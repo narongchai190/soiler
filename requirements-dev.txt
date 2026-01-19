@@ -1,0 +1,10 @@
+# S.O.I.L.E.R. Development Dependencies
+# Install with: pip install -r requirements-dev.txt
+
+-r requirements.txt
+
+# Testing
+pytest>=7.0.0
+
+# Linting
+ruff>=0.1.0

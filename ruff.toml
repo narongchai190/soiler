@@ -1,0 +1,31 @@
+# Ruff configuration for S.O.I.L.E.R.
+# Minimal config - avoid mass reformatting
+
+[lint]
+# Only check for critical errors
+select = ["E", "F"]
+
+# Ignore common issues that would require mass changes
+ignore = [
+    "E501",  # Line too long (handled by project style)
+    "E402",  # Module level import not at top (some files need sys.path)
+    "E722",  # Bare except (legacy code, fix later)
+    "F401",  # Unused imports (many are for re-export)
+    "F541",  # f-string without placeholders (intentional in Thai strings)
+    "F841",  # Unused variables (some are intentional placeholders)
+]
+
+# Exclude generated/vendored code
+exclude = [
+    ".git",
+    ".venv",
+    "venv",
+    "__pycache__",
+    "*.egg-info",
+    ".pytest_cache",
+]
+
+[format]
+# Don't auto-format - preserve existing style
+quote-style = "double"
+indent-style = "space"

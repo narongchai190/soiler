@@ -1,0 +1,348 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "last_updated": "2026-01-18",
+    "description": "S.O.I.L.E.R. Master Data - Soil series, crops, and fertilizers for Phrae Province, Thailand",
+    "author": "S.O.I.L.E.R. Development Team"
+  },
+
+  "soil_series": {
+    "Phrae": {
+      "series_code": "Pr",
+      "description": "Alluvial soils found in floodplains and river terraces",
+      "description_th": "ดินตะกอนที่พบในที่ราบน้ำท่วมถึงและลานแม่น้ำ",
+      "typical_properties": {
+        "ph_range": {"min": 5.5, "max": 6.5, "optimal": 6.0},
+        "organic_matter_percent": {"min": 1.5, "max": 2.5},
+        "nitrogen_mg_kg": {"low": 20, "medium": 40, "high": 60},
+        "phosphorus_mg_kg": {"low": 10, "medium": 25, "high": 45},
+        "potassium_mg_kg": {"low": 60, "medium": 120, "high": 200}
+      },
+      "texture": "clay loam",
+      "texture_th": "ดินร่วนเหนียว",
+      "texture_composition": {"sand": 30, "silt": 35, "clay": 35},
+      "drainage": "moderate",
+      "water_holding_capacity": "high",
+      "cec_meq_100g": 18.5,
+      "suitable_crops": ["rice", "riceberry", "vegetables"],
+      "limitations": ["flooding risk", "compaction"],
+      "location_areas": ["Mae Yom basin", "Phrae city surroundings"],
+      "coordinates": {"lat": 18.1445, "lng": 100.1408}
+    },
+    "Long": {
+      "series_code": "Lo",
+      "description": "Residual soils on undulating to rolling terrain",
+      "description_th": "ดินที่พัฒนาในที่จากการผุพังของหินเดิมบนพื้นที่ลูกคลื่น",
+      "typical_properties": {
+        "ph_range": {"min": 5.0, "max": 6.0, "optimal": 5.5},
+        "organic_matter_percent": {"min": 1.0, "max": 2.0},
+        "nitrogen_mg_kg": {"low": 15, "medium": 30, "high": 50},
+        "phosphorus_mg_kg": {"low": 8, "medium": 20, "high": 35},
+        "potassium_mg_kg": {"low": 50, "medium": 100, "high": 180}
+      },
+      "texture": "sandy clay loam",
+      "texture_th": "ดินร่วนเหนียวปนทราย",
+      "texture_composition": {"sand": 55, "silt": 20, "clay": 25},
+      "drainage": "well-drained",
+      "water_holding_capacity": "moderate",
+      "cec_meq_100g": 12.0,
+      "suitable_crops": ["corn", "cassava", "sugarcane", "upland rice"],
+      "limitations": ["erosion susceptibility", "low fertility"],
+      "location_areas": ["Long district", "Sung Men district"],
+      "coordinates": {"lat": 18.0087, "lng": 99.8456}
+    },
+    "Den Chai": {
+      "series_code": "Dc",
+      "description": "Deep alluvial soils in lowland paddy areas",
+      "description_th": "ดินตะกอนลึกในพื้นที่นาลุ่ม",
+      "typical_properties": {
+        "ph_range": {"min": 5.8, "max": 6.8, "optimal": 6.3},
+        "organic_matter_percent": {"min": 2.0, "max": 3.5},
+        "nitrogen_mg_kg": {"low": 25, "medium": 50, "high": 75},
+        "phosphorus_mg_kg": {"low": 12, "medium": 30, "high": 50},
+        "potassium_mg_kg": {"low": 70, "medium": 140, "high": 220}
+      },
+      "texture": "silty clay",
+      "texture_th": "ดินเหนียวปนทรายแป้ง",
+      "texture_composition": {"sand": 15, "silt": 45, "clay": 40},
+      "drainage": "slow",
+      "water_holding_capacity": "very high",
+      "cec_meq_100g": 22.0,
+      "suitable_crops": ["rice", "riceberry", "wetland vegetables"],
+      "limitations": ["poor drainage", "waterlogging"],
+      "location_areas": ["Den Chai district", "Wang Chin lowlands"],
+      "coordinates": {"lat": 17.9883, "lng": 100.0483}
+    }
+  },
+
+  "crop_requirements": {
+    "Riceberry Rice": {
+      "crop_code": "RB",
+      "name_th": "ข้าวไรซ์เบอร์รี่",
+      "scientific_name": "Oryza sativa (Riceberry variety)",
+      "description": "Purple-pigmented rice with high anthocyanin content",
+      "description_th": "ข้าวสีม่วงที่มีปริมาณแอนโธไซยานินสูง",
+      "growth_cycle_days": 120,
+      "growth_stages": {
+        "seedling": {"days": 20, "description": "Nursery stage", "description_th": "ระยะกล้า"},
+        "vegetative": {"days": 35, "description": "Tillering and growth", "description_th": "ระยะแตกกอและเจริญเติบโต"},
+        "reproductive": {"days": 35, "description": "Panicle development", "description_th": "ระยะออกรวง"},
+        "ripening": {"days": 30, "description": "Grain filling and maturity", "description_th": "ระยะเมล็ดสุกแก่"}
+      },
+      "soil_requirements": {
+        "ph_range": {"min": 5.5, "max": 6.5, "optimal": 6.0},
+        "texture_preference": ["clay loam", "silty clay", "clay"],
+        "drainage": "moderate to slow (paddy conditions)",
+        "organic_matter_min_percent": 2.0
+      },
+      "nutrient_requirements_kg_per_rai": {
+        "nitrogen": {"min": 8, "optimal": 12, "max": 16},
+        "phosphorus_p2o5": {"min": 4, "optimal": 6, "max": 8},
+        "potassium_k2o": {"min": 4, "optimal": 8, "max": 12}
+      },
+      "water_requirement_mm": 1200,
+      "yield_potential_kg_per_rai": {"low": 350, "average": 450, "high": 550},
+      "market_price_thb_per_kg": {"min": 40, "average": 45, "premium": 55},
+      "special_notes": [
+        "Requires flooded conditions during vegetative stage",
+        "Sensitive to iron toxicity in acidic soils",
+        "Benefits from organic matter amendments"
+      ],
+      "special_notes_th": [
+        "ต้องการน้ำขังในช่วงเจริญเติบโต",
+        "ไวต่อพิษธาตุเหล็กในดินกรด",
+        "ได้ประโยชน์จากการใส่อินทรียวัตถุ"
+      ]
+    },
+    "Corn": {
+      "crop_code": "CN",
+      "name_th": "ข้าวโพด",
+      "scientific_name": "Zea mays",
+      "description": "Field corn for grain production",
+      "description_th": "ข้าวโพดเลี้ยงสัตว์สำหรับผลิตเมล็ดพันธุ์",
+      "growth_cycle_days": 110,
+      "growth_stages": {
+        "emergence": {"days": 10, "description": "Germination to emergence", "description_th": "ระยะงอก"},
+        "vegetative": {"days": 45, "description": "V1 to VT stages", "description_th": "ระยะเจริญเติบโต"},
+        "reproductive": {"days": 35, "description": "Silking to dough", "description_th": "ระยะออกดอกและติดเมล็ด"},
+        "maturity": {"days": 20, "description": "Dent to physiological maturity", "description_th": "ระยะสุกแก่"}
+      },
+      "soil_requirements": {
+        "ph_range": {"min": 5.8, "max": 7.0, "optimal": 6.5},
+        "texture_preference": ["sandy loam", "loam", "sandy clay loam"],
+        "drainage": "well-drained",
+        "organic_matter_min_percent": 1.5
+      },
+      "nutrient_requirements_kg_per_rai": {
+        "nitrogen": {"min": 12, "optimal": 18, "max": 24},
+        "phosphorus_p2o5": {"min": 6, "optimal": 9, "max": 12},
+        "potassium_k2o": {"min": 6, "optimal": 10, "max": 14}
+      },
+      "water_requirement_mm": 500,
+      "yield_potential_kg_per_rai": {"low": 600, "average": 800, "high": 1100},
+      "market_price_thb_per_kg": {"min": 7, "average": 9, "premium": 12},
+      "special_notes": [
+        "Critical water needs during tasseling and silking",
+        "High nitrogen demand during rapid growth",
+        "Sensitive to waterlogging"
+      ],
+      "special_notes_th": [
+        "ต้องการน้ำมากในช่วงออกดอก",
+        "ต้องการไนโตรเจนสูงในช่วงเจริญเติบโตเร็ว",
+        "ไม่ทนต่อน้ำขัง"
+      ]
+    }
+  },
+
+  "fertilizers": [
+    {
+      "id": "urea",
+      "name": "Urea (46-0-0)",
+      "name_th": "ยูเรีย",
+      "formula": "46-0-0",
+      "npk_ratio": {"N": 46, "P": 0, "K": 0},
+      "type": "nitrogen",
+      "form": "granular",
+      "price_thb_per_kg": 18.5,
+      "price_thb_per_50kg_bag": 925,
+      "application_method": "broadcast or side-dress",
+      "application_method_th": "หว่านหรือใส่ข้างแถว",
+      "notes": "High nitrogen content, prone to volatilization if not incorporated",
+      "notes_th": "ไนโตรเจนสูง ระเหยง่ายถ้าไม่คลุกดิน",
+      "availability": "widely available"
+    },
+    {
+      "id": "ammonium_sulfate",
+      "name": "Ammonium Sulfate (21-0-0)",
+      "name_th": "แอมโมเนียมซัลเฟต",
+      "formula": "21-0-0",
+      "npk_ratio": {"N": 21, "P": 0, "K": 0},
+      "type": "nitrogen",
+      "form": "crystalline",
+      "price_thb_per_kg": 14.0,
+      "price_thb_per_50kg_bag": 700,
+      "application_method": "broadcast or side-dress",
+      "application_method_th": "หว่านหรือใส่ข้างแถว",
+      "notes": "Contains 24% sulfur, acidifying effect on soil",
+      "notes_th": "มีกำมะถัน 24% ทำให้ดินเป็นกรด",
+      "availability": "widely available"
+    },
+    {
+      "id": "triple_super",
+      "name": "Triple Superphosphate (0-46-0)",
+      "name_th": "ทริปเปิลซุปเปอร์ฟอสเฟต",
+      "formula": "0-46-0",
+      "npk_ratio": {"N": 0, "P": 46, "K": 0},
+      "type": "phosphorus",
+      "form": "granular",
+      "price_thb_per_kg": 22.0,
+      "price_thb_per_50kg_bag": 1100,
+      "application_method": "basal application",
+      "application_method_th": "รองพื้น",
+      "notes": "High phosphorus content, best applied at planting",
+      "notes_th": "ฟอสฟอรัสสูง เหมาะใส่ตอนปลูก",
+      "availability": "widely available"
+    },
+    {
+      "id": "mop",
+      "name": "Muriate of Potash (0-0-60)",
+      "name_th": "โพแทสเซียมคลอไรด์",
+      "formula": "0-0-60",
+      "npk_ratio": {"N": 0, "P": 0, "K": 60},
+      "type": "potassium",
+      "form": "granular",
+      "price_thb_per_kg": 20.0,
+      "price_thb_per_50kg_bag": 1000,
+      "application_method": "broadcast or band",
+      "application_method_th": "หว่านหรือโรยเป็นแถว",
+      "notes": "High potassium content, contains chloride",
+      "notes_th": "โพแทสเซียมสูง มีคลอไรด์",
+      "availability": "widely available"
+    },
+    {
+      "id": "npk_15_15_15",
+      "name": "NPK 15-15-15",
+      "name_th": "สูตร 15-15-15",
+      "formula": "15-15-15",
+      "npk_ratio": {"N": 15, "P": 15, "K": 15},
+      "type": "compound",
+      "form": "granular",
+      "price_thb_per_kg": 19.0,
+      "price_thb_per_50kg_bag": 950,
+      "application_method": "basal or top-dress",
+      "application_method_th": "รองพื้นหรือแต่งหน้า",
+      "notes": "Balanced fertilizer for general use",
+      "notes_th": "ปุ๋ยสมดุลสำหรับใช้ทั่วไป",
+      "availability": "widely available"
+    },
+    {
+      "id": "npk_16_20_0",
+      "name": "NPK 16-20-0",
+      "name_th": "สูตร 16-20-0",
+      "formula": "16-20-0",
+      "npk_ratio": {"N": 16, "P": 20, "K": 0},
+      "type": "compound",
+      "form": "granular",
+      "price_thb_per_kg": 17.5,
+      "price_thb_per_50kg_bag": 875,
+      "application_method": "basal application",
+      "application_method_th": "รองพื้น",
+      "notes": "Good for rice at transplanting, promotes root development",
+      "notes_th": "ดีสำหรับข้าวตอนปักดำ ช่วยพัฒนาราก",
+      "availability": "widely available"
+    },
+    {
+      "id": "custom_rice_mix",
+      "name": "NPK 46-0-0 + 16-20-0 (Custom Rice Mix)",
+      "name_th": "สูตรผสมสำหรับข้าว",
+      "formula": "custom",
+      "npk_ratio": {"N": 31, "P": 10, "K": 0},
+      "type": "custom blend",
+      "form": "mixed granular",
+      "price_thb_per_kg": 18.0,
+      "price_thb_per_50kg_bag": 900,
+      "application_method": "split application",
+      "application_method_th": "แบ่งใส่หลายครั้ง",
+      "notes": "Common farmer practice for rice cultivation",
+      "notes_th": "วิธีที่เกษตรกรนิยมใช้ปลูกข้าว",
+      "availability": "custom mixing required"
+    },
+    {
+      "id": "organic_compost",
+      "name": "Organic Compost",
+      "name_th": "ปุ๋ยหมัก",
+      "formula": "2-1-1",
+      "npk_ratio": {"N": 2, "P": 1, "K": 1},
+      "type": "organic",
+      "form": "bulk",
+      "price_thb_per_kg": 3.0,
+      "price_thb_per_50kg_bag": 150,
+      "application_method": "broadcast and incorporate",
+      "application_method_th": "หว่านและคลุกเคล้ากับดิน",
+      "notes": "Improves soil structure, slow nutrient release",
+      "notes_th": "ปรับโครงสร้างดิน ปลดปล่อยธาตุอาหารช้า",
+      "availability": "local production"
+    },
+    {
+      "id": "chicken_manure",
+      "name": "Chicken Manure (processed)",
+      "name_th": "มูลไก่อัดเม็ด",
+      "formula": "3-2-2",
+      "npk_ratio": {"N": 3, "P": 2, "K": 2},
+      "type": "organic",
+      "form": "pelletized",
+      "price_thb_per_kg": 5.0,
+      "price_thb_per_50kg_bag": 250,
+      "application_method": "basal application",
+      "application_method_th": "รองพื้น",
+      "notes": "Good organic option, needs time to mineralize",
+      "notes_th": "ตัวเลือกอินทรีย์ที่ดี ต้องการเวลาย่อยสลาย",
+      "availability": "widely available"
+    }
+  ],
+
+  "climate_data": {
+    "phrae_province": {
+      "region": "Northern Thailand",
+      "climate_zone": "Tropical savanna (Aw)",
+      "monthly_averages": {
+        "1": {"temp_min": 14, "temp_max": 31, "rainfall_mm": 5, "humidity": 65, "season": "cool_dry"},
+        "2": {"temp_min": 16, "temp_max": 34, "rainfall_mm": 8, "humidity": 60, "season": "hot_dry"},
+        "3": {"temp_min": 20, "temp_max": 36, "rainfall_mm": 25, "humidity": 55, "season": "hot_dry"},
+        "4": {"temp_min": 23, "temp_max": 37, "rainfall_mm": 65, "humidity": 60, "season": "hot_dry"},
+        "5": {"temp_min": 24, "temp_max": 35, "rainfall_mm": 180, "humidity": 75, "season": "rainy"},
+        "6": {"temp_min": 24, "temp_max": 33, "rainfall_mm": 150, "humidity": 80, "season": "rainy"},
+        "7": {"temp_min": 24, "temp_max": 32, "rainfall_mm": 200, "humidity": 85, "season": "rainy"},
+        "8": {"temp_min": 24, "temp_max": 32, "rainfall_mm": 250, "humidity": 85, "season": "rainy"},
+        "9": {"temp_min": 23, "temp_max": 32, "rainfall_mm": 220, "humidity": 85, "season": "rainy"},
+        "10": {"temp_min": 22, "temp_max": 32, "rainfall_mm": 100, "humidity": 78, "season": "rainy"},
+        "11": {"temp_min": 18, "temp_max": 31, "rainfall_mm": 30, "humidity": 70, "season": "cool_dry"},
+        "12": {"temp_min": 15, "temp_max": 30, "rainfall_mm": 10, "humidity": 68, "season": "cool_dry"}
+      }
+    }
+  },
+
+  "districts": {
+    "phrae_district": {
+      "name_en": "Phrae District",
+      "name_th": "อำเภอเมืองแพร่",
+      "province": "Phrae Province",
+      "soil_series": "Phrae",
+      "coordinates": {"lat": 18.1445, "lng": 100.1408}
+    },
+    "long_district": {
+      "name_en": "Long District",
+      "name_th": "อำเภอลอง",
+      "province": "Phrae Province",
+      "soil_series": "Long",
+      "coordinates": {"lat": 18.0087, "lng": 99.8456}
+    },
+    "denchai_district": {
+      "name_en": "Den Chai District",
+      "name_th": "อำเภอเด่นชัย",
+      "province": "Phrae Province",
+      "soil_series": "Den Chai",
+      "coordinates": {"lat": 17.9883, "lng": 100.0483}
+    }
+  }
+}

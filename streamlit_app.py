@@ -18,6 +18,14 @@ import sys
 from datetime import datetime
 import pandas as pd
 
+# Map dependencies (OSM/Leaflet via folium)
+try:
+    import folium
+    from streamlit_folium import st_folium
+    FOLIUM_AVAILABLE = True
+except ImportError:
+    FOLIUM_AVAILABLE = False
+
 # Add project root to path
 sys.path.insert(0, ".")
 
@@ -68,6 +76,14 @@ TH = {
     "coords_help": "ใส่พิกัดทศนิยม เช่น 18.1445",
     "use_map": "เลือกจากแผนที่",
     "map_instruction": "คลิกบนแผนที่เพื่อเลือกตำแหน่ง",
+    "use_gps": "ใช้ GPS มือถือ",
+    "gps_instruction": "กดปุ่มเพื่อขอตำแหน่งปัจจุบัน",
+    "gps_not_available": "GPS ไม่พร้อมใช้งาน",
+    "current_location": "ตำแหน่งปัจจุบัน",
+    "clear_location": "ล้างตำแหน่ง",
+    "map_pin_set": "ตั้งหมุดแล้ว",
+    "click_map_hint": "คลิก/แตะบนแผนที่เพื่อเลือกตำแหน่งฟาร์ม",
+    "google_maps_error": "Google Maps API ไม่พร้อมใช้งาน - ใช้แผนที่ OpenStreetMap แทน",
 
     # Districts
     "phrae_district": "อำเภอเมืองแพร่",
@@ -178,9 +194,11 @@ TH = {
     # Agent names (8-agent architecture)
     "agent_soil_series": "ผู้เชี่ยวชาญชุดดิน",
     "agent_soil_chem": "ผู้เชี่ยวชาญเคมีดิน",
+    "agent_soil": "ผู้เชี่ยวชาญวิเคราะห์ดิน",
     "agent_crop": "ผู้เชี่ยวชาญชีววิทยาพืช",
     "agent_pest": "ผู้เชี่ยวชาญโรคและแมลง",
     "agent_climate": "ผู้เชี่ยวชาญภูมิอากาศ",
+    "agent_env": "ผู้เชี่ยวชาญสภาพแวดล้อม",
     "agent_fert": "ผู้เชี่ยวชาญสูตรปุ๋ย",
     "agent_market": "ผู้เชี่ยวชาญตลาดและต้นทุน",
     "agent_report": "ผู้สรุปรายงาน",
@@ -1203,6 +1221,14 @@ def main():
     # SIDEBAR
     # =========================================================================
     with st.sidebar:
+        # Initialize session state for location persistence
+        if "farm_lat" not in st.session_state:
+            st.session_state["farm_lat"] = 18.0087
+        if "farm_lng" not in st.session_state:
+            st.session_state["farm_lng"] = 99.8456
+        if "location_district_idx" not in st.session_state:
+            st.session_state["location_district_idx"] = 1
+
         # Location Section
         st.markdown(f"""
         <div class="sidebar-section">
@@ -1219,13 +1245,17 @@ def main():
             TH["denchai_district"]: "Den Chai District, Phrae Province",
             TH["custom_location"]: "custom",
         }
+        location_keys = list(location_options.keys())
 
         location_thai = st.selectbox(
             TH["select_district"],
-            options=list(location_options.keys()),
-            index=1,
+            options=location_keys,
+            index=st.session_state["location_district_idx"],
+            key="sidebar_location_district",
             label_visibility="visible"
         )
+        # Update session state
+        st.session_state["location_district_idx"] = location_keys.index(location_thai)
         location = location_options[location_thai]
 
         # Custom coordinates input
@@ -1233,15 +1263,55 @@ def main():
 
         if use_custom_coords:
             st.markdown(f"**{TH['or_enter_coords']}**")
+
+            # Map pin selection with OSM (Folium)
+            if FOLIUM_AVAILABLE:
+                with st.expander(f"📍 {TH['use_map']}", expanded=True):
+                    st.caption(TH["click_map_hint"])
+
+                    # Create OSM map centered on current location
+                    m = folium.Map(
+                        location=[st.session_state["farm_lat"], st.session_state["farm_lng"]],
+                        zoom_start=12,
+                        tiles="OpenStreetMap"
+                    )
+                    # Add marker for current selection
+                    folium.Marker(
+                        [st.session_state["farm_lat"], st.session_state["farm_lng"]],
+                        popup=TH["current_location"],
+                        icon=folium.Icon(color="green", icon="leaf")
+                    ).add_to(m)
+
+                    # Render map and capture clicks
+                    map_data = st_folium(m, width=280, height=250, key="sidebar_map")
+
+                    # Handle map click
+                    if map_data and map_data.get("last_clicked"):
+                        clicked_lat = map_data["last_clicked"]["lat"]
+                        clicked_lng = map_data["last_clicked"]["lng"]
+                        st.session_state["farm_lat"] = clicked_lat
+                        st.session_state["farm_lng"] = clicked_lng
+
+                    # Display current coordinates
+                    st.success(f"📍 {st.session_state['farm_lat']:.4f}, {st.session_state['farm_lng']:.4f}")
+
+                    # Clear button
+                    if st.button(f"🗑️ {TH['clear_location']}", key="clear_loc_btn"):
+                        st.session_state["farm_lat"] = 18.0087
+                        st.session_state["farm_lng"] = 99.8456
+                        st.rerun()
+
+            # Manual coordinate inputs (always available)
             col_lat, col_lng = st.columns(2)
             with col_lat:
                 custom_lat = st.number_input(
                     TH["latitude"],
                     min_value=5.0,
                     max_value=21.0,
-                    value=18.0087,
+                    value=st.session_state["farm_lat"],
                     step=0.0001,
                     format="%.4f",
+                    key="sidebar_lat_input",
                     help=TH["coords_help"]
                 )
             with col_lng:
@@ -1249,31 +1319,45 @@ def main():
                     TH["longitude"],
                     min_value=97.0,
                     max_value=106.0,
-                    value=99.8456,
+                    value=st.session_state["farm_lng"],
                     step=0.0001,
                     format="%.4f",
+                    key="sidebar_lng_input",
                     help=TH["coords_help"]
                 )
 
-            # Show map for custom location
-            if GOOGLE_MAPS_API_KEY != "YOUR_API_KEY_HERE":
-                with st.expander(TH["use_map"], expanded=False):
-                    st.markdown(f"<small>{TH['map_instruction']}</small>", unsafe_allow_html=True)
-                    st.markdown(create_google_map_html(custom_lat, custom_lng, GOOGLE_MAPS_API_KEY), unsafe_allow_html=True)
+            # Update session state from manual inputs
+            st.session_state["farm_lat"] = custom_lat
+            st.session_state["farm_lng"] = custom_lng
 
             location = "Long District, Phrae Province"  # Default for processing
             coords = {"lat": custom_lat, "lng": custom_lng}
         else:
             coords = DISTRICT_COORDS.get(location, {"lat": 18.0087, "lng": 99.8456})
+            st.session_state["farm_lat"] = coords["lat"]
+            st.session_state["farm_lng"] = coords["lng"]
 
-            # Show mini map for selected district
-            if GOOGLE_MAPS_API_KEY != "YOUR_API_KEY_HERE":
-                with st.expander(TH["use_map"], expanded=False):
-                    st.markdown(create_google_map_html(coords["lat"], coords["lng"], GOOGLE_MAPS_API_KEY), unsafe_allow_html=True)
+            # Show mini OSM map for selected district
+            if FOLIUM_AVAILABLE:
+                with st.expander(f"📍 {TH['use_map']}", expanded=False):
+                    m = folium.Map(
+                        location=[coords["lat"], coords["lng"]],
+                        zoom_start=13,
+                        tiles="OpenStreetMap"
+                    )
+                    folium.Marker(
+                        [coords["lat"], coords["lng"]],
+                        popup=location_thai,
+                        icon=folium.Icon(color="blue", icon="info-sign")
+                    ).add_to(m)
+                    st_folium(m, width=280, height=200, key="sidebar_map_district")
 
         st.markdown("---")
 
         # Crop Section
+        if "crop_idx" not in st.session_state:
+            st.session_state["crop_idx"] = 1
+
         st.markdown(f"""
         <div class="sidebar-section">
             <div class="sidebar-section-title">
@@ -1287,12 +1371,15 @@ def main():
             TH["riceberry"]: "Riceberry Rice",
             TH["corn"]: "Corn",
         }
+        crop_keys = list(crop_options.keys())
 
         crop_thai = st.selectbox(
             TH["select_crop"],
-            options=list(crop_options.keys()),
-            index=1
+            options=crop_keys,
+            index=st.session_state["crop_idx"],
+            key="sidebar_crop_select"
         )
+        st.session_state["crop_idx"] = crop_keys.index(crop_thai)
         crop = crop_options[crop_thai]
 
         st.markdown("---")
@@ -1388,6 +1475,13 @@ def main():
         st.markdown("---")
 
         # Options Section
+        if "texture_idx" not in st.session_state:
+            st.session_state["texture_idx"] = 3
+        if "irrigation" not in st.session_state:
+            st.session_state["irrigation"] = True
+        if "prefer_organic" not in st.session_state:
+            st.session_state["prefer_organic"] = False
+
         with st.expander(f"⚙️ {TH['options_section']}", expanded=False):
             texture_options = {
                 TH["loam"]: "loam",
@@ -1396,16 +1490,30 @@ def main():
                 TH["sandy_clay_loam"]: "sandy clay loam",
                 TH["silty_clay"]: "silty clay",
             }
+            texture_keys = list(texture_options.keys())
 
             texture_thai = st.selectbox(
                 TH["soil_texture"],
-                options=list(texture_options.keys()),
-                index=3
+                options=texture_keys,
+                index=st.session_state["texture_idx"],
+                key="sidebar_texture_select"
             )
+            st.session_state["texture_idx"] = texture_keys.index(texture_thai)
             texture = texture_options[texture_thai]
 
-            irrigation = st.checkbox(TH["irrigation"], value=True)
-            prefer_organic = st.checkbox(TH["prefer_organic"], value=False)
+            irrigation = st.checkbox(
+                TH["irrigation"],
+                value=st.session_state["irrigation"],
+                key="sidebar_irrigation"
+            )
+            st.session_state["irrigation"] = irrigation
+
+            prefer_organic = st.checkbox(
+                TH["prefer_organic"],
+                value=st.session_state["prefer_organic"],
+                key="sidebar_organic"
+            )
+            st.session_state["prefer_organic"] = prefer_organic
 
         st.markdown("---")
 
@@ -1458,6 +1566,7 @@ def main():
                 TH["history_title"],
                 options=history_options,
                 index=0,
+                key="sidebar_history_select",
                 label_visibility="collapsed"
             )
 

@@ -511,28 +511,81 @@ st.markdown("""
         padding: var(--spacing-md) !important;
     }
 
+    /* ========================================
+       SOILER SECTION HEADERS (Borderless Design)
+       ======================================== */
+    .soiler-section-header {
+        margin-top: 20px;
+        margin-bottom: 12px;
+        padding: 0;
+    }
+
+    .soiler-section-header:first-of-type {
+        margin-top: 8px;
+    }
+
+    .soiler-section-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--text-primary);
+        font-weight: 700;
+        font-size: 22px;
+        line-height: 1.25;
+        margin: 0;
+        padding: 0;
+    }
+
+    .soiler-section-icon {
+        font-size: 24px;
+        color: var(--primary);
+        line-height: 1;
+        display: flex;
+        align-items: center;
+    }
+
+    .soiler-section-divider {
+        height: 1px;
+        background: var(--border-color);
+        opacity: 0.4;
+        margin-top: 10px;
+    }
+
+    /* Mobile responsive */
+    @media (max-width: 768px) {
+        .soiler-section-title {
+            font-size: 20px;
+        }
+        .soiler-section-icon {
+            font-size: 22px;
+        }
+    }
+
+    /* Legacy sidebar-section (keep for compatibility but style as borderless) */
     .sidebar-section {
-        background: var(--bg-tertiary);
-        border: 1px solid var(--border-color);
-        border-radius: var(--radius-md);
-        padding: var(--spacing-md);
-        margin-bottom: var(--spacing-md);
+        background: transparent;
+        border: none;
+        border-radius: 0;
+        padding: 0;
+        margin-top: 20px;
+        margin-bottom: 12px;
     }
 
     .sidebar-section-title {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 12px;
         color: var(--text-primary);
-        font-weight: 600;
-        font-size: 18px;
-        margin-bottom: var(--spacing-sm);
-        padding-bottom: var(--spacing-xs);
-        border-bottom: 1px solid var(--border-color);
+        font-weight: 700;
+        font-size: 22px;
+        line-height: 1.25;
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
     }
 
     .sidebar-section-title .material-icons-outlined {
-        font-size: 22px;
+        font-size: 24px;
         color: var(--primary);
     }
 
@@ -956,8 +1009,8 @@ st.markdown("""
        ======================================== */
     .feature-card {
         background: var(--bg-card);
-        border: 1px solid var(--border-color);
-        border-radius: var(--radius-md);
+        border: 1px solid rgba(255,255,255,0.06);
+        border-radius: var(--radius-lg);
         padding: var(--spacing-lg);
         height: 100%;
         transition: all 0.3s ease;
@@ -966,35 +1019,50 @@ st.markdown("""
     .feature-card:hover {
         border-color: var(--primary);
         box-shadow: var(--shadow-md);
+        transform: translateY(-2px);
     }
 
     .feature-icon {
-        width: 56px;
-        height: 56px;
+        width: 72px;
+        height: 72px;
         background: var(--primary-muted);
         border-radius: var(--radius-md);
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-bottom: var(--spacing-sm);
+        margin-bottom: var(--spacing-md);
     }
 
     .feature-icon .material-icons-outlined {
-        font-size: 32px;
+        font-size: 36px;
         color: var(--primary);
     }
 
     .feature-title {
         font-size: 20px;
-        font-weight: 600;
+        font-weight: 700;
         color: var(--text-primary);
-        margin-bottom: 8px;
+        margin-bottom: 10px;
     }
 
     .feature-desc {
         font-size: 16px;
         color: var(--text-secondary);
         line-height: 1.6;
+    }
+
+    /* Mobile responsive feature cards */
+    @media (max-width: 768px) {
+        .feature-icon {
+            width: 64px;
+            height: 64px;
+        }
+        .feature-icon .material-icons-outlined {
+            font-size: 32px;
+        }
+        .feature-title {
+            font-size: 18px;
+        }
     }
 
     /* ========================================
@@ -1187,6 +1255,26 @@ def create_google_map_html(lat: float, lng: float, api_key: str) -> str:
     """
 
 
+def render_section_header(title: str, icon: str, subtitle: str | None = None) -> None:
+    """Render a styled section header in the sidebar.
+
+    Args:
+        title: The section title text
+        icon: Material Icons Outlined icon name (e.g., 'location_on', 'grass')
+        subtitle: Optional subtitle text below the title
+    """
+    subtitle_html = f'<div class="soiler-section-subtitle">{subtitle}</div>' if subtitle else ""
+    st.markdown(f"""
+    <div class="soiler-section-header">
+        <div class="soiler-section-title">
+            <span class="soiler-section-icon material-icons-outlined">{icon}</span>
+            {title}
+        </div>
+        {subtitle_html}
+    </div>
+    """, unsafe_allow_html=True)
+
+
 # =============================================================================
 # DISTRICT COORDINATES
 # =============================================================================
@@ -1230,14 +1318,7 @@ def main():
             st.session_state["location_district_idx"] = 1
 
         # Location Section
-        st.markdown(f"""
-        <div class="sidebar-section">
-            <div class="sidebar-section-title">
-                <span class="material-icons-outlined">location_on</span>
-                {TH["location_section"]}
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+        render_section_header(TH["location_section"], "location_on")
 
         location_options = {
             TH["phrae_district"]: "Phrae District, Phrae Province",
@@ -1358,14 +1439,7 @@ def main():
         if "crop_idx" not in st.session_state:
             st.session_state["crop_idx"] = 1
 
-        st.markdown(f"""
-        <div class="sidebar-section">
-            <div class="sidebar-section-title">
-                <span class="material-icons-outlined">grass</span>
-                {TH["crop_section"]}
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+        render_section_header(TH["crop_section"], "grass")
 
         crop_options = {
             TH["riceberry"]: "Riceberry Rice",
@@ -1385,14 +1459,7 @@ def main():
         st.markdown("---")
 
         # Field Section
-        st.markdown(f"""
-        <div class="sidebar-section">
-            <div class="sidebar-section-title">
-                <span class="material-icons-outlined">straighten</span>
-                {TH["field_section"]}
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+        render_section_header(TH["field_section"], "straighten")
 
         field_size = st.number_input(
             TH["field_size"],
@@ -1415,14 +1482,7 @@ def main():
         st.markdown("---")
 
         # Soil Section
-        st.markdown(f"""
-        <div class="sidebar-section">
-            <div class="sidebar-section-title">
-                <span class="material-icons-outlined">science</span>
-                {TH["soil_section"]}
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+        render_section_header(TH["soil_section"], "science")
 
         ph = st.slider(
             TH["ph_level"],
@@ -1528,14 +1588,7 @@ def main():
         # =====================================================================
         # HISTORY SECTION (ประวัติการวิเคราะห์)
         # =====================================================================
-        st.markdown(f"""
-        <div class="sidebar-section">
-            <div class="sidebar-section-title">
-                <span class="material-icons-outlined">history</span>
-                {TH["history_section"]}
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+        render_section_header(TH["history_section"], "history")
 
         # Get recent history from database
         try:

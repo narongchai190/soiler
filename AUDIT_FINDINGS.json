@@ -1,0 +1,200 @@
+{
+  "audit_metadata": {
+    "date": "2026-01-20",
+    "auditor": "Claude Opus 4.5",
+    "repository": "soiler",
+    "version_audited": "0.1.0",
+    "total_findings": 11,
+    "tests_passed": 19,
+    "tests_failed": 1,
+    "tests_total": 20
+  },
+  "summary": {
+    "p0_critical": 1,
+    "p1_high": 2,
+    "p2_medium": 5,
+    "p3_low": 3,
+    "release_ready": false,
+    "blocking_issues": ["F-001", "F-002", "F-003"]
+  },
+  "findings": [
+    {
+      "id": "F-001",
+      "title": "Hardcoded Google Maps API Key",
+      "severity": "P0",
+      "category": "security",
+      "file": "streamlit_app.py",
+      "line_range": "55-57",
+      "impact": "API key exposed in source control, potential billing abuse",
+      "root_cause": "Developer convenience pattern with hardcoded fallback",
+      "fix": "Remove hardcoded key, use st.secrets only with graceful fallback to None",
+      "verification": "Search for Google API key pattern should return 0 results",
+      "effort_hours": 0.5
+    },
+    {
+      "id": "F-002",
+      "title": "E2E Test Flaky - Selector Matches Multiple Elements",
+      "severity": "P1",
+      "category": "testing",
+      "file": "tests/test_ui_e2e.py",
+      "line_range": "85",
+      "impact": "CI shows 1 failed test, reduces confidence",
+      "root_cause": "get_by_text matches multiple Thai text elements",
+      "fix": "Use .first() or more specific selector",
+      "verification": "pytest tests/test_ui_e2e.py -v should pass all 3",
+      "effort_hours": 0.25
+    },
+    {
+      "id": "F-003",
+      "title": "Unused Variables and Imports (Ruff Findings)",
+      "severity": "P1",
+      "category": "code_quality",
+      "file": "agents/*.py",
+      "line_range": "multiple",
+      "impact": "Code confusion, incomplete refactoring",
+      "root_cause": "Dead code from development",
+      "fix": "Run ruff check --fix",
+      "verification": "ruff check . --select=E,F should return 0 errors",
+      "effort_hours": 0.25,
+      "details": [
+        {"file": "agents/crop_agent.py", "line": 7, "issue": "F401: Optional imported but unused"},
+        {"file": "agents/crop_agent.py", "line": 402, "issue": "F841: current_day assigned but unused"},
+        {"file": "agents/crop_biology_agent.py", "line": 208, "issue": "F841: crop_name assigned but unused"},
+        {"file": "agents/env_agent.py", "line": 9, "issue": "F401: Optional imported but unused"},
+        {"file": "agents/env_agent.py", "line": 205, "issue": "F841: end_month assigned but unused"}
+      ]
+    },
+    {
+      "id": "F-004",
+      "title": "Missing requests Dependency in requirements.txt",
+      "severity": "P2",
+      "category": "dependencies",
+      "file": "requirements.txt",
+      "line_range": "N/A",
+      "impact": "Tests may fail in fresh environments",
+      "root_cause": "Transitive dependency not explicitly declared",
+      "fix": "Add 'requests>=2.28.0' to requirements.txt",
+      "verification": "pip install -r requirements.txt in clean venv",
+      "effort_hours": 0.1
+    },
+    {
+      "id": "F-005",
+      "title": ".venv Directory Not in .gitignore",
+      "severity": "P2",
+      "category": "configuration",
+      "file": ".gitignore",
+      "line_range": "24",
+      "impact": "Virtual environment files may be tracked",
+      "root_cause": "Missing pattern",
+      "fix": "Add '.venv/' to .gitignore",
+      "verification": "git status should not show .venv files",
+      "effort_hours": 0.1
+    },
+    {
+      "id": "F-006",
+      "title": "CI Installs Playwright for All Matrix Jobs",
+      "severity": "P2",
+      "category": "ci_cd",
+      "file": ".github/workflows/ci.yml",
+      "line_range": "30-31",
+      "impact": "Slows CI by ~150MB download per job",
+      "root_cause": "No conditional for Playwright install",
+      "fix": "Add 'if: matrix.python-version == 3.11' condition",
+      "verification": "CI job duration should decrease",
+      "effort_hours": 0.25
+    },
+    {
+      "id": "F-007",
+      "title": "observation_th Not Wired in main.py Display",
+      "severity": "P2",
+      "category": "correctness",
+      "file": "main.py",
+      "line_range": "195-222",
+      "impact": "CLI may show English observations instead of Thai",
+      "root_cause": "Uses 'observation' key instead of 'observation_th'",
+      "fix": "Change to obs.get('observation_th', obs.get('observation', 'No observation'))",
+      "verification": "Run main.py and verify Thai text in output",
+      "effort_hours": 0.25
+    },
+    {
+      "id": "F-008",
+      "title": "Session State Keys Not Namespaced",
+      "severity": "P2",
+      "category": "maintainability",
+      "file": "streamlit_app.py",
+      "line_range": "1358-1364",
+      "impact": "Potential key collisions in future",
+      "root_cause": "Generic key names",
+      "fix": "Prefix keys with 'soiler_'",
+      "verification": "Search for st.session_state usage",
+      "effort_hours": 1.0
+    },
+    {
+      "id": "F-009",
+      "title": "Bare Exception Handlers",
+      "severity": "P3",
+      "category": "code_quality",
+      "file": "streamlit_app.py",
+      "line_range": "1657-1658",
+      "impact": "May hide unexpected errors",
+      "root_cause": "Overly broad exception handling",
+      "fix": "Change to 'except (ValueError, TypeError):'",
+      "verification": "grep 'except:' streamlit_app.py",
+      "effort_hours": 0.25
+    },
+    {
+      "id": "F-010",
+      "title": "Missing Type Hints in Agent Functions",
+      "severity": "P3",
+      "category": "maintainability",
+      "file": "agents/*.py",
+      "line_range": "various",
+      "impact": "Reduced IDE assistance",
+      "root_cause": "Incomplete typing",
+      "fix": "Add return type hints to public methods",
+      "verification": "mypy agents/",
+      "effort_hours": 2.0
+    },
+    {
+      "id": "F-011",
+      "title": "VERSION File Missing",
+      "severity": "P3",
+      "category": "release",
+      "file": "VERSION",
+      "line_range": "N/A",
+      "impact": "RELEASE.md process incomplete",
+      "root_cause": "File never created",
+      "fix": "echo '0.1.0' > VERSION",
+      "verification": "cat VERSION",
+      "effort_hours": 0.1
+    }
+  ],
+  "security_scan": {
+    "hardcoded_secrets": 1,
+    "eval_exec_usage": 0,
+    "subprocess_usage": 2,
+    "subprocess_context": "test infrastructure only",
+    "sql_injection_risk": "none - parameterized queries used",
+    "pii_stored": true,
+    "pii_details": "Farm lat/lon coordinates stored in SQLite"
+  },
+  "dependency_audit": {
+    "total_direct_dependencies": 6,
+    "total_dev_dependencies": 4,
+    "unpinned_versions": true,
+    "known_vulnerabilities": 0,
+    "missing_dependencies": ["requests"]
+  },
+  "test_results": {
+    "unit_tests": {"passed": 12, "failed": 0},
+    "integration_tests": {"passed": 5, "failed": 0},
+    "e2e_tests": {"passed": 2, "failed": 1},
+    "flaky_tests": ["tests/test_ui_e2e.py::test_run_analysis_smoke[chromium]"]
+  },
+  "ci_status": {
+    "workflow_file": ".github/workflows/ci.yml",
+    "python_versions": ["3.10", "3.11", "3.12"],
+    "steps": ["checkout", "setup-python", "install-deps", "playwright", "py_compile", "ruff", "smoke-test", "pytest"],
+    "issues": ["ruff uses --exit-zero", "playwright installed for all jobs"]
+  }
+}

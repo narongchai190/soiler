@@ -15,12 +15,14 @@ Run with: streamlit run streamlit_app.py
 import streamlit as st
 import time
 import sys
+import os
 from datetime import datetime
 import pandas as pd
 
 # Map dependencies (OSM/Leaflet via folium)
 try:
     import folium
+    from folium.plugins import LocateControl
     from streamlit_folium import st_folium
     FOLIUM_AVAILABLE = True
 except ImportError:
@@ -32,6 +34,10 @@ sys.path.insert(0, ".")
 from core.orchestrator import SoilerOrchestrator
 from data.database_manager import get_database, save_analysis, get_recent_history, get_analysis_by_id
 from agents.env_agent import EnvironmentAgent
+from utils.logger import UILogger
+
+# Initialize Logger
+UILogger.setup()
 
 # =============================================================================
 # PAGE CONFIGURATION
@@ -44,12 +50,29 @@ st.set_page_config(
 )
 
 # =============================================================================
-# GOOGLE MAPS API KEY (Configure this)
+# GOOGLE MAPS API KEY (Secure Loading)
 # =============================================================================
-try:
-    GOOGLE_MAPS_API_KEY = st.secrets.get("GOOGLE_MAPS_API_KEY", "AIzaSyD3EpfcWf9SuBk8q6CwBuUZV-kLkUqg9-0")
-except Exception:
-    GOOGLE_MAPS_API_KEY = "AIzaSyD3EpfcWf9SuBk8q6CwBuUZV-kLkUqg9-0"
+def get_google_maps_key() -> str | None:
+    """
+    Securely load Google Maps API key.
+    Priority: st.secrets > environment variable > None
+    """
+    # Try Streamlit secrets first
+    try:
+        key = st.secrets.get("GOOGLE_MAPS_API_KEY")
+        if key:
+            return key
+    except Exception:
+        pass
+
+    # Fallback to environment variable
+    key = os.getenv("GOOGLE_MAPS_API_KEY")
+    if key:
+        return key
+
+    return None
+
+GOOGLE_MAPS_API_KEY = get_google_maps_key()
 
 # =============================================================================
 # THAI TRANSLATIONS - FARMER-FRIENDLY LANGUAGE
@@ -1161,6 +1184,44 @@ st.markdown("""
         font-weight: 500;
         font-size: 16px;
     }
+
+    /* ========================================
+       FIX DROPDOWN VISIBILITY (NUCLEAR OPTION)
+       ======================================== */
+    
+    /* 1. Force ALL text inside the select box to be white */
+    div[data-baseweb="select"] * {
+        color: #ffffff !important;
+        opacity: 1 !important;
+        -webkit-text-fill-color: #ffffff !important;
+    }
+
+    /* 2. Specific fix for the placeholder/selected value container */
+    div[data-baseweb="select"] > div {
+        background-color: #262730 !important; /* Dark background */
+        border-color: #4c4c4c !important;
+    }
+
+    /* 3. Dropdown Menu Items (The popup list) */
+    li[data-baseweb="menu-item"] {
+        background-color: #262730 !important;
+    }
+    
+    li[data-baseweb="menu-item"] div {
+        color: #ffffff !important;
+    }
+
+    /* 4. Hover state for menu items */
+    li[data-baseweb="menu-item"]:hover,
+    li[data-baseweb="menu-item"][aria-selected="true"] {
+        background-color: #4CAF50 !important; /* Green highlight */
+    }
+
+    /* 5. Fix SVG Icons (Arrow) */
+    div[data-baseweb="select"] svg {
+        fill: #ffffff !important;
+        color: #ffffff !important;
+    }
 </style>
 
 <!-- Material Icons -->
@@ -1290,6 +1351,9 @@ DISTRICT_COORDS = {
 # =============================================================================
 
 def main():
+    # Log application rerun
+    UILogger.log("Streamlit App Rerun Triggered")
+
     # =========================================================================
     # HEADER
     # =========================================================================
@@ -1320,118 +1384,110 @@ def main():
         # Location Section
         render_section_header(TH["location_section"], "location_on")
 
-        location_options = {
-            TH["phrae_district"]: "Phrae District, Phrae Province",
-            TH["long_district"]: "Long District, Phrae Province",
-            TH["denchai_district"]: "Den Chai District, Phrae Province",
-            TH["custom_location"]: "custom",
-        }
-        location_keys = list(location_options.keys())
+        if FOLIUM_AVAILABLE:
+            # 1. Selected Location Card (Visual Feedback)
+            st.markdown(f"""
+            <div style="
+                background-color: var(--bg-tertiary);
+                border: 1px solid var(--primary);
+                border-radius: 8px;
+                padding: 12px;
+                margin-bottom: 12px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            ">
+                <span class="material-icons" style="color: var(--primary); font-size: 24px;">place</span>
+                <div>
+                    <div style="font-size: 12px; color: var(--text-secondary);">พิกัดที่เลือก</div>
+                    <div style="font-size: 16px; font-weight: 600; color: var(--text-primary);">
+                        {st.session_state['farm_lat']:.4f}, {st.session_state['farm_lng']:.4f}
+                    </div>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
 
-        location_thai = st.selectbox(
-            TH["select_district"],
-            options=location_keys,
-            index=st.session_state["location_district_idx"],
-            key="sidebar_location_district",
-            label_visibility="visible"
-        )
-        # Update session state
-        st.session_state["location_district_idx"] = location_keys.index(location_thai)
-        location = location_options[location_thai]
+            # 2. Interactive Map (Primary Interface)
+            map_center = [st.session_state["farm_lat"], st.session_state["farm_lng"]]
+            
+            m = folium.Map(
+                location=map_center,
+                zoom_start=13,
+                tiles="OpenStreetMap",
+                control_scale=True
+            )
+            
+            # Add "Locate Me" button (GPS) - World Class Standard Control
+            LocateControl(
+                auto_start=False,
+                strings={"title": "📍 ตำแหน่งปัจจุบันของฉัน"},
+                flyTo=True,
+                position="topleft"
+            ).add_to(m)
 
-        # Custom coordinates input
-        use_custom_coords = location == "custom"
+            # Add Draggable Marker (Best Practice for fine-tuning)
+            folium.Marker(
+                map_center,
+                popup=TH["current_location"],
+                icon=folium.Icon(color="red", icon="leaf", prefix="fa"),
+                draggable=False # Keep simple click-to-move for mobile stability
+            ).add_to(m)
 
-        if use_custom_coords:
-            st.markdown(f"**{TH['or_enter_coords']}**")
+            # Render map
+            st.caption(TH["click_map_hint"])
+            map_data = st_folium(
+                m, 
+                width=280, 
+                height=280, 
+                key="sidebar_map",
+                returned_objects=["last_clicked"]
+            )
 
-            # Map pin selection with OSM (Folium)
-            if FOLIUM_AVAILABLE:
-                with st.expander(f"📍 {TH['use_map']}", expanded=True):
-                    st.caption(TH["click_map_hint"])
+            # Handle map interaction
+            if map_data and map_data.get("last_clicked"):
+                clicked_lat = map_data["last_clicked"]["lat"]
+                clicked_lng = map_data["last_clicked"]["lng"]
+                
+                # Update only if changed significantly (prevent jitter)
+                if abs(clicked_lat - st.session_state["farm_lat"]) > 0.00001 or \
+                   abs(clicked_lng - st.session_state["farm_lng"]) > 0.00001:
+                    st.session_state["farm_lat"] = clicked_lat
+                    st.session_state["farm_lng"] = clicked_lng
+                    st.rerun()
 
-                    # Create OSM map centered on current location
-                    m = folium.Map(
-                        location=[st.session_state["farm_lat"], st.session_state["farm_lng"]],
-                        zoom_start=12,
-                        tiles="OpenStreetMap"
-                    )
-                    # Add marker for current selection
-                    folium.Marker(
-                        [st.session_state["farm_lat"], st.session_state["farm_lng"]],
-                        popup=TH["current_location"],
-                        icon=folium.Icon(color="green", icon="leaf")
-                    ).add_to(m)
-
-                    # Render map and capture clicks
-                    map_data = st_folium(m, width=280, height=250, key="sidebar_map")
-
-                    # Handle map click
-                    if map_data and map_data.get("last_clicked"):
-                        clicked_lat = map_data["last_clicked"]["lat"]
-                        clicked_lng = map_data["last_clicked"]["lng"]
-                        st.session_state["farm_lat"] = clicked_lat
-                        st.session_state["farm_lng"] = clicked_lng
-
-                    # Display current coordinates
-                    st.success(f"📍 {st.session_state['farm_lat']:.4f}, {st.session_state['farm_lng']:.4f}")
-
-                    # Clear button
-                    if st.button(f"🗑️ {TH['clear_location']}", key="clear_loc_btn"):
-                        st.session_state["farm_lat"] = 18.0087
-                        st.session_state["farm_lng"] = 99.8456
-                        st.rerun()
-
-            # Manual coordinate inputs (always available)
+        # 3. Manual Override (Progressive Disclosure)
+        with st.expander("✍️ ระบุพิกัดด้วยตัวเอง (Manual)", expanded=False):
             col_lat, col_lng = st.columns(2)
             with col_lat:
-                custom_lat = st.number_input(
-                    TH["latitude"],
+                new_lat = st.number_input(
+                    "Lat (N)",
                     min_value=5.0,
                     max_value=21.0,
-                    value=st.session_state["farm_lat"],
+                    value=float(st.session_state["farm_lat"]),
                     step=0.0001,
                     format="%.4f",
-                    key="sidebar_lat_input",
-                    help=TH["coords_help"]
+                    key="manual_lat"
                 )
             with col_lng:
-                custom_lng = st.number_input(
-                    TH["longitude"],
+                new_lng = st.number_input(
+                    "Lng (E)",
                     min_value=97.0,
                     max_value=106.0,
-                    value=st.session_state["farm_lng"],
+                    value=float(st.session_state["farm_lng"]),
                     step=0.0001,
                     format="%.4f",
-                    key="sidebar_lng_input",
-                    help=TH["coords_help"]
+                    key="manual_lng"
                 )
 
-            # Update session state from manual inputs
-            st.session_state["farm_lat"] = custom_lat
-            st.session_state["farm_lng"] = custom_lng
+            # Update state from manual inputs
+            if new_lat != st.session_state["farm_lat"] or new_lng != st.session_state["farm_lng"]:
+                st.session_state["farm_lat"] = new_lat
+                st.session_state["farm_lng"] = new_lng
+                st.rerun()
 
-            location = "Long District, Phrae Province"  # Default for processing
-            coords = {"lat": custom_lat, "lng": custom_lng}
-        else:
-            coords = DISTRICT_COORDS.get(location, {"lat": 18.0087, "lng": 99.8456})
-            st.session_state["farm_lat"] = coords["lat"]
-            st.session_state["farm_lng"] = coords["lng"]
-
-            # Show mini OSM map for selected district
-            if FOLIUM_AVAILABLE:
-                with st.expander(f"📍 {TH['use_map']}", expanded=False):
-                    m = folium.Map(
-                        location=[coords["lat"], coords["lng"]],
-                        zoom_start=13,
-                        tiles="OpenStreetMap"
-                    )
-                    folium.Marker(
-                        [coords["lat"], coords["lng"]],
-                        popup=location_thai,
-                        icon=folium.Icon(color="blue", icon="info-sign")
-                    ).add_to(m)
-                    st_folium(m, width=280, height=200, key="sidebar_map_district")
+        # Set location string for backend
+        location = f"Custom Location ({st.session_state['farm_lat']:.4f}, {st.session_state['farm_lng']:.4f})"
+        coords = {"lat": st.session_state["farm_lat"], "lng": st.session_state["farm_lng"]}
 
         st.markdown("---")
 
@@ -1577,6 +1633,18 @@ def main():
 
         st.markdown("---")
 
+        # =====================================================================
+        # SELECTION SUMMARY
+        # =====================================================================
+        st.markdown(f"### 📋 สรุปข้อมูลที่เลือก")
+        st.info(f"""
+        📍 **พื้นที่:** {st.session_state['farm_lat']:.4f}, {st.session_state['farm_lng']:.4f}
+        🌾 **พืช:** {crop_thai}
+        📏 **ขนาด:** {field_size} ไร่
+        💰 **งบ:** {format_currency(budget)}
+        🧪 **ดิน:** pH {ph}, N{nitrogen}-P{phosphorus}-K{potassium}
+        """)
+
         # Run Analysis Button
         run_analysis = st.button(
             f"🔬 {TH['run_analysis']}",
@@ -1665,6 +1733,8 @@ def main():
     # =========================================================================
 
     if run_analysis:
+        UILogger.log("Run Analysis Button Clicked")
+        
         # Create tabs
         tab1, tab2, tab3, tab4 = st.tabs([
             f"📊 {TH['tab_dashboard']}",
@@ -1673,40 +1743,58 @@ def main():
             f"📝 {TH['tab_action']}"
         ])
 
-        # Initialize orchestrator
-        orchestrator = SoilerOrchestrator(verbose=False)
+        try:
+            # Initialize orchestrator
+            orchestrator = SoilerOrchestrator(verbose=True) # Enable verbose for logs
+            
+            # Processing status
+            with st.status(TH["processing"], expanded=True) as status:
+                UILogger.log("Orchestrator initialized. Starting analysis...")
+                
+                agents_info = [
+                    (TH["agent_soil"], "layers", "กำลังวิเคราะห์องค์ประกอบดิน..."),
+                    (TH["agent_crop"], "grass", "กำลังคำนวณเป้าหมายผลผลิต..."),
+                    (TH["agent_env"], "cloud", "กำลังประเมินสภาพอากาศ..."),
+                    (TH["agent_fert"], "science", "กำลังวางแผนการใส่ปุ๋ย..."),
+                    (TH["agent_market"], "trending_up", "กำลังคำนวณผลตอบแทน..."),
+                    (TH["agent_report"], "assignment", "กำลังสรุปรายงาน..."),
+                ]
 
-        # Processing status
-        with st.status(TH["processing"], expanded=True) as status:
-            agents_info = [
-                (TH["agent_soil"], "layers", "กำลังวิเคราะห์องค์ประกอบดิน..."),
-                (TH["agent_crop"], "grass", "กำลังคำนวณเป้าหมายผลผลิต..."),
-                (TH["agent_env"], "cloud", "กำลังประเมินสภาพอากาศ..."),
-                (TH["agent_fert"], "science", "กำลังวางแผนการใส่ปุ๋ย..."),
-                (TH["agent_market"], "trending_up", "กำลังคำนวณผลตอบแทน..."),
-                (TH["agent_report"], "assignment", "กำลังสรุปรายงาน..."),
-            ]
+                for agent_name, icon, task in agents_info:
+                    st.write(f"**{agent_name}**: {task}")
+                    # Remove time.sleep to speed up if actual agents are running
+                    # time.sleep(0.2) 
 
-            for agent_name, icon, task in agents_info:
-                st.write(f"**{agent_name}**: {task}")
-                time.sleep(0.2)
+                # Run analysis
+                UILogger.log(f"Calling orchestrator.analyze with: Location={location}, Crop={crop}")
+                report = orchestrator.analyze(
+                    location=location,
+                    crop=crop,
+                    ph=ph,
+                    nitrogen=nitrogen,
+                    phosphorus=phosphorus,
+                    potassium=potassium,
+                    field_size_rai=field_size,
+                    texture=texture,
+                    budget_thb=budget,
+                    irrigation_available=irrigation,
+                    prefer_organic=prefer_organic
+                )
+                
+                if not report:
+                    raise ValueError("Orchestrator returned empty report.")
 
-            # Run analysis
-            report = orchestrator.analyze(
-                location=location,
-                crop=crop,
-                ph=ph,
-                nitrogen=nitrogen,
-                phosphorus=phosphorus,
-                potassium=potassium,
-                field_size_rai=field_size,
-                texture=texture,
-                budget_thb=budget,
-                irrigation_available=irrigation,
-                prefer_organic=prefer_organic
-            )
+                UILogger.log("Analysis complete. Report generated.")
+                status.update(label=f"✅ {TH['analysis_complete']}", state="complete", expanded=False)
 
-            status.update(label=f"✅ {TH['analysis_complete']}", state="complete", expanded=False)
+        except Exception as e:
+            import traceback
+            st.error(f"❌ เกิดข้อผิดพลาดในการวิเคราะห์: {str(e)}")
+            UILogger.log(f"Analysis Error: {str(e)}", level="error")
+            with st.expander("🔍 Debug Info"):
+                st.code(traceback.format_exc())
+            # Stop execution
+            st.stop()
 
         # =====================================================================
         # AUTO-SAVE TO DATABASE
@@ -1750,35 +1838,43 @@ def main():
         # Extract data
         summary = report.get("executive_summary", {})
         dashboard = report.get("dashboard", {})
-        observations = orchestrator.get_observations()
-        fertilizer_section = report.get("sections", {}).get("fertilizer_recommendations", {})
+        observations = report.get("agent_observations", [])
+        
+        # Sections mapping (Fixing key mismatches)
+        sections = report.get("sections", {})
+        fertilizer_section = sections.get("fertilizer", {})
+        soil_series_section = sections.get("soil_series", {})
+        soil_chem_section = sections.get("soil_chemistry", {})
+        crop_section = sections.get("crop_planning", {})
+        env_section = sections.get("climate", {})
+        financial_section = sections.get("financial", {})
+        risk_section = sections.get("risks", {})
+        
         action_plan = report.get("action_plan", [])
+        recommendations = report.get("recommendations", {})
 
         # =====================================================================
         # TAB 1: DASHBOARD
         # =====================================================================
         with tab1:
             # Assessment Banner
-            assessment = summary.get("overall_assessment", "N/A")
+            assessment = summary.get("overall_status_th", "N/A")
             score = summary.get("overall_score", 0)
 
-            if "FAVORABLE" in assessment.upper():
+            if "ดีเยี่ยม" in assessment or "ดี" in assessment:
                 banner_class = "favorable"
-                assessment_thai = TH["assessment_favorable"]
                 title_color = "#66BB6A"
-            elif "MODERATE" in assessment.upper():
+            elif "ปานกลาง" in assessment:
                 banner_class = "moderate"
-                assessment_thai = TH["assessment_moderate"]
                 title_color = "#FFB74D"
             else:
                 banner_class = "challenging"
-                assessment_thai = TH["assessment_challenging"]
                 title_color = "#EF5350"
 
             st.markdown(f"""
             <div class="assessment-banner {banner_class}">
                 <div class="assessment-title" style="color: {title_color};">
-                    {TH["overall_assessment"]}: {assessment_thai}
+                    {TH["overall_assessment"]}: {assessment}
                 </div>
                 <div class="assessment-score">
                     {TH["overall_score"]}: <strong>{score:.1f}/100</strong>
@@ -1793,7 +1889,7 @@ def main():
 
             with col1:
                 soil_health = dashboard.get("soil_health", {}).get("score", 0)
-                soil_status = get_status_thai(dashboard.get("soil_health", {}).get("status", ""))
+                soil_status = dashboard.get("soil_health", {}).get("status_th", "")
                 st.markdown(f"""
                 <div class="metric-card">
                     <div class="metric-icon">
@@ -1855,6 +1951,15 @@ def main():
 
                 returns = dashboard.get("returns", {})
                 investment = dashboard.get("investment", {})
+                # Note: 'fertilizer_cost' might need calculation if not directly in investment dict in new schema
+                # Looking at debug output, fertilizer cost is in cost_analysis.
+                # In dashboard['investment'], we might just have totals.
+                # Let's rely on financial_section for breakdown if needed, or estimate.
+                
+                # Try to get fertilizer cost from fertilizer section
+                fert_cost = fertilizer_section.get("total_cost_thb", 0)
+                total_c = investment.get("total_cost", 0)
+                other_c = total_c - fert_cost
 
                 financial_data = {
                     TH["item"]: [
@@ -1865,11 +1970,11 @@ def main():
                         TH["expected_profit"]
                     ],
                     TH["amount"]: [
-                        format_currency(investment.get("fertilizer_cost", 0)),
-                        format_currency(investment.get("total_cost", 0) - investment.get("fertilizer_cost", 0)),
-                        format_currency(investment.get("total_cost", 0)),
-                        format_currency(returns.get("expected_revenue", 0)),
-                        format_currency(returns.get("expected_profit", 0))
+                        format_currency(fert_cost),
+                        format_currency(other_c),
+                        format_currency(total_c),
+                        format_currency(returns.get("revenue", 0)),
+                        format_currency(returns.get("profit", 0))
                     ]
                 }
 
@@ -1879,12 +1984,12 @@ def main():
             with col2:
                 st.markdown(f"### {TH['risk_assessment']}")
 
-                risk_level = dashboard.get("risk_level", "N/A")
-                risk_thai = get_risk_thai(risk_level)
-
-                if risk_level.lower() == "low":
+                # Risk section structure: { "risks": [], "summary": {...}, "overall_rating_th": "..." }
+                risk_level = risk_section.get("overall_rating_th", "N/A")
+                
+                if risk_level == "ต่ำ":
                     risk_class = "status-good"
-                elif risk_level.lower() == "medium":
+                elif risk_level == "ปานกลาง":
                     risk_class = "status-moderate"
                 else:
                     risk_class = "status-poor"
@@ -1892,23 +1997,22 @@ def main():
                 st.markdown(f"""
                 <div style="text-align: center; margin: 20px 0;">
                     <span class="{risk_class}" style="padding: 12px 32px; font-size: 20px;">
-                        {risk_thai}
+                        ความเสี่ยง: {risk_level}
                     </span>
                 </div>
                 """, unsafe_allow_html=True)
 
-                risk_analysis = report.get("sections", {}).get("risk_assessment", {})
-                risks = risk_analysis.get("risks", [])[:3]
+                risks = risk_section.get("risks", [])[:3]
 
                 if risks:
                     st.markdown(f"**{TH['key_risk_factors']}:**")
                     for risk in risks:
-                        severity = risk.get("severity", "medium")
-                        icon = "error" if severity == "high" else "warning" if severity == "medium" else "info"
+                        severity = risk.get("severity_th", "ปานกลาง")
+                        icon = "error" if severity == "สูง" else "warning" if severity == "ปานกลาง" else "info"
                         st.markdown(f"""
                         <div style="display: flex; align-items: center; gap: 8px; margin: 8px 0; color: #B0B0B0;">
                             <span class="material-icons-outlined" style="font-size: 18px;">{icon}</span>
-                            {risk.get('risk', 'N/A')}
+                            {risk.get('risk_th', 'N/A')}
                         </div>
                         """, unsafe_allow_html=True)
 
@@ -1924,23 +2028,25 @@ def main():
                 for i, app in enumerate(schedule, 1):
                     schedule_data.append({
                         TH["number"]: i,
-                        TH["product"]: app.get("product", "N/A"),
+                        TH["product"]: app.get("name_th", "N/A"),
                         TH["formula"]: app.get("formula", "N/A"),
                         TH["rate"]: f"{app.get('rate_kg_per_rai', 0):.1f}",
-                        TH["total_kg"]: f"{app.get('total_kg', 0):.1f}",
-                        TH["stage"]: app.get("stage", "N/A").title(),
+                        # Calculate total kg: rate * field_size
+                        TH["total_kg"]: f"{app.get('rate_kg_per_rai', 0) * field_size:.1f}",
+                        TH["stage"]: app.get("stage_th", "N/A"),
                     })
 
                 df_schedule = pd.DataFrame(schedule_data)
                 st.dataframe(df_schedule, width='stretch', hide_index=True)
 
                 col1, col2, col3 = st.columns(3)
+                total_fert_cost = fertilizer_section.get('total_cost_thb', 0)
                 with col1:
-                    st.info(f"💰 {TH['total_cost']}: {format_currency(fertilizer_section.get('total_cost_thb', 0))}")
+                    st.info(f"💰 {TH['total_cost']}: {format_currency(total_fert_cost)}")
                 with col2:
                     st.info(f"📊 {TH['cost_per_rai']}: {format_currency(fertilizer_section.get('cost_per_rai_thb', 0))}")
                 with col3:
-                    budget_diff = budget - fertilizer_section.get('total_cost_thb', 0)
+                    budget_diff = budget - total_fert_cost
                     if budget_diff >= 0:
                         st.success(f"✅ {TH['under_budget']}: {format_currency(budget_diff)}")
                     else:
@@ -1954,10 +2060,16 @@ def main():
             st.markdown(f"<p style='color: #B0B0B0;'>{TH['thought_chain_desc']}</p>", unsafe_allow_html=True)
 
             for i, obs in enumerate(observations, 1):
-                agent = obs.get("agent", "Unknown")
-                observation = obs.get("observation", "ไม่มีข้อสังเกต")
-                agent_thai = get_agent_thai(agent)
-                icon = get_agent_icon(agent)
+                agent_th = obs.get("agent_th", "Unknown")
+                observation = obs.get("observation_th", "ไม่มีข้อสังเกต")
+                # Map Thai agent name back to icon key if possible, or just use default
+                icon = "smart_toy" 
+                if "ดิน" in agent_th: icon = "layers"
+                elif "พืช" in agent_th: icon = "grass"
+                elif "อากาศ" in agent_th: icon = "cloud"
+                elif "ปุ๋ย" in agent_th: icon = "science"
+                elif "ตลาด" in agent_th: icon = "trending_up"
+                elif "รายงาน" in agent_th: icon = "assignment"
 
                 st.markdown(f"""
                 <div class="agent-card">
@@ -1965,7 +2077,7 @@ def main():
                         <div class="agent-icon">
                             <span class="material-icons-outlined">{icon}</span>
                         </div>
-                        <div class="agent-name">ตัวแทน {i}: {agent_thai}</div>
+                        <div class="agent-name">ตัวแทน {i}: {agent_th}</div>
                     </div>
                     <div class="agent-observation">{observation}</div>
                 </div>
@@ -1983,7 +2095,7 @@ def main():
             st.markdown(f"### {TH['pipeline_summary']}")
             col1, col2, col3 = st.columns(3)
             with col1:
-                st.metric(TH["agents_executed"], len(observations))
+                st.metric(TH["agents_executed"], 8)
             with col2:
                 st.metric(TH["observations"], len(observations))
             with col3:
@@ -2015,83 +2127,80 @@ def main():
             """, unsafe_allow_html=True)
 
             with st.expander(f"🔬 {TH['soil_analysis']}", expanded=True):
-                soil_section = report.get("sections", {}).get("soil_assessment", {})
-
+                # Combine soil series and chemistry data
                 col1, col2 = st.columns(2)
                 with col1:
-                    st.markdown(f"**{TH['identified_series']}:** {soil_section.get('soil_series', 'N/A')}")
-                    st.markdown(f"**{TH['match_confidence']}:** {soil_section.get('match_confidence', 'N/A')}")
-                    st.markdown(f"**{TH['health_score']}:** {soil_section.get('health_score', 0)}/100")
+                    st.markdown(f"**{TH['identified_series']}:** {soil_series_section.get('series_name_th', 'N/A')}")
+                    st.markdown(f"**{TH['match_confidence']}:** {soil_series_section.get('match_score', 'N/A')}%")
+                    st.markdown(f"**{TH['health_score']}:** {soil_chem_section.get('health_score', 0)}/100")
 
                 with col2:
-                    ph_info = soil_section.get("ph", {})
+                    ph_info = soil_chem_section.get("ph_analysis", {})
                     st.markdown(f"**{TH['ph_value']}:** {ph_info.get('value', 'N/A')}")
-                    st.markdown(f"**{TH['ph_status']}:** {ph_info.get('status', 'N/A')}")
-                    st.markdown(f"**{TH['ph_suitability']}:** {ph_info.get('suitability', 'N/A')}")
+                    st.markdown(f"**{TH['ph_status']}:** {ph_info.get('status_th', 'N/A')}")
+                    st.markdown(f"**{TH['ph_suitability']}:** {ph_info.get('suitability_th', 'N/A')}")
 
-                nutrients = soil_section.get("nutrient_status", [])
+                nutrients = soil_chem_section.get("nutrient_analysis", {})
+                # Flatten nutrient dict to list for table
                 if nutrients:
                     st.markdown(f"**{TH['nutrient_status']}:**")
                     nutrient_data = []
-                    for n in nutrients:
-                        nutrient_data.append({
-                            TH["nutrient"]: n.get("nutrient", "N/A"),
-                            TH["level"]: f"{n.get('current_level', 0)} {TH['unit_mg_kg']}",
-                            TH["status"]: n.get("status", "N/A").upper(),
-                            TH["description"]: n.get("description", "N/A")
-                        })
+                    # Assuming standard NPK keys
+                    for key in ['nitrogen', 'phosphorus', 'potassium']:
+                        n_data = nutrients.get(key, {})
+                        if n_data:
+                            nutrient_data.append({
+                                TH["nutrient"]: key.capitalize(),
+                                TH["level"]: f"{n_data.get('value', 0)} {TH['unit_mg_kg']}",
+                                TH["status"]: n_data.get('status_th', 'N/A'),
+                                TH["description"]: n_data.get('interpretation_th', '-')
+                            })
                     st.dataframe(pd.DataFrame(nutrient_data), width='stretch', hide_index=True)
 
             with st.expander(f"🌾 {TH['crop_planning']}"):
-                crop_section = report.get("sections", {}).get("crop_planning", {})
-
                 col1, col2 = st.columns(2)
                 with col1:
-                    st.markdown(f"**{TH['crop_name']}:** {crop_section.get('crop_name', 'N/A')}")
+                    st.markdown(f"**{TH['crop_name']}:** {crop_section.get('crop_name_th', 'N/A')}")
                     st.markdown(f"**{TH['growth_cycle']}:** {crop_section.get('growth_cycle_days', 0)} {TH['days']}")
-                    st.markdown(f"**{TH['planting_date']}:** {crop_section.get('planting_date', 'N/A')[:10]}")
+                    st.markdown(f"**{TH['planting_date']}:** {crop_section.get('planting_date', 'N/A')}")
 
                 with col2:
-                    st.markdown(f"**{TH['harvest_date']}:** {crop_section.get('harvest_date', 'N/A')[:10]}")
-                    yield_info = crop_section.get("yield_target", {})
+                    st.markdown(f"**{TH['harvest_date']}:** {crop_section.get('harvest_date', 'N/A')}")
+                    yield_info = crop_section.get("yield_targets", {})
                     st.markdown(f"**{TH['yield_target']}:** {yield_info.get('target_kg_per_rai', 0)} {TH['kg_per_rai']}")
 
             with st.expander(f"🌤️ {TH['env_analysis']}"):
-                env_section = report.get("sections", {}).get("environmental_analysis", {})
-
-                climate = env_section.get("climate_suitability", {})
-                st.markdown(f"**{TH['climate_suitability']}:** {climate.get('rating', 'N/A').upper()} ({climate.get('score', 0)}/100)")
+                climate_suitability = env_section.get("suitability", {})
+                st.markdown(f"**{TH['climate_suitability']}:** {climate_suitability.get('rating_th', 'N/A')} ({climate_suitability.get('score', 0)}/100)")
 
                 planting_window = env_section.get("planting_window", {})
                 st.markdown(f"**{TH['optimal_planting']}:** {planting_window.get('optimal_months', 'N/A')}")
 
-                forecast = env_section.get("seasonal_forecast", {})
-                st.markdown(f"**{TH['seasonal_outlook']}:** {forecast.get('outlook', 'N/A')}")
+                # Forecast removed or different structure, check weather risks
+                risks = env_section.get("weather_risks", [])
+                if risks:
+                    st.markdown(f"**ความเสี่ยงสภาพอากาศ:**")
+                    for r in risks:
+                        st.markdown(f"- {r.get('risk_th', '')} ({r.get('severity_th', '')})")
 
             with st.expander(f"💰 {TH['financial_analysis']}"):
-                financial = report.get("sections", {}).get("financial_analysis", {})
+                inv_th = financial_section.get("investment_th", {})
+                prof_th = financial_section.get("profit_th", {})
 
                 col1, col2 = st.columns(2)
 
                 with col1:
                     st.markdown(f"**{TH['investment_breakdown']}:**")
-                    investment_data = financial.get("investment", {})
-                    for key, value in investment_data.items():
-                        key_display = key.replace('_', ' ').title()
-                        st.markdown(f"- {key_display}: {format_currency(value) if isinstance(value, (int, float)) else value}")
+                    # breakdown is a list
+                    breakdown = inv_th.get("breakdown", [])
+                    for item in breakdown:
+                        st.markdown(f"- {item.get('name_th', 'N/A')}: {format_currency(item.get('total_cost', 0))}")
 
                 with col2:
                     st.markdown(f"**{TH['profitability']}:**")
-                    profit_data = financial.get("profitability", {})
-                    for key, value in profit_data.items():
-                        key_display = key.replace('_', ' ').title()
-                        if isinstance(value, float):
-                            if 'percent' in key:
-                                st.markdown(f"- {key_display}: {value:.1f}%")
-                            else:
-                                st.markdown(f"- {key_display}: {format_currency(value)}")
-                        else:
-                            st.markdown(f"- {key_display}: {value}")
+                    st.markdown(f"- กำไรสุทธิ: {format_currency(prof_th.get('net_profit', 0))}")
+                    st.markdown(f"- กำไรต่อไร่: {format_currency(prof_th.get('profit_per_rai', 0))}")
+                    st.markdown(f"- ROI: {prof_th.get('roi_percent', 0):.1f}%")
 
         # =====================================================================
         # TAB 4: ACTION PLAN
@@ -2102,33 +2211,30 @@ def main():
 
             if action_plan:
                 for action in action_plan:
-                    urgency = action.get("urgency", "MEDIUM")
+                    urgency = action.get("urgency_th", "ปกติ")
 
-                    if urgency == "CRITICAL":
+                    if "วิกฤต" in urgency:
                         urgency_class = "critical"
-                        urgency_thai = TH["urgency_critical"]
                         urgency_color = "#EF5350"
-                    elif urgency == "HIGH":
+                    elif "สูง" in urgency:
                         urgency_class = "high"
-                        urgency_thai = TH["urgency_high"]
                         urgency_color = "#FFB74D"
                     else:
                         urgency_class = "medium"
-                        urgency_thai = TH["urgency_medium"]
                         urgency_color = "#4CAF50"
 
                     st.markdown(f"""
                     <div class="action-item {urgency_class}">
                         <div class="action-header">
                             <span class="action-priority" style="color: {urgency_color};">
-                                {TH["priority"]} #{action.get('priority', '-')} — {urgency_thai}
+                                {TH["priority"]} #{action.get('priority', '-')} — {urgency}
                             </span>
-                            <span class="action-category">{action.get('category', 'ทั่วไป')}</span>
+                            <span class="action-category">{action.get('category_th', 'ทั่วไป')}</span>
                         </div>
-                        <div class="action-text">{action.get('action', 'N/A')}</div>
+                        <div class="action-text">{action.get('action_th', 'N/A')}</div>
                         <div class="action-timeline">
                             <span class="material-icons-outlined" style="font-size: 16px;">schedule</span>
-                            {TH["timeline"]}: {action.get('timeline', 'ตามความเหมาะสม')}
+                            {TH["timeline"]}: {action.get('timeline_th', 'ตามความเหมาะสม')}
                         </div>
                     </div>
                     """, unsafe_allow_html=True)
@@ -2137,32 +2243,30 @@ def main():
 
             st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
 
-            # Recommendations
-            recommendations = report.get("recommendations", {})
-
+            # Recommendations (using _th suffix keys)
             if recommendations:
                 col1, col2 = st.columns(2)
 
                 with col1:
-                    if recommendations.get("immediate"):
+                    if recommendations.get("immediate_th"):
                         st.markdown(f"#### 🚀 {TH['immediate_actions']}")
-                        for rec in recommendations.get("immediate", [])[:5]:
+                        for rec in recommendations.get("immediate_th", [])[:5]:
                             st.markdown(f"- {rec}")
 
-                    if recommendations.get("pre_planting"):
+                    if recommendations.get("pre_planting_th"):
                         st.markdown(f"#### 🌱 {TH['pre_planting']}")
-                        for rec in recommendations.get("pre_planting", [])[:5]:
+                        for rec in recommendations.get("pre_planting_th", [])[:5]:
                             st.markdown(f"- {rec}")
 
                 with col2:
-                    if recommendations.get("financial"):
+                    if recommendations.get("financial_th"):
                         st.markdown(f"#### 💰 {TH['financial_tips']}")
-                        for rec in recommendations.get("financial", [])[:5]:
+                        for rec in recommendations.get("financial_th", [])[:5]:
                             st.markdown(f"- {rec}")
 
-                    if recommendations.get("long_term"):
+                    if recommendations.get("long_term_th"):
                         st.markdown(f"#### 🎯 {TH['long_term']}")
-                        for rec in recommendations.get("long_term", [])[:5]:
+                        for rec in recommendations.get("long_term_th", [])[:5]:
                             st.markdown(f"- {rec}")
 
         # Bottom line
@@ -2170,7 +2274,7 @@ def main():
         st.markdown(f"""
         <div style="text-align: center; padding: 24px;">
             <p style="color: #4CAF50; font-size: 20px; font-weight: 600;">
-                {summary.get('bottom_line', 'การวิเคราะห์เสร็จสมบูรณ์')}
+                {summary.get('bottom_line_th', 'การวิเคราะห์เสร็จสมบูรณ์')}
             </p>
         </div>
         """, unsafe_allow_html=True)

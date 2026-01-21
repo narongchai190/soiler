@@ -95,7 +95,11 @@ Copy `.env.example` to `.env` and configure:
 | Variable | Description | Default |
 |----------|-------------|---------|
 | `OPENWEATHERMAP_API_KEY` | Weather API for live data | None (uses simulated data) |
-| `GOOGLE_MAPS_API_KEY` | Maps integration in Streamlit | Fallback key provided |
+| `GOOGLE_MAPS_API_KEY` | Google Maps integration | None (app uses OSM/Folium) |
+
+**Note:** No API keys are provided in this repository. You must set `GOOGLE_MAPS_API_KEY` via:
+- Environment variable (`.env` file, untracked)
+- Streamlit secrets (`.streamlit/secrets.toml`, untracked)
 
 ## Troubleshooting
 

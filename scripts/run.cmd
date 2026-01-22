@@ -31,7 +31,8 @@ exit /b %errorlevel%
 
 :web
 echo Starting S.O.I.L.E.R. Web Dashboard...
-streamlit run streamlit_app.py
+echo Open your browser to the URL shown below (usually http://localhost:8501)
+python -m streamlit run streamlit_app.py
 exit /b %errorlevel%
 
 :test

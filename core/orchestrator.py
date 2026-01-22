@@ -1,6 +1,5 @@
 """
 S.O.I.L.E.R. Orchestrator - Version 2.0
-ระบบประสานงาน Multi-Agent สำหรับการเกษตรอัจฉริยะ
 
 The main "Commander" that coordinates all 8 specialized agents in the analysis pipeline.
 All agent observations are in Thai language.
@@ -9,6 +8,15 @@ All agent observations are in Thai language.
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 import uuid
+import logging
+
+from core.encoding_bootstrap import bootstrap_utf8, get_utf8_logger
+
+# Ensure UTF-8 encoding is set up
+bootstrap_utf8()
+
+# Get UTF-8 safe logger
+logger = get_utf8_logger(__name__)
 
 # New 9-Agent Architecture (8 agents + orchestrator)
 from agents.soil_series_agent import SoilSeriesAgent
@@ -82,36 +90,35 @@ class SoilerOrchestrator:
         self._agent_observations: List[Dict[str, str]] = []
 
     def _print_header(self, text: str) -> None:
-        """Print a formatted header."""
+        """Log a formatted header."""
         if self.verbose:
             width = 70
-            print("\n" + "═" * width)
-            print(f"🌱 S.O.I.L.E.R. | {text}")
-            print("═" * width)
+            logger.info("=" * width)
+            logger.info(f"S.O.I.L.E.R. | {text}")
+            logger.info("=" * width)
 
     def _print_section(self, step: int, total: int, title: str, title_th: str) -> None:
-        """Print a section divider with step counter."""
+        """Log a section divider with step counter."""
         if self.verbose:
-            print(f"\n{'─' * 50}")
-            print(f"📋 ขั้นตอน {step}/{total}: {title_th}")
-            print(f"   ({title})")
-            print("─" * 50)
+            logger.info("-" * 50)
+            logger.info(f"Step {step}/{total}: {title_th} ({title})")
+            logger.info("-" * 50)
 
     def _print_pipeline(self, current_step: int) -> None:
-        """Print visual pipeline status."""
+        """Log visual pipeline status."""
         if not self.verbose:
             return
 
-        stages_th = ["ชุดดิน", "เคมีดิน", "ชีววิทยา", "โรคแมลง", "ภูมิอากาศ", "ปุ๋ย", "ตลาด", "รายงาน"]
+        stages_th = ["Series", "Chem", "Bio", "Pest", "Climate", "Fert", "Market", "Report"]
         pipeline = ""
         for i, stage in enumerate(stages_th):
             if i < current_step:
-                pipeline += f"[✓ {stage}] → "
+                pipeline += f"[OK {stage}] -> "
             elif i == current_step:
-                pipeline += f"[▶ {stage}] → "
+                pipeline += f"[>> {stage}] -> "
             else:
-                pipeline += f"[○ {stage}] → "
-        print(f"\n🔄 สถานะ: {pipeline[:-3]}")
+                pipeline += f"[-- {stage}] -> "
+        logger.info(f"Pipeline: {pipeline[:-4]}")
 
     def _generate_session_id(self) -> str:
         """Generate unique session ID."""
@@ -170,14 +177,14 @@ class SoilerOrchestrator:
         self._agent_observations = []
         sample_id = f"SOIL-{datetime.now().strftime('%Y%m%d')}-{uuid.uuid4().hex[:4].upper()}"
 
-        self._print_header("เริ่มวิเคราะห์ Multi-Agent Pipeline")
+        self._print_header("Starting Multi-Agent Pipeline")
         if self.verbose:
-            print(f"🔑 Session ID: {self._session_id}")
-            print(f"🧪 Sample ID: {sample_id}")
-            print(f"📍 ตำแหน่ง: {location}")
-            print(f"🌾 พืชเป้าหมาย: {crop}")
-            print(f"📐 ขนาดพื้นที่: {field_size_rai} ไร่ ({field_size_rai * 0.16:.2f} เฮกตาร์)")
-            print(f"\n🤖 ทีม Agent: {' → '.join([a[1] for a in self.AGENT_SEQUENCE_TH])}")
+            logger.info(f"Session ID: {self._session_id}")
+            logger.info(f"Sample ID: {sample_id}")
+            logger.info(f"Location: {location}")
+            logger.info(f"Target crop: {crop}")
+            logger.info(f"Field size: {field_size_rai} rai ({field_size_rai * 0.16:.2f} ha)")
+            logger.info(f"Agent team: {len(self.AGENT_SEQUENCE_TH)} agents")
 
         total_steps = 8
 
@@ -433,43 +440,34 @@ class SoilerOrchestrator:
         return final_report
 
     def _print_final_summary(self, report: Dict[str, Any]) -> None:
-        """Print the final executive summary in Thai."""
+        """Log the final executive summary."""
         if not self.verbose:
             return
 
         summary = report.get("executive_summary", {})
         dashboard = report.get("dashboard", {})
 
-        print("\n" + "═" * 70)
-        print("🌱 S.O.I.L.E.R. สรุปผลการวิเคราะห์")
-        print("═" * 70)
+        logger.info("=" * 70)
+        logger.info("S.O.I.L.E.R. Analysis Summary")
+        logger.info("=" * 70)
 
         # Overall assessment
-        assessment = summary.get("overall_status_th", "ไม่ทราบ")
         score = summary.get("overall_score", 0)
-        print(f"\n📊 สถานะโดยรวม: {assessment} (คะแนน: {score:.1f}/100)")
+        logger.info(f"Overall score: {score:.1f}/100")
 
         # Key metrics
-        print(f"\n🏥 สุขภาพดิน: {dashboard.get('soil_health', {}).get('score', 0)}/100")
-        print(f"🌾 ผลผลิตเป้าหมาย: {dashboard.get('yield_target', {}).get('value', 0):,.0f} กก./ไร่")
-        print(f"💰 ต้นทุนรวม: {dashboard.get('investment', {}).get('total_cost', 0):,.0f} บาท")
-        print(f"📈 ROI คาดการณ์: {dashboard.get('returns', {}).get('roi_percent', 0):.1f}%")
-        print(f"💵 กำไรคาดการณ์: {dashboard.get('returns', {}).get('profit', 0):,.0f} บาท")
+        logger.info(f"Soil health: {dashboard.get('soil_health', {}).get('score', 0)}/100")
+        logger.info(f"Yield target: {dashboard.get('yield_target', {}).get('value', 0):,.0f} kg/rai")
+        logger.info(f"Total cost: {dashboard.get('investment', {}).get('total_cost', 0):,.0f} THB")
+        logger.info(f"ROI: {dashboard.get('returns', {}).get('roi_percent', 0):.1f}%")
+        logger.info(f"Profit: {dashboard.get('returns', {}).get('profit', 0):,.0f} THB")
 
-        # Bottom line
-        print("\n📝 สรุป:")
-        print(f"   {summary.get('bottom_line_th', 'การวิเคราะห์เสร็จสมบูรณ์')}")
+        # Agent observations count
+        logger.info(f"Agent observations collected: {len(self._agent_observations)}")
 
-        # Agent observations chain (Thai)
-        print("\n🔗 ข้อสังเกตจากทีม Agent:")
-        for i, obs in enumerate(self._agent_observations, 1):
-            agent_th = obs.get("agent_th", "Unknown")
-            observation = obs.get("observation_th", "")[:70]
-            print(f"   {i}. [{agent_th}]: {observation}...")
-
-        print("\n" + "═" * 70)
-        print("✅ รายงานเสร็จสมบูรณ์")
-        print("═" * 70 + "\n")
+        logger.info("=" * 70)
+        logger.info("Report completed")
+        logger.info("=" * 70)
 
     def _build_error_response(self, title: str, message: str) -> Dict[str, Any]:
         """Build error response in Thai."""
@@ -578,11 +576,11 @@ def run_analysis(
 
 if __name__ == "__main__":
     # Demo run
-    print("🌱 S.O.I.L.E.R. - ระบบแนะนำการเกษตรอัจฉริยะ")
-    print("Multi-Agent AI System Demo v2.0\n")
+    logger.info("S.O.I.L.E.R. - Precision Agriculture AI System")
+    logger.info("Multi-Agent AI System Demo v2.0")
 
     result = run_analysis(
-        location="อำเภอเด่นชัย, จังหวัดแพร่",
+        location="Denchai, Phrae",
         crop="Riceberry Rice",
         ph=5.8,
         nitrogen=28,
@@ -592,5 +590,5 @@ if __name__ == "__main__":
         budget_thb=5000
     )
 
-    # Print report ID
-    print(f"\n📄 Report ID: {result.get('report_metadata', {}).get('report_id', 'N/A')}")
+    # Log report ID
+    logger.info(f"Report ID: {result.get('report_metadata', {}).get('report_id', 'N/A')}")

@@ -6,15 +6,14 @@ Main Entry Point - Multi-Agent AI System for Precision Agriculture
 This script demonstrates the full 6-agent pipeline with professional console output.
 """
 
+# CRITICAL: Bootstrap UTF-8 encoding FIRST before any other imports
 import sys
-import time
-import io
-from typing import Any, Dict
+sys.path.insert(0, ".")
+from core.encoding_bootstrap import bootstrap_utf8
+bootstrap_utf8()
 
-# Fix Windows console encoding to support Thai and Unicode characters
-if sys.platform == "win32":
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
+import time
+from typing import Any, Dict
 
 # Try to import Rich for beautiful console output, fallback to basic printing
 try:
@@ -29,9 +28,6 @@ except ImportError:
     RICH_AVAILABLE = False
     print("[!] Rich library not found. Using standard output.")
     print("    Install with: pip install rich\n")
-
-# Add project root to path
-sys.path.insert(0, ".")
 
 from core.orchestrator import SoilerOrchestrator
 

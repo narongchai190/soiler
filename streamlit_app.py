@@ -1,6 +1,5 @@
 """
 S.O.I.L.E.R. Web Dashboard - Professional Edition
-ระบบ AI หลายตัวแทนสำหรับการเกษตรแม่นยำ
 
 Professional AGRI-TECH Interface with:
 - Sarabun Font (Google Fonts)
@@ -10,10 +9,17 @@ Professional AGRI-TECH Interface with:
 - Thai Localization
 
 Run with: streamlit run streamlit_app.py
+Or use: scripts/run_ui.cmd (Windows)
 """
 
-import streamlit as st
+# CRITICAL: Bootstrap UTF-8 encoding FIRST before any other imports
+# This ensures Thai text works on all Windows terminals
 import sys
+sys.path.insert(0, ".")
+from core.encoding_bootstrap import bootstrap_utf8
+bootstrap_utf8()
+
+import streamlit as st
 import os
 from datetime import datetime
 import pandas as pd
@@ -27,15 +33,20 @@ try:
 except ImportError:
     FOLIUM_AVAILABLE = False
 
-# Add project root to path
-sys.path.insert(0, ".")
-
 from core.orchestrator import SoilerOrchestrator
 from data.database_manager import save_analysis, get_recent_history, get_analysis_by_id
 from utils.logger import UILogger
 
 # Initialize Logger
 UILogger.setup()
+
+# =============================================================================
+# E2E TEST MODE - Deterministic mode for automated testing
+# Set SOILER_E2E=1 to enable
+# =============================================================================
+E2E_MODE = os.getenv("SOILER_E2E") == "1"
+if E2E_MODE:
+    UILogger.log("Running in E2E test mode - external API calls may be disabled")
 
 # =============================================================================
 # PAGE CONFIGURATION
@@ -1632,21 +1643,24 @@ def main():
         st.markdown("---")
 
         # =====================================================================
-        # SELECTION SUMMARY
+        # SELECTION SUMMARY (with stable anchor for E2E tests)
         # =====================================================================
-        st.markdown("### 📋 สรุปข้อมูลที่เลือก")
+        st.markdown('<div id="selection-summary"></div>', unsafe_allow_html=True)
+        st.markdown("### สรุปสิ่งที่เลือก")
         st.info(f"""
-        📍 **พื้นที่:** {st.session_state['farm_lat']:.4f}, {st.session_state['farm_lng']:.4f}
-        🌾 **พืช:** {crop_thai}
-        📏 **ขนาด:** {field_size} ไร่
-        💰 **งบ:** {format_currency(budget)}
-        🧪 **ดิน:** pH {ph}, N{nitrogen}-P{phosphorus}-K{potassium}
+        **พื้นที่:** {st.session_state['farm_lat']:.4f}, {st.session_state['farm_lng']:.4f}
+        **พืช:** {crop_thai}
+        **ขนาด:** {field_size:.1f} ไร่
+        **งบประมาณ:** {format_currency(budget)}
+        **ค่าดิน:** pH {ph}, N{nitrogen}-P{phosphorus}-K{potassium}
         """)
 
-        # Run Analysis Button
+        # Run Analysis Button (with stable anchor for E2E tests)
+        st.markdown('<div id="run-button"></div>', unsafe_allow_html=True)
         run_analysis = st.button(
             f"🔬 {TH['run_analysis']}",
-            width='stretch'
+            key="sidebar_run_analysis",
+            use_container_width=True
         )
 
         st.markdown("---")
@@ -1784,6 +1798,9 @@ def main():
 
                 UILogger.log("Analysis complete. Report generated.")
                 status.update(label=f"✅ {TH['analysis_complete']}", state="complete", expanded=False)
+
+            # E2E test marker: visible success indicator
+            st.markdown('<div id="run-ok"></div>', unsafe_allow_html=True)
 
         except Exception as e:
             import traceback

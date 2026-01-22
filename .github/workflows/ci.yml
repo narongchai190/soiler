@@ -24,24 +24,38 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
           pip install -r requirements.txt
-          pip install pytest ruff
+
+      - name: Install Playwright browsers
+        run: |
+          playwright install chromium --with-deps
 
       - name: Check syntax (py_compile)
         run: |
           python -m py_compile main.py streamlit_app.py
-          python -m py_compile agents/*.py
-          python -m py_compile core/*.py
-          python -m py_compile data/*.py
-          python -m py_compile utils/*.py
+          # Use compileall for better coverage
+          python -m compileall agents core data utils
 
       - name: Lint with ruff
         run: |
           ruff check . --select=E,F --ignore=E501,E402 --exit-zero
 
-      - name: Run tests
+      - name: Pipeline Smoke Test
         run: |
-          pytest -v
+          python main.py -q
+
+      - name: Run Unit Tests
+        run: |
+          pytest tests/ -v --ignore=tests/test_ui_e2e.py
+
+      - name: Run E2E Smoke Tests
+        env:
+          SOILER_E2E: "1"
+          PYTHONUTF8: "1"
+          PYTHONIOENCODING: "utf-8"
+        run: |
+          pytest tests_e2e/ -v
 
   syntax-check:
     runs-on: ubuntu-latest

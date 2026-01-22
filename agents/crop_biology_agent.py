@@ -205,7 +205,6 @@ class CropBiologyAgent(BaseAgent):
 
     def _identify_critical_periods(self, crop_data: Dict, planting_date: datetime) -> List[Dict]:
         """Identify critical growth periods."""
-        crop_name = crop_data.get("crop_code", "")
         periods = []
 
         if "rice" in crop_data.get("scientific_name", "").lower():

@@ -13,7 +13,6 @@ Run with: streamlit run streamlit_app.py
 """
 
 import streamlit as st
-import time
 import sys
 import os
 from datetime import datetime
@@ -32,8 +31,7 @@ except ImportError:
 sys.path.insert(0, ".")
 
 from core.orchestrator import SoilerOrchestrator
-from data.database_manager import get_database, save_analysis, get_recent_history, get_analysis_by_id
-from agents.env_agent import EnvironmentAgent
+from data.database_manager import save_analysis, get_recent_history, get_analysis_by_id
 from utils.logger import UILogger
 
 # Initialize Logger
@@ -1636,7 +1634,7 @@ def main():
         # =====================================================================
         # SELECTION SUMMARY
         # =====================================================================
-        st.markdown(f"### 📋 สรุปข้อมูลที่เลือก")
+        st.markdown("### 📋 สรุปข้อมูลที่เลือก")
         st.info(f"""
         📍 **พื้นที่:** {st.session_state['farm_lat']:.4f}, {st.session_state['farm_lng']:.4f}
         🌾 **พืช:** {crop_thai}
@@ -1661,7 +1659,7 @@ def main():
         # Get recent history from database
         try:
             history_records = get_recent_history(limit=5)
-        except Exception as e:
+        except Exception:
             history_records = []
 
         if history_records:
@@ -1673,7 +1671,7 @@ def main():
                 # Format date
                 try:
                     record_date = datetime.fromisoformat(record["timestamp"]).strftime("%d/%m/%y %H:%M")
-                except:
+                except (ValueError, TypeError, KeyError):
                     record_date = "N/A"
 
                 # Create display text
@@ -2063,13 +2061,19 @@ def main():
                 agent_th = obs.get("agent_th", "Unknown")
                 observation = obs.get("observation_th", "ไม่มีข้อสังเกต")
                 # Map Thai agent name back to icon key if possible, or just use default
-                icon = "smart_toy" 
-                if "ดิน" in agent_th: icon = "layers"
-                elif "พืช" in agent_th: icon = "grass"
-                elif "อากาศ" in agent_th: icon = "cloud"
-                elif "ปุ๋ย" in agent_th: icon = "science"
-                elif "ตลาด" in agent_th: icon = "trending_up"
-                elif "รายงาน" in agent_th: icon = "assignment"
+                icon = "smart_toy"
+                if "ดิน" in agent_th:
+                    icon = "layers"
+                elif "พืช" in agent_th:
+                    icon = "grass"
+                elif "อากาศ" in agent_th:
+                    icon = "cloud"
+                elif "ปุ๋ย" in agent_th:
+                    icon = "science"
+                elif "ตลาด" in agent_th:
+                    icon = "trending_up"
+                elif "รายงาน" in agent_th:
+                    icon = "assignment"
 
                 st.markdown(f"""
                 <div class="agent-card">
@@ -2179,7 +2183,7 @@ def main():
                 # Forecast removed or different structure, check weather risks
                 risks = env_section.get("weather_risks", [])
                 if risks:
-                    st.markdown(f"**ความเสี่ยงสภาพอากาศ:**")
+                    st.markdown("**ความเสี่ยงสภาพอากาศ:**")
                     for r in risks:
                         st.markdown(f"- {r.get('risk_th', '')} ({r.get('severity_th', '')})")
 

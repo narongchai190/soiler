@@ -4,7 +4,7 @@ Analyzes crop growth stages, water requirements, and yield optimization.
 """
 
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from agents.base_agent import BaseAgent
 from data.knowledge_base import CROP_REQUIREMENTS
@@ -399,7 +399,6 @@ class CropAgent(BaseAgent):
     ) -> List[Dict[str, Any]]:
         """Identify critical management windows."""
         periods = []
-        current_day = 0
 
         stages = crop_data.get("growth_stages", {})
 

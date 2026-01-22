@@ -2,7 +2,6 @@
 Smoke tests for S.O.I.L.E.R. agents.
 Tests that each agent can be instantiated and processes basic input.
 """
-import pytest
 
 
 class TestAgentInstantiation:

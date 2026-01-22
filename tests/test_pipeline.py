@@ -2,7 +2,6 @@
 Integration test for S.O.I.L.E.R. pipeline.
 Tests that the full orchestrator pipeline runs successfully.
 """
-import pytest
 
 
 class TestPipeline:

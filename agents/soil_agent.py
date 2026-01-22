@@ -6,12 +6,6 @@ Analyzes soil data and matches against known soil series.
 from typing import Any, Dict, List, Tuple
 
 from agents.base_agent import BaseAgent
-from core.schemas import (
-    AnalysisResult,
-    FertilityLevel,
-    NutrientStatus,
-    SoilHealthIndicator,
-)
 from data.knowledge_base import CROP_REQUIREMENTS, SOIL_SERIES
 from utils.calculator import assess_nutrient_level, calculate_lime_requirement
 

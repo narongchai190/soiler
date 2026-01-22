@@ -457,11 +457,11 @@ class SoilerOrchestrator:
         print(f"💵 กำไรคาดการณ์: {dashboard.get('returns', {}).get('profit', 0):,.0f} บาท")
 
         # Bottom line
-        print(f"\n📝 สรุป:")
+        print("\n📝 สรุป:")
         print(f"   {summary.get('bottom_line_th', 'การวิเคราะห์เสร็จสมบูรณ์')}")
 
         # Agent observations chain (Thai)
-        print(f"\n🔗 ข้อสังเกตจากทีม Agent:")
+        print("\n🔗 ข้อสังเกตจากทีม Agent:")
         for i, obs in enumerate(self._agent_observations, 1):
             agent_th = obs.get("agent_th", "Unknown")
             observation = obs.get("observation_th", "")[:70]

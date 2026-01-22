@@ -175,8 +175,6 @@ class FertilizerAgent(BaseAgent):
         target_crop: str
     ) -> List[Dict[str, Any]]:
         """Build detailed application schedule."""
-        crop = CROP_REQUIREMENTS.get(target_crop, {})
-        growth_stages = crop.get("growth_stages", {})
 
         applications = []
         for rec in fertilizer_recs:

@@ -6,7 +6,7 @@ Enhanced with real-time weather forecast capability (OpenWeatherMap ready).
 """
 
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 import random
 import os
 
@@ -201,8 +201,6 @@ class EnvironmentAgent(BaseAgent):
     ) -> Dict[str, Any]:
         """Get climate data for the growing period."""
         start_month = planting_date.month
-        end_date = planting_date + timedelta(days=growth_cycle)
-        end_month = end_date.month
 
         # Collect monthly data for growing period
         monthly_data = []

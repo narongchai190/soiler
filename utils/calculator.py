@@ -283,12 +283,12 @@ def assess_nutrient_level(
     })
 
     if value < thresh["very_low"]:
-        return "very_low", f"Critical deficiency - immediate attention needed"
+        return "very_low", "Critical deficiency - immediate attention needed"
     elif value < thresh["low"]:
-        return "low", f"Deficient - supplementation recommended"
+        return "low", "Deficient - supplementation recommended"
     elif value < thresh["medium"]:
-        return "medium", f"Adequate - maintenance fertilization"
+        return "medium", "Adequate - maintenance fertilization"
     elif value < thresh["high"]:
-        return "high", f"Sufficient - reduce fertilizer application"
+        return "high", "Sufficient - reduce fertilizer application"
     else:
-        return "very_high", f"Excess - no fertilizer needed, monitor for toxicity"
+        return "very_high", "Excess - no fertilizer needed, monitor for toxicity"

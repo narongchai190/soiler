@@ -6,7 +6,6 @@ Supports the new 9-agent architecture with Thai outputs.
 
 import sqlite3
 import json
-import os
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 from pathlib import Path
@@ -138,10 +137,6 @@ class DatabaseManager:
         # Support both old and new format for ROI
         dashboard = final_report.get("dashboard", {})
         roi_percent = dashboard.get("returns", {}).get("roi_percent", 0)
-
-        # Extract Thai summary if available (v2.0)
-        overall_status_th = executive_summary.get("overall_status_th", "")
-        bottom_line_th = executive_summary.get("bottom_line_th", "")
 
         cursor.execute("""
             INSERT INTO analysis_history (

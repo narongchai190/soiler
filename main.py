@@ -9,7 +9,6 @@ This script demonstrates the full 6-agent pipeline with professional console out
 import sys
 import time
 import io
-from datetime import datetime
 from typing import Any, Dict
 
 # Fix Windows console encoding to support Thai and Unicode characters
@@ -23,11 +22,8 @@ try:
     from rich.panel import Panel
     from rich.table import Table
     from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn
-    from rich.live import Live
-    from rich.layout import Layout
     from rich.text import Text
     from rich.box import DOUBLE, ROUNDED, HEAVY
-    from rich import print as rprint
     RICH_AVAILABLE = True
 except ImportError:
     RICH_AVAILABLE = False
@@ -477,7 +473,7 @@ def main():
         orchestrator = SoilerOrchestrator(verbose=False)
 
         if RICH_AVAILABLE:
-            with console.console.status("[bold green]Processing through 6-agent pipeline...") as status:
+            with console.console.status("[bold green]Processing through 6-agent pipeline..."):
                 # Run analysis
                 report = orchestrator.analyze(
                     location=scenario["location"],

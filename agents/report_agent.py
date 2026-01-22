@@ -272,9 +272,9 @@ class ReportAgent(BaseAgent):
             highlights.append(f"△ ดินต้องปรับปรุง ({soil_score:.0f}/100)")
 
         if climate_score >= 70:
-            highlights.append(f"✓ ภูมิอากาศเหมาะสม")
+            highlights.append("✓ ภูมิอากาศเหมาะสม")
         else:
-            highlights.append(f"△ มีความท้าทายด้านภูมิอากาศ")
+            highlights.append("△ มีความท้าทายด้านภูมิอากาศ")
 
         if roi >= 50:
             highlights.append(f"✓ ROI ดีมาก ({roi:.0f}%)")

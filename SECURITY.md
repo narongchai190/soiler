@@ -36,12 +36,64 @@ python scripts/scan_secrets.py
 
 This script checks for common secret patterns (API keys, tokens, passwords) and fails the build if any are detected.
 
+### Local Development Setup
+
+For local development, create a `.env` file in the project root (this file is gitignored):
+
+```bash
+# .env (DO NOT COMMIT)
+GOOGLE_MAPS_API_KEY=your_key_here
+```
+
+Or set environment variables directly:
+
+```bash
+# Windows
+set GOOGLE_MAPS_API_KEY=your_key_here
+
+# Linux/Mac
+export GOOGLE_MAPS_API_KEY=your_key_here
+```
+
+### Streamlit Cloud Deployment
+
+For Streamlit Cloud, configure secrets in the dashboard:
+
+1. Go to your app's settings
+2. Click "Secrets"
+3. Add your secrets in TOML format:
+
+```toml
+GOOGLE_MAPS_API_KEY = "your_key_here"
+```
+
+Or create `.streamlit/secrets.toml` locally (gitignored).
+
+### What To Do If a Key Is Exposed
+
+If you accidentally commit a secret:
+
+1. **Immediately rotate the key** - The old key is compromised forever
+2. **Remove from git history** (optional but recommended):
+   ```bash
+   git filter-branch --force --index-filter \
+     "git rm --cached --ignore-unmatch path/to/file" \
+     --prune-empty --tag-name-filter cat -- --all
+   ```
+3. **Force push** (if already pushed to remote):
+   ```bash
+   git push origin --force --all
+   ```
+4. **Review access logs** - Check for unauthorized usage
+5. **Report to team** - Document the incident
+
 ### Best Practices
 
 1. **Never commit secrets** - Use `.env` files (excluded via `.gitignore`)
 2. **Rotate exposed keys** - If a key is ever committed, rotate it immediately
 3. **Use API key restrictions** - Limit keys to specific APIs and referrers
 4. **Review access regularly** - Audit who has access to production secrets
+5. **Use secret scanning** - Run `python scripts/scan_secrets.py` before commits
 
 ## Dependencies
 

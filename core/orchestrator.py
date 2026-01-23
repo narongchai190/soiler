@@ -8,7 +8,6 @@ All agent observations are in Thai language.
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 import uuid
-import logging
 
 from core.encoding_bootstrap import bootstrap_utf8, get_utf8_logger
 

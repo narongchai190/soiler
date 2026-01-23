@@ -1,0 +1,156 @@
+name: Evaluations
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    # Run on all PRs, but also on PRs with [evals] in title
+    branches: [master, main]
+
+jobs:
+  run-evals:
+    name: Run 30 Evaluation Cases
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-json-report
+
+      - name: Run Evaluation Suite
+        id: evals
+        env:
+          PYTHONUTF8: "1"
+          PYTHONIOENCODING: "utf-8"
+        run: |
+          # Run evals with JSON report
+          pytest tests/test_evals.py \
+            -v \
+            --json-report \
+            --json-report-file=eval-results.json \
+            --tb=short \
+            2>&1 | tee eval-output.txt
+
+          # Extract summary
+          PASSED=$(grep -c "PASSED" eval-output.txt || echo "0")
+          FAILED=$(grep -c "FAILED" eval-output.txt || echo "0")
+          TOTAL=$((PASSED + FAILED))
+
+          echo "passed=$PASSED" >> $GITHUB_OUTPUT
+          echo "failed=$FAILED" >> $GITHUB_OUTPUT
+          echo "total=$TOTAL" >> $GITHUB_OUTPUT
+
+      - name: Generate Summary Report
+        if: always()
+        run: |
+          cat << 'EOF' > eval-summary.md
+          # S.O.I.L.E.R. Evaluation Summary
+
+          ## Results
+
+          | Category | Cases | Status |
+          |----------|-------|--------|
+          | Soil Diagnosis (EVAL-SOIL-01 to 10) | 10 | ${{ steps.evals.outputs.passed >= 10 && '✅' || '❌' }} |
+          | Fertilizer Planning (EVAL-FERT-11 to 20) | 10 | ${{ steps.evals.outputs.passed >= 20 && '✅' || '❌' }} |
+          | RAG Retrieval (EVAL-RAG-21 to 30) | 10 | ${{ steps.evals.outputs.passed >= 30 && '✅' || '❌' }} |
+
+          ## Summary
+
+          - **Total Cases**: ${{ steps.evals.outputs.total }}
+          - **Passed**: ${{ steps.evals.outputs.passed }}
+          - **Failed**: ${{ steps.evals.outputs.failed }}
+          - **Pass Rate**: $(echo "scale=1; ${{ steps.evals.outputs.passed }} * 100 / ${{ steps.evals.outputs.total }}" | bc)%
+
+          ## Evaluation Categories
+
+          ### Soil Diagnosis (10 cases)
+          - EVAL-SOIL-01: Optimal soil - no issues
+          - EVAL-SOIL-02: Very acidic soil - critical pH
+          - EVAL-SOIL-03: Very alkaline soil - pH issue
+          - EVAL-SOIL-04: All nutrients deficient
+          - EVAL-SOIL-05: High nutrients - no recommendations
+          - EVAL-SOIL-06: pH boundary at 6.0
+          - EVAL-SOIL-07: Nitrogen boundary at 20
+          - EVAL-SOIL-08: No inputs - 0% confidence
+          - EVAL-SOIL-09: Partial inputs - reduced confidence
+          - EVAL-SOIL-10: Thai output validation
+
+          ### Fertilizer Planning (10 cases)
+          - EVAL-FERT-11: Rice standard requirements
+          - EVAL-FERT-12: Cassava high potassium
+          - EVAL-FERT-13: High yield adjustment
+          - EVAL-FERT-14: Soil adjustment
+          - EVAL-FERT-15: Budget constraint
+          - EVAL-FERT-16: Organic preference
+          - EVAL-FERT-17: Cost calculation
+          - EVAL-FERT-18: Full confidence
+          - EVAL-FERT-19: Disclaimers present
+          - EVAL-FERT-20: Unknown crop defaults
+
+          ### RAG Retrieval (10 cases)
+          - EVAL-RAG-21: pH query retrieval
+          - EVAL-RAG-22: NPK query retrieval
+          - EVAL-RAG-23: Rice fertilizer query
+          - EVAL-RAG-24: Thai language query
+          - EVAL-RAG-25: Organic fertilizer query
+          - EVAL-RAG-26: Citation format
+          - EVAL-RAG-27: Context extraction
+          - EVAL-RAG-28: Top-k limit
+          - EVAL-RAG-29: Empty query handling
+          - EVAL-RAG-30: Document list
+          EOF
+
+          cat eval-summary.md
+
+      - name: Upload Evaluation Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-results
+          path: |
+            eval-results.json
+            eval-output.txt
+            eval-summary.md
+          retention-days: 30
+
+      - name: Post Summary to Job
+        if: always()
+        run: |
+          echo "## Evaluation Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Total Cases | ${{ steps.evals.outputs.total }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Passed | ${{ steps.evals.outputs.passed }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Failed | ${{ steps.evals.outputs.failed }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "See artifacts for detailed results." >> $GITHUB_STEP_SUMMARY
+
+      - name: Check All Evals Passed
+        run: |
+          if [ "${{ steps.evals.outputs.failed }}" != "0" ]; then
+            echo "❌ Some evaluation cases failed!"
+            exit 1
+          fi
+          echo "✅ All 30 evaluation cases passed!"
+
+  evals-badge:
+    name: Update Evals Badge
+    needs: run-evals
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+
+    steps:
+      - name: Create Badge Data
+        run: |
+          echo "Evals passed - badge would be updated here"
+          # In production, this would update a badge service

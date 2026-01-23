@@ -5,10 +5,8 @@ Ensures that Thai text can be logged/printed without encoding errors
 on Windows systems with various terminal encodings.
 """
 
-import logging
 import sys
 
-import pytest
 
 
 def test_bootstrap_import():

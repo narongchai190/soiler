@@ -7,7 +7,6 @@ Verifies critical UI functionality:
 3. Run/Analyze button triggers processing
 """
 
-import pytest
 from playwright.sync_api import Page, expect
 
 

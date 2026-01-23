@@ -2,26 +2,36 @@
 
 ## Pre-Release Checklist
 
-### 1. Code Quality
-- [ ] All tests pass: `pytest -v`
+### 1. Security (P0 - Must Pass)
+- [ ] Secret scan passes: `python scripts/scan_secrets.py`
+- [ ] No API keys in docs or code
+- [ ] SECURITY.md is up to date
+- [ ] No DB files tracked: `git ls-files | findstr ".db"`
+
+### 2. Code Quality
+- [ ] Syntax check: `python -m compileall .`
 - [ ] Lint passes: `ruff check .`
-- [ ] Syntax check: `python -m py_compile main.py streamlit_app.py`
+- [ ] All tests pass: `pytest -v`
+- [ ] Evals pass (30 cases): `pytest tests/test_evals.py -v`
 - [ ] No uncommitted changes: `git status`
 
-### 2. Functionality
+### 3. Functionality
 - [ ] CLI runs: `python main.py -q`
+- [ ] Import works: `python -c "import streamlit_app"`
 - [ ] Pipeline completes without errors
-- [ ] Output shows "Analysis Complete"
+- [ ] E2E smoke tests pass: `pytest tests_e2e/ -v`
 
-### 3. Documentation
+### 4. Documentation
 - [ ] CHANGELOG.md updated with new version
-- [ ] VERSION file updated
+- [ ] VERSION file matches release
 - [ ] README.md accurate
+- [ ] RUNBOOK.md current
 
-### 4. Environment
+### 5. Environment
 - [ ] .env.example lists all optional vars
 - [ ] requirements.txt is minimal and correct
-- [ ] No hardcoded secrets in code
+- [ ] .gitignore covers sensitive files
+- [ ] Seed data available for fresh installs
 
 ## Cutting a Release
 

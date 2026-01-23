@@ -1,0 +1,33 @@
+{
+  "version": "0.2.0",
+  "description": "S.O.I.L.E.R. seed data for fresh installations",
+  "sample_analyses": [
+    {
+      "id": "sample-001",
+      "location": "Denchai, Phrae",
+      "crop": "Riceberry Rice",
+      "ph": 6.2,
+      "nitrogen": 35,
+      "phosphorus": 20,
+      "potassium": 100,
+      "field_size_rai": 5.0,
+      "notes": "Sample analysis for demo purposes"
+    },
+    {
+      "id": "sample-002",
+      "location": "Chiang Mai",
+      "crop": "Corn",
+      "ph": 5.8,
+      "nitrogen": 28,
+      "phosphorus": 15,
+      "potassium": 80,
+      "field_size_rai": 3.0,
+      "notes": "Corn field sample"
+    }
+  ],
+  "default_settings": {
+    "language": "th",
+    "prefer_organic": false,
+    "irrigation_available": true
+  }
+}

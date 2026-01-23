@@ -5,6 +5,47 @@ All notable changes to S.O.I.L.E.R. will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2026-01-24
+
+### Added
+- **Skill-first Agent Architecture**: Deterministic soil diagnosis and fertilizer planning
+  - `soil_diagnosis()` skill with Thai Dept of Agriculture thresholds
+  - `fertilizer_plan()` skill with crop-specific NPK targets
+  - Skill-based agent wrappers for pipeline integration
+- **RAG System with Citations**: Knowledge retrieval with source citations
+  - 7 reference documents covering Thai agriculture standards
+  - TF-IDF based search with relevance scoring
+  - Citation formatting for grounded responses
+- **Evaluation Suite**: 30 deterministic test cases
+  - 10 soil diagnosis cases
+  - 10 fertilizer planning cases
+  - 10 RAG retrieval cases
+- **E2E Smoke Tests**: Playwright-based UI testing
+- **Selection Summary Panel**: Sidebar widget showing user selections
+
+### Security
+- Secret scanner with enhanced pattern detection
+- CI enforcement of secret scanning
+- SECURITY.md with key rotation instructions
+- No secrets shipped in repository
+
+### Fixed
+- UTF-8 encoding issues on Windows console
+- Streamlit widget state stability
+- Sidebar dropdown inconsistencies
+- Ruff lint errors (44 total fixed)
+
+### DevOps
+- `evals.yml` CI workflow for evaluation suite
+- Database seeding mechanism for fresh installations
+- Enhanced `.gitignore` for production safety
+- Release readiness report generation
+
+### Documentation
+- RUNBOOK.md production runbook
+- RELEASE.md release checklist
+- Enhanced SECURITY.md with deployment guides
+
 ## [0.1.0] - 2026-01-19
 
 ### Added

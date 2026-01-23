@@ -39,3 +39,33 @@ Thumbs.db
 .claude/
 *.log
 .env
+.env.local
+.env.*.local
+
+# Database files (use seed for fresh setup)
+*.db
+*.sqlite
+*.sqlite3
+data/*.db
+data/*.sqlite*
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Test artifacts
+test-results/
+playwright-report/
+screenshots/
+videos/
+*.png
+*.jpg
+
+# Debug/capture scripts (local only)
+capture_ui.py
+debug_*.py
+nul
+
+# Temporary files
+*.tmp
+*.temp
+*.bak

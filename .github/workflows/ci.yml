@@ -57,6 +57,25 @@ jobs:
         run: |
           pytest tests_e2e/ -v
 
+  security-scan:
+    name: Security - Secret Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run Secret Scanner
+        run: |
+          python scripts/scan_secrets.py
+
+      - name: Verify No Secrets
+        run: |
+          echo "✅ Secret scan passed - no hardcoded secrets found"
+
   syntax-check:
     runs-on: ubuntu-latest
     steps:

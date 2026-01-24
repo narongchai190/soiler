@@ -1195,10 +1195,21 @@ st.markdown("""
     }
 
     /* ========================================
-       FIX DROPDOWN VISIBILITY (ENHANCED)
+       FIX DROPDOWN VISIBILITY
+       Root cause: Streamlit's CSS sets the text container height to 0px
+       with overflow:hidden, making the selected value invisible.
        ======================================== */
 
-    /* 1. Force ALL text inside the select box to be white - max specificity */
+    /* 1. CRITICAL FIX: Force the text container to have visible height
+       The element path is: div[data-baseweb="select"] > div > div > div:first-child
+       This element has height:0px by default which hides the selected text */
+    div[data-baseweb="select"] > div > div > div:first-child {
+        height: auto !important;
+        min-height: 1.2em !important;
+        overflow: visible !important;
+    }
+
+    /* 2. Force ALL text inside the select box to be white */
     div[data-baseweb="select"],
     div[data-baseweb="select"] *,
     div[data-baseweb="select"] span,
@@ -1209,7 +1220,7 @@ st.markdown("""
         -webkit-text-fill-color: #ffffff !important;
     }
 
-    /* 2. Target value container by class pattern (BaseWeb uses dynamic classes) */
+    /* 3. Target value container by class pattern (BaseWeb dynamic classes) */
     div[data-baseweb="select"] [class*="valueContainer"],
     div[data-baseweb="select"] [class*="singleValue"],
     div[data-baseweb="select"] [class*="placeholder"],
@@ -1217,15 +1228,16 @@ st.markdown("""
         color: #ffffff !important;
         -webkit-text-fill-color: #ffffff !important;
         opacity: 1 !important;
+        height: auto !important;
     }
 
-    /* 3. Specific fix for the control container */
+    /* 4. Specific fix for the control container */
     div[data-baseweb="select"] > div {
         background-color: #262730 !important;
         border-color: #4c4c4c !important;
     }
 
-    /* 4. Dropdown Menu Items (The popup list) */
+    /* 5. Dropdown Menu Items (The popup list) */
     li[data-baseweb="menu-item"] {
         background-color: #262730 !important;
     }
@@ -1236,19 +1248,19 @@ st.markdown("""
         -webkit-text-fill-color: #ffffff !important;
     }
 
-    /* 5. Hover state for menu items */
+    /* 6. Hover state for menu items */
     li[data-baseweb="menu-item"]:hover,
     li[data-baseweb="menu-item"][aria-selected="true"] {
         background-color: #4CAF50 !important;
     }
 
-    /* 6. Fix SVG Icons (Arrow) */
+    /* 7. Fix SVG Icons (Arrow) */
     div[data-baseweb="select"] svg {
         fill: #ffffff !important;
         color: #ffffff !important;
     }
 
-    /* 7. Streamlit-specific selectbox styling (st.selectbox uses stSelectbox class) */
+    /* 8. Streamlit-specific selectbox styling */
     .stSelectbox label,
     .stSelectbox div[data-baseweb="select"] {
         color: #ffffff !important;

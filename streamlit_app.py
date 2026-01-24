@@ -1195,41 +1195,67 @@ st.markdown("""
     }
 
     /* ========================================
-       FIX DROPDOWN VISIBILITY (NUCLEAR OPTION)
+       FIX DROPDOWN VISIBILITY (ENHANCED)
        ======================================== */
-    
-    /* 1. Force ALL text inside the select box to be white */
-    div[data-baseweb="select"] * {
+
+    /* 1. Force ALL text inside the select box to be white - max specificity */
+    div[data-baseweb="select"],
+    div[data-baseweb="select"] *,
+    div[data-baseweb="select"] span,
+    div[data-baseweb="select"] div,
+    div[data-baseweb="select"] input {
         color: #ffffff !important;
         opacity: 1 !important;
         -webkit-text-fill-color: #ffffff !important;
     }
 
-    /* 2. Specific fix for the placeholder/selected value container */
+    /* 2. Target value container by class pattern (BaseWeb uses dynamic classes) */
+    div[data-baseweb="select"] [class*="valueContainer"],
+    div[data-baseweb="select"] [class*="singleValue"],
+    div[data-baseweb="select"] [class*="placeholder"],
+    div[data-baseweb="select"] [class*="Input"] {
+        color: #ffffff !important;
+        -webkit-text-fill-color: #ffffff !important;
+        opacity: 1 !important;
+    }
+
+    /* 3. Specific fix for the control container */
     div[data-baseweb="select"] > div {
-        background-color: #262730 !important; /* Dark background */
+        background-color: #262730 !important;
         border-color: #4c4c4c !important;
     }
 
-    /* 3. Dropdown Menu Items (The popup list) */
+    /* 4. Dropdown Menu Items (The popup list) */
     li[data-baseweb="menu-item"] {
         background-color: #262730 !important;
     }
-    
-    li[data-baseweb="menu-item"] div {
+
+    li[data-baseweb="menu-item"] div,
+    li[data-baseweb="menu-item"] span {
         color: #ffffff !important;
+        -webkit-text-fill-color: #ffffff !important;
     }
 
-    /* 4. Hover state for menu items */
+    /* 5. Hover state for menu items */
     li[data-baseweb="menu-item"]:hover,
     li[data-baseweb="menu-item"][aria-selected="true"] {
-        background-color: #4CAF50 !important; /* Green highlight */
+        background-color: #4CAF50 !important;
     }
 
-    /* 5. Fix SVG Icons (Arrow) */
+    /* 6. Fix SVG Icons (Arrow) */
     div[data-baseweb="select"] svg {
         fill: #ffffff !important;
         color: #ffffff !important;
+    }
+
+    /* 7. Streamlit-specific selectbox styling (st.selectbox uses stSelectbox class) */
+    .stSelectbox label,
+    .stSelectbox div[data-baseweb="select"] {
+        color: #ffffff !important;
+    }
+
+    .stSelectbox [data-testid="stWidgetLabel"] {
+        color: #fafafa !important;
     }
 </style>
 

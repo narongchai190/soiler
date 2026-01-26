@@ -652,18 +652,14 @@ st.markdown("""
     }
 
     .hero-title {
-        font-family: var(--font-heading) !important;
+        font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif !important;
         font-size: 96px !important;
         font-weight: 800 !important;
-        color: white !important;
-        margin: 0 0 var(--spacing-4) 0 !important;
-        letter-spacing: -2px;
-        text-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
-        line-height: 1.0;
-        background: linear-gradient(135deg, #FFFFFF 0%, #E2E8F0 50%, #FFFFFF 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
+        color: #FFFFFF !important;
+        margin: 0 0 16px 0 !important;
+        letter-spacing: -2px !important;
+        text-shadow: 0 4px 30px rgba(0, 0, 0, 0.5) !important;
+        line-height: 1.0 !important;
     }
 
     .hero-subtitle {

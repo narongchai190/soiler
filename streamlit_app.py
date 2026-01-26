@@ -354,92 +354,122 @@ TH = {
 }
 
 # =============================================================================
-# PROFESSIONAL CSS - MINIMALIST DEEP DARK THEME WITH SARABUN FONT
+# PROFESSIONAL CSS - MODERN DASHBOARD DESIGN SYSTEM
+# Inspired by Linear, Vercel, Notion - Clean, Professional, World-Class
 # =============================================================================
 st.markdown("""
 <style>
     /* ========================================
-       GOOGLE FONT - SARABUN
+       GOOGLE FONTS - Poppins + Open Sans (Professional Pairing)
        ======================================== */
-    @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Open+Sans:wght@400;500;600;700&display=swap');
     @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
     @import url('https://fonts.googleapis.com/icon?family=Material+Icons+Outlined');
 
     /* ========================================
-       CSS VARIABLES - DEEP DARK THEME
+       CSS VARIABLES - MODERN DARK THEME
+       Linear/Vercel/Notion Inspired
        ======================================== */
     :root {
-        /* Primary Colors - Muted & Professional */
-        --primary: #4CAF50;
-        --primary-light: #81C784;
-        --primary-dark: #388E3C;
-        --primary-muted: rgba(76, 175, 80, 0.15);
+        /* Primary Colors - Professional Green */
+        --primary: #22C55E;
+        --primary-light: #4ADE80;
+        --primary-dark: #16A34A;
+        --primary-muted: rgba(34, 197, 94, 0.1);
+        --primary-glow: rgba(34, 197, 94, 0.15);
 
         /* Accent Colors */
-        --accent: #8D6E63;
-        --accent-light: #A1887F;
-        --gold: #D4AF37;
-        --gold-muted: rgba(212, 175, 55, 0.15);
+        --accent: #3B82F6;
+        --accent-light: #60A5FA;
+        --gold: #F59E0B;
+        --gold-muted: rgba(245, 158, 11, 0.1);
 
-        /* Backgrounds - Deep Dark */
-        --bg-primary: #121212;
-        --bg-secondary: #1E1E1E;
-        --bg-tertiary: #252525;
-        --bg-card: #1A1A1A;
-        --bg-hover: #2D2D2D;
+        /* Backgrounds - Refined Dark (Like Linear) */
+        --bg-primary: #0F172A;
+        --bg-secondary: #1E293B;
+        --bg-tertiary: #334155;
+        --bg-card: #1E293B;
+        --bg-card-hover: #283548;
+        --bg-elevated: #273449;
 
-        /* Text Colors */
-        --text-primary: #FAFAFA;
-        --text-secondary: #B0B0B0;
-        --text-muted: #757575;
+        /* Glass Effect */
+        --glass-bg: rgba(30, 41, 59, 0.8);
+        --glass-border: rgba(255, 255, 255, 0.1);
 
-        /* Borders */
-        --border-color: #333333;
-        --border-light: #404040;
+        /* Text Colors - High Readability */
+        --text-primary: #F8FAFC;
+        --text-secondary: #94A3B8;
+        --text-muted: #64748B;
 
-        /* Status Colors - Muted */
-        --success: #66BB6A;
-        --warning: #FFB74D;
-        --error: #EF5350;
-        --info: #42A5F5;
+        /* Borders - Subtle */
+        --border-color: rgba(255, 255, 255, 0.08);
+        --border-light: rgba(255, 255, 255, 0.06);
+        --border-strong: rgba(255, 255, 255, 0.12);
 
-        /* Shadows */
-        --shadow-sm: 0 2px 4px rgba(0,0,0,0.3);
-        --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
-        --shadow-lg: 0 8px 24px rgba(0,0,0,0.5);
+        /* Status Colors */
+        --success: #22C55E;
+        --warning: #F59E0B;
+        --error: #EF4444;
+        --info: #3B82F6;
 
-        /* Typography */
-        --font-family: 'Sarabun', -apple-system, BlinkMacSystemFont, sans-serif;
-        --font-size-base: 20px;
-        --font-size-sm: 18px;
-        --font-size-lg: 24px;
-        --font-size-h1: 32px;
-        --font-size-h2: 28px;
-        --font-size-h3: 24px;
-        --font-size-h4: 22px;
+        /* Shadows - Subtle & Professional */
+        --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+        --shadow-glow: 0 0 20px rgba(34, 197, 94, 0.15);
 
-        /* Spacing */
-        --spacing-xs: 0.5rem;
-        --spacing-sm: 1rem;
-        --spacing-md: 1.5rem;
-        --spacing-lg: 2rem;
-        --spacing-xl: 3rem;
+        /* Typography Scale - Clean & Readable */
+        --font-heading: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+        --font-body: 'Open Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+        --font-size-xs: 13px;
+        --font-size-sm: 14px;
+        --font-size-base: 16px;
+        --font-size-lg: 18px;
+        --font-size-xl: 20px;
+        --font-size-2xl: 24px;
+        --font-size-3xl: 30px;
+        --font-size-4xl: 36px;
 
-        /* Border Radius */
-        --radius-sm: 8px;
-        --radius-md: 12px;
-        --radius-lg: 16px;
-        --radius-xl: 24px;
+        /* Icon Sizes - Balanced */
+        --icon-sm: 18px;
+        --icon-md: 22px;
+        --icon-lg: 28px;
+        --icon-xl: 36px;
+
+        /* Spacing Scale (8px base) */
+        --spacing-1: 4px;
+        --spacing-2: 8px;
+        --spacing-3: 12px;
+        --spacing-4: 16px;
+        --spacing-5: 20px;
+        --spacing-6: 24px;
+        --spacing-8: 32px;
+        --spacing-10: 40px;
+        --spacing-12: 48px;
+
+        /* Border Radius - Modern & Soft */
+        --radius-sm: 6px;
+        --radius-md: 8px;
+        --radius-lg: 12px;
+        --radius-xl: 16px;
+        --radius-full: 9999px;
+
+        /* Transitions */
+        --transition-fast: 150ms ease;
+        --transition-normal: 200ms ease;
+        --transition-slow: 300ms ease;
     }
 
     /* ========================================
-       GLOBAL STYLES
+       GLOBAL STYLES - Modern Clean
        ======================================== */
     html, body, [class*="css"] {
-        font-family: var(--font-family) !important;
+        font-family: var(--font-body) !important;
         font-size: var(--font-size-base) !important;
         line-height: 1.6 !important;
         color: var(--text-primary) !important;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
     }
 
     .stApp {
@@ -447,92 +477,360 @@ st.markdown("""
     }
 
     /* ========================================
-       TYPOGRAPHY
+       TYPOGRAPHY - Clean & Professional
        ======================================== */
     h1, .stMarkdown h1 {
-        font-family: var(--font-family) !important;
-        font-size: var(--font-size-h1) !important;
+        font-family: var(--font-heading) !important;
+        font-size: var(--font-size-4xl) !important;
         font-weight: 700 !important;
         color: var(--text-primary) !important;
-        letter-spacing: 0.5px !important;
-        margin-bottom: var(--spacing-md) !important;
+        letter-spacing: -0.5px !important;
+        margin-bottom: var(--spacing-6) !important;
+        line-height: 1.2 !important;
     }
 
     h2, .stMarkdown h2 {
-        font-family: var(--font-family) !important;
-        font-size: var(--font-size-h2) !important;
+        font-family: var(--font-heading) !important;
+        font-size: var(--font-size-2xl) !important;
         font-weight: 600 !important;
         color: var(--text-primary) !important;
-        border-bottom: 2px solid var(--primary) !important;
-        padding-bottom: var(--spacing-xs) !important;
-        margin-top: var(--spacing-lg) !important;
+        border-bottom: none !important;
+        padding-bottom: 0 !important;
+        margin-top: var(--spacing-8) !important;
+        margin-bottom: var(--spacing-4) !important;
     }
 
     h3, .stMarkdown h3 {
-        font-family: var(--font-family) !important;
-        font-size: var(--font-size-h3) !important;
+        font-family: var(--font-heading) !important;
+        font-size: var(--font-size-xl) !important;
         font-weight: 600 !important;
-        color: var(--primary-light) !important;
+        color: var(--text-primary) !important;
     }
 
     h4, .stMarkdown h4 {
-        font-family: var(--font-family) !important;
-        font-size: var(--font-size-h4) !important;
-        font-weight: 500 !important;
+        font-family: var(--font-heading) !important;
+        font-size: var(--font-size-lg) !important;
+        font-weight: 600 !important;
         color: var(--text-primary) !important;
     }
 
     p, span, label, .stMarkdown p {
         font-size: var(--font-size-base) !important;
         color: var(--text-secondary) !important;
+        line-height: 1.6 !important;
     }
 
     /* ========================================
-       HEADER BANNER - MINIMALIST
+       TOP NAVIGATION BAR - World-Class Style
        ======================================== */
-    .header-banner {
-        background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
-        border: 1px solid var(--border-color);
-        border-left: 4px solid var(--primary);
-        border-radius: var(--radius-lg);
-        padding: var(--spacing-lg);
-        margin-bottom: var(--spacing-lg);
+    .top-navbar {
         display: flex;
+        justify-content: space-between;
         align-items: center;
-        gap: var(--spacing-md);
+        padding: var(--spacing-4) 0;
+        margin-bottom: var(--spacing-4);
+        border-bottom: 1px solid var(--border-color);
     }
 
-    .header-logo {
-        width: 64px;
-        height: 64px;
-        background: var(--primary-muted);
-        border-radius: var(--radius-md);
+    .nav-brand {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-3);
+    }
+
+    .nav-logo {
         display: flex;
         align-items: center;
         justify-content: center;
-        flex-shrink: 0;
     }
 
-    .header-logo .material-icons {
-        font-size: 36px;
+    .nav-logo .material-icons {
+        font-size: 28px !important;
         color: var(--primary);
     }
 
-    .header-content h1 {
-        margin: 0 !important;
-        font-size: 28px !important;
-        color: var(--text-primary) !important;
-        font-weight: 700 !important;
+    .nav-brand-text {
+        font-family: var(--font-heading);
+        font-weight: 700;
+        font-size: var(--font-size-lg);
+        color: var(--text-primary);
+        letter-spacing: -0.3px;
     }
 
-    .header-content p {
-        margin: 4px 0 0 0 !important;
-        color: var(--text-secondary) !important;
-        font-size: 18px !important;
+    .nav-links {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-1);
+    }
+
+    .nav-link {
+        padding: var(--spacing-2) var(--spacing-4);
+        font-size: var(--font-size-sm);
+        font-weight: 500;
+        color: var(--text-secondary);
+        text-decoration: none;
+        border-radius: var(--radius-md);
+        transition: all var(--transition-fast);
+        cursor: pointer;
+    }
+
+    .nav-link:hover {
+        color: var(--text-primary);
+        background: var(--bg-tertiary);
+    }
+
+    .nav-link.active {
+        color: var(--primary);
+        background: var(--primary-muted);
+    }
+
+    .nav-cta {
+        padding: var(--spacing-2) var(--spacing-5);
+        font-size: var(--font-size-sm);
+        font-weight: 600;
+        color: white;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        border-radius: var(--radius-md);
+        text-decoration: none;
+        transition: all var(--transition-fast);
+        cursor: pointer;
+        margin-left: var(--spacing-3);
+    }
+
+    .nav-cta:hover {
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-md), var(--shadow-glow);
     }
 
     /* ========================================
-       SIDEBAR - CLEAN DESIGN
+       HERO BANNER - Full Width Cover Image
+       ======================================== */
+    .hero-banner {
+        position: relative;
+        width: 100%;
+        height: 360px;
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+        margin-bottom: var(--spacing-8);
+        background:
+            linear-gradient(180deg,
+                rgba(15, 23, 42, 0.1) 0%,
+                rgba(15, 23, 42, 0.3) 40%,
+                rgba(15, 23, 42, 0.85) 80%,
+                rgba(15, 23, 42, 0.98) 100%
+            ),
+            url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1400&q=85') center 30%/cover no-repeat;
+    }
+
+    .hero-content {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: var(--spacing-10) var(--spacing-8) var(--spacing-8) var(--spacing-8);
+        z-index: 2;
+    }
+
+    .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        background: rgba(34, 197, 94, 0.2);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(34, 197, 94, 0.4);
+        border-radius: var(--radius-full);
+        padding: var(--spacing-2) var(--spacing-4);
+        font-size: var(--font-size-sm);
+        font-weight: 600;
+        color: var(--primary-light);
+        margin-bottom: var(--spacing-5);
+    }
+
+    .hero-badge .material-icons {
+        font-size: 18px !important;
+    }
+
+    .hero-title {
+        font-family: var(--font-heading) !important;
+        font-size: 42px !important;
+        font-weight: 700 !important;
+        color: white !important;
+        margin: 0 0 var(--spacing-3) 0 !important;
+        letter-spacing: -0.5px;
+        text-shadow: 0 2px 20px rgba(0, 0, 0, 0.4);
+        line-height: 1.1;
+    }
+
+    .hero-subtitle {
+        font-size: var(--font-size-lg) !important;
+        color: rgba(255, 255, 255, 0.85) !important;
+        margin: 0 !important;
+        font-weight: 400;
+        max-width: 550px;
+        line-height: 1.5;
+    }
+
+    .hero-stats {
+        display: flex;
+        gap: var(--spacing-8);
+        margin-top: var(--spacing-6);
+        padding-top: var(--spacing-5);
+        border-top: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .hero-stat {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-1);
+    }
+
+    .hero-stat-value {
+        font-family: var(--font-heading);
+        font-size: var(--font-size-2xl);
+        font-weight: 700;
+        color: white;
+    }
+
+    .hero-stat-label {
+        font-size: var(--font-size-xs);
+        color: rgba(255, 255, 255, 0.6);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* Responsive Hero */
+    @media (max-width: 768px) {
+        .hero-banner {
+            height: 300px;
+        }
+        .hero-content {
+            padding: var(--spacing-6);
+        }
+        .hero-title {
+            font-size: var(--font-size-2xl) !important;
+        }
+        .hero-subtitle {
+            font-size: var(--font-size-base) !important;
+        }
+        .hero-stats {
+            gap: var(--spacing-5);
+        }
+        .hero-stat-value {
+            font-size: var(--font-size-xl);
+        }
+        .top-navbar {
+            flex-direction: column;
+            gap: var(--spacing-3);
+        }
+        .nav-links {
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+    }
+
+    /* Legacy header-banner (keep for compatibility) */
+    .header-banner {
+        display: none;
+    }
+
+    /* ========================================
+       FOOTER - Professional with Copyright
+       ======================================== */
+    .app-footer {
+        margin-top: var(--spacing-12);
+        padding: var(--spacing-8) 0;
+        border-top: 1px solid var(--border-color);
+        text-align: center;
+    }
+
+    .footer-brand {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--spacing-2);
+        margin-bottom: var(--spacing-4);
+    }
+
+    .footer-brand-logo {
+        width: 28px;
+        height: 28px;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        border-radius: var(--radius-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .footer-brand-logo .material-icons {
+        font-size: 16px !important;
+        color: white;
+    }
+
+    .footer-brand-text {
+        font-family: var(--font-heading);
+        font-weight: 600;
+        font-size: var(--font-size-base);
+        color: var(--text-primary);
+    }
+
+    .footer-tagline {
+        font-size: var(--font-size-sm);
+        color: var(--text-secondary);
+        margin-bottom: var(--spacing-3);
+    }
+
+    .footer-developer {
+        font-size: var(--font-size-sm);
+        color: var(--text-muted);
+        margin-bottom: var(--spacing-4);
+    }
+
+    .footer-developer a {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .footer-developer a:hover {
+        text-decoration: underline;
+    }
+
+    .footer-links {
+        display: flex;
+        justify-content: center;
+        gap: var(--spacing-6);
+        margin-bottom: var(--spacing-5);
+    }
+
+    .footer-link {
+        font-size: var(--font-size-sm);
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: color var(--transition-fast);
+    }
+
+    .footer-link:hover {
+        color: var(--primary);
+    }
+
+    .footer-copyright {
+        font-size: var(--font-size-xs);
+        color: var(--text-muted);
+        line-height: 1.6;
+    }
+
+    .footer-copyright a {
+        color: var(--text-secondary);
+        text-decoration: none;
+    }
+
+    .footer-copyright a:hover {
+        color: var(--primary);
+    }
+
+    /* ========================================
+       SIDEBAR - Modern Clean Design
        ======================================== */
     [data-testid="stSidebar"] {
         background: var(--bg-secondary) !important;
@@ -540,36 +838,39 @@ st.markdown("""
     }
 
     [data-testid="stSidebar"] > div:first-child {
-        padding: var(--spacing-md) !important;
+        padding: var(--spacing-5) !important;
     }
 
     /* ========================================
-       SOILER SECTION HEADERS (Borderless Design)
+       SOILER SECTION HEADERS - Modern
        ======================================== */
     .soiler-section-header {
-        margin-top: 20px;
-        margin-bottom: 12px;
+        margin-top: var(--spacing-6);
+        margin-bottom: var(--spacing-4);
         padding: 0;
     }
 
     .soiler-section-header:first-of-type {
-        margin-top: 8px;
+        margin-top: var(--spacing-2);
     }
 
     .soiler-section-title {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: var(--spacing-3);
         color: var(--text-primary);
-        font-weight: 700;
-        font-size: 22px;
-        line-height: 1.25;
+        font-family: var(--font-heading);
+        font-weight: 600;
+        font-size: var(--font-size-sm);
+        line-height: 1.4;
         margin: 0;
         padding: 0;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
     .soiler-section-icon {
-        font-size: 24px;
+        font-size: var(--icon-md);
         color: var(--primary);
         line-height: 1;
         display: flex;
@@ -579,73 +880,78 @@ st.markdown("""
     .soiler-section-divider {
         height: 1px;
         background: var(--border-color);
-        opacity: 0.4;
-        margin-top: 10px;
+        margin-top: var(--spacing-3);
     }
 
     /* Mobile responsive */
     @media (max-width: 768px) {
         .soiler-section-title {
-            font-size: 20px;
+            font-size: var(--font-size-sm);
         }
         .soiler-section-icon {
-            font-size: 22px;
+            font-size: var(--icon-sm);
         }
     }
 
-    /* Legacy sidebar-section (keep for compatibility but style as borderless) */
+    /* Legacy sidebar-section - Modern */
     .sidebar-section {
         background: transparent;
         border: none;
         border-radius: 0;
         padding: 0;
-        margin-top: 20px;
-        margin-bottom: 12px;
+        margin-top: var(--spacing-6);
+        margin-bottom: var(--spacing-4);
     }
 
     .sidebar-section-title {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: var(--spacing-3);
         color: var(--text-primary);
-        font-weight: 700;
-        font-size: 22px;
-        line-height: 1.25;
+        font-family: var(--font-heading);
+        font-weight: 600;
+        font-size: var(--font-size-sm);
+        line-height: 1.4;
         margin-bottom: 0;
         padding-bottom: 0;
         border-bottom: none;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
     .sidebar-section-title .material-icons-outlined {
-        font-size: 24px;
+        font-size: var(--icon-md);
         color: var(--primary);
     }
 
     /* Sidebar labels */
     [data-testid="stSidebar"] label {
-        font-size: 18px !important;
+        font-size: var(--font-size-sm) !important;
         font-weight: 500 !important;
         color: var(--text-secondary) !important;
     }
 
     /* ========================================
-       FORM INPUTS - ELDERLY FRIENDLY
+       FORM INPUTS - Modern Clean
        ======================================== */
     .stSelectbox > div > div,
     .stNumberInput > div > div > input,
     .stTextInput > div > div > input {
-        font-size: 20px !important;
-        padding: 14px 16px !important;
+        font-size: var(--font-size-base) !important;
+        padding: var(--spacing-3) var(--spacing-4) !important;
         background: var(--bg-tertiary) !important;
-        border: 2px solid var(--border-color) !important;
-        border-radius: var(--radius-sm) !important;
+        border: 1px solid var(--border-color) !important;
+        border-radius: var(--radius-md) !important;
         color: var(--text-primary) !important;
+        font-weight: 400 !important;
+        transition: all var(--transition-fast) !important;
     }
 
     .stSelectbox > div > div:hover,
     .stNumberInput > div > div > input:hover,
     .stTextInput > div > div > input:hover {
-        border-color: var(--primary) !important;
+        border-color: var(--border-strong) !important;
+        background: var(--bg-card-hover) !important;
     }
 
     .stSelectbox > div > div:focus-within,
@@ -653,432 +959,485 @@ st.markdown("""
     .stTextInput > div > div > input:focus {
         border-color: var(--primary) !important;
         box-shadow: 0 0 0 3px var(--primary-muted) !important;
+        outline: none !important;
     }
 
-    /* Slider */
+    /* Slider - Modern */
     .stSlider > div > div > div {
-        background: var(--border-color) !important;
+        background: var(--bg-tertiary) !important;
+        height: 6px !important;
+        border-radius: var(--radius-full) !important;
     }
 
     .stSlider [data-testid="stThumbValue"] {
-        font-size: 18px !important;
+        font-size: var(--font-size-sm) !important;
         font-weight: 600 !important;
         color: var(--primary) !important;
     }
 
-    /* Checkbox */
+    /* Checkbox - Clean */
     .stCheckbox label {
-        font-size: 18px !important;
+        font-size: var(--font-size-base) !important;
+        font-weight: 400 !important;
+    }
+
+    .stCheckbox label span {
+        font-size: var(--font-size-base) !important;
     }
 
     /* ========================================
-       BUTTONS - LARGE & ACCESSIBLE
+       BUTTONS - Modern Professional
        ======================================== */
     .stButton > button {
-        font-family: var(--font-family) !important;
-        font-size: 20px !important;
+        font-family: var(--font-heading) !important;
+        font-size: var(--font-size-base) !important;
         font-weight: 600 !important;
-        padding: 16px 32px !important;
+        padding: var(--spacing-3) var(--spacing-6) !important;
         border-radius: var(--radius-md) !important;
         border: none !important;
         background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%) !important;
         color: white !important;
         width: 100% !important;
-        transition: all 0.3s ease !important;
+        transition: all var(--transition-normal) !important;
         box-shadow: var(--shadow-md) !important;
+        cursor: pointer !important;
     }
 
     .stButton > button:hover {
         background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%) !important;
-        transform: translateY(-2px) !important;
-        box-shadow: var(--shadow-lg) !important;
+        transform: translateY(-1px) !important;
+        box-shadow: var(--shadow-lg), var(--shadow-glow) !important;
     }
 
     .stButton > button:active {
         transform: translateY(0) !important;
+        box-shadow: var(--shadow-sm) !important;
     }
 
     /* ========================================
-       METRIC CARDS
+       METRIC CARDS - Modern Glass
        ======================================== */
     .metric-card {
-        background: var(--bg-card);
-        border: 1px solid var(--border-color);
-        border-radius: var(--radius-md);
-        padding: var(--spacing-md);
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-lg);
+        padding: var(--spacing-5);
         text-align: center;
-        transition: all 0.3s ease;
+        transition: all var(--transition-normal);
+        cursor: pointer;
     }
 
     .metric-card:hover {
-        border-color: var(--primary);
-        box-shadow: var(--shadow-md);
+        border-color: var(--primary-muted);
+        background: var(--bg-card-hover);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
     }
 
     .metric-icon {
         width: 48px;
         height: 48px;
-        margin: 0 auto var(--spacing-sm);
+        margin: 0 auto var(--spacing-4);
         background: var(--primary-muted);
-        border-radius: var(--radius-sm);
+        border-radius: var(--radius-md);
         display: flex;
         align-items: center;
         justify-content: center;
     }
 
     .metric-icon .material-icons-outlined {
-        font-size: 28px;
+        font-size: var(--icon-lg);
         color: var(--primary);
     }
 
     .metric-value {
-        font-size: 32px !important;
+        font-size: var(--font-size-3xl) !important;
         font-weight: 700 !important;
+        font-family: var(--font-heading) !important;
         color: var(--text-primary) !important;
         margin: 0;
     }
 
     .metric-label {
-        font-size: 16px !important;
+        font-size: var(--font-size-sm) !important;
         color: var(--text-muted) !important;
-        margin: 4px 0 0 0;
+        margin: var(--spacing-2) 0 0 0;
+        font-weight: 500;
     }
 
     .metric-delta {
-        font-size: 14px !important;
+        font-size: var(--font-size-sm) !important;
         color: var(--success) !important;
-        margin-top: 4px;
+        margin-top: var(--spacing-2);
+        font-weight: 600;
     }
 
     /* ========================================
-       NATIVE STREAMLIT METRICS
+       NATIVE STREAMLIT METRICS - Modern
        ======================================== */
     [data-testid="stMetricValue"] {
-        font-size: 28px !important;
+        font-size: var(--font-size-2xl) !important;
         font-weight: 700 !important;
+        font-family: var(--font-heading) !important;
         color: var(--text-primary) !important;
     }
 
     [data-testid="stMetricLabel"] {
-        font-size: 18px !important;
+        font-size: var(--font-size-sm) !important;
         font-weight: 500 !important;
         color: var(--text-secondary) !important;
     }
 
     [data-testid="stMetricDelta"] {
-        font-size: 16px !important;
+        font-size: var(--font-size-sm) !important;
+        font-weight: 600 !important;
     }
 
     /* ========================================
-       DATA TABLES
+       DATA TABLES - Modern Clean
        ======================================== */
     .stDataFrame {
-        border-radius: var(--radius-md) !important;
+        border-radius: var(--radius-lg) !important;
         overflow: hidden !important;
+        border: 1px solid var(--border-color) !important;
     }
 
     .stDataFrame th {
         background: var(--bg-tertiary) !important;
         color: var(--text-primary) !important;
         font-weight: 600 !important;
-        font-size: 18px !important;
-        padding: 14px 16px !important;
-        border-bottom: 2px solid var(--primary) !important;
+        font-size: var(--font-size-sm) !important;
+        padding: var(--spacing-3) var(--spacing-4) !important;
+        border-bottom: 1px solid var(--border-color) !important;
     }
 
     .stDataFrame td {
         background: var(--bg-card) !important;
         color: var(--text-secondary) !important;
-        font-size: 18px !important;
-        padding: 12px 16px !important;
-        border-bottom: 1px solid var(--border-color) !important;
+        font-size: var(--font-size-sm) !important;
+        padding: var(--spacing-3) var(--spacing-4) !important;
+        border-bottom: 1px solid var(--border-light) !important;
     }
 
     .stDataFrame tr:hover td {
-        background: var(--bg-hover) !important;
+        background: var(--bg-card-hover) !important;
     }
 
     /* ========================================
-       TABS
+       TABS - Modern Minimal
        ======================================== */
     .stTabs [data-baseweb="tab-list"] {
-        gap: 8px;
-        background: var(--bg-secondary);
-        padding: 8px;
-        border-radius: var(--radius-md);
+        gap: var(--spacing-1);
+        background: transparent;
+        padding: var(--spacing-1);
+        border-radius: var(--radius-lg);
+        border-bottom: 1px solid var(--border-color);
     }
 
     .stTabs [data-baseweb="tab"] {
-        font-family: var(--font-family) !important;
-        font-size: 18px !important;
+        font-family: var(--font-heading) !important;
+        font-size: var(--font-size-sm) !important;
         font-weight: 500 !important;
-        padding: 12px 24px !important;
-        border-radius: var(--radius-sm) !important;
+        padding: var(--spacing-3) var(--spacing-5) !important;
+        border-radius: var(--radius-md) !important;
         background: transparent !important;
-        color: var(--text-secondary) !important;
+        color: var(--text-muted) !important;
+        border: none !important;
+        transition: all var(--transition-fast) !important;
+    }
+
+    .stTabs [data-baseweb="tab"]:hover {
+        color: var(--text-primary) !important;
+        background: var(--bg-tertiary) !important;
     }
 
     .stTabs [aria-selected="true"] {
-        background: var(--primary) !important;
-        color: white !important;
+        background: var(--primary-muted) !important;
+        color: var(--primary) !important;
     }
 
     /* ========================================
-       EXPANDERS
+       EXPANDERS - Modern Clean
        ======================================== */
     .streamlit-expanderHeader {
-        font-family: var(--font-family) !important;
-        font-size: 20px !important;
+        font-family: var(--font-heading) !important;
+        font-size: var(--font-size-base) !important;
         font-weight: 600 !important;
         background: var(--bg-tertiary) !important;
-        border-radius: var(--radius-sm) !important;
-        padding: 14px 16px !important;
+        border-radius: var(--radius-md) !important;
+        padding: var(--spacing-4) !important;
         color: var(--text-primary) !important;
+        border: 1px solid var(--border-color) !important;
     }
 
     .streamlit-expanderContent {
         background: var(--bg-card) !important;
         border: 1px solid var(--border-color) !important;
         border-top: none !important;
-        border-radius: 0 0 var(--radius-sm) var(--radius-sm) !important;
-        padding: var(--spacing-md) !important;
+        border-radius: 0 0 var(--radius-md) var(--radius-md) !important;
+        padding: var(--spacing-5) !important;
     }
 
     /* ========================================
-       ALERTS & INFO BOXES
+       ALERTS & INFO BOXES - Modern
        ======================================== */
     .stAlert {
-        font-size: 18px !important;
-        padding: var(--spacing-md) !important;
+        font-size: var(--font-size-base) !important;
+        padding: var(--spacing-4) !important;
         border-radius: var(--radius-md) !important;
         border-width: 1px !important;
         border-left-width: 4px !important;
     }
 
     /* ========================================
-       AGENT CARD
+       AGENT CARD - Modern Glass
        ======================================== */
     .agent-card {
-        background: var(--bg-card);
-        border: 1px solid var(--border-color);
-        border-left: 4px solid var(--primary);
-        border-radius: var(--radius-md);
-        padding: var(--spacing-md);
-        margin: var(--spacing-sm) 0;
+        background: var(--glass-bg);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid var(--glass-border);
+        border-left: 3px solid var(--primary);
+        border-radius: var(--radius-lg);
+        padding: var(--spacing-5);
+        margin: var(--spacing-4) 0;
+        transition: all var(--transition-normal);
+    }
+
+    .agent-card:hover {
+        background: var(--bg-card-hover);
+        border-color: var(--primary-muted);
     }
 
     .agent-header {
         display: flex;
         align-items: center;
-        gap: 12px;
-        margin-bottom: 10px;
+        gap: var(--spacing-3);
+        margin-bottom: var(--spacing-3);
     }
 
     .agent-icon {
         width: 40px;
         height: 40px;
         background: var(--primary-muted);
-        border-radius: var(--radius-sm);
+        border-radius: var(--radius-md);
         display: flex;
         align-items: center;
         justify-content: center;
     }
 
     .agent-icon .material-icons-outlined {
-        font-size: 24px;
+        font-size: var(--icon-md);
         color: var(--primary);
     }
 
     .agent-name {
+        font-family: var(--font-heading);
         font-weight: 600;
-        font-size: 18px;
+        font-size: var(--font-size-base);
         color: var(--text-primary);
     }
 
     .agent-observation {
         color: var(--text-secondary);
-        font-size: 18px;
-        line-height: 1.7;
+        font-size: var(--font-size-sm);
+        line-height: 1.6;
     }
 
     /* ========================================
-       STATUS BADGES
+       STATUS BADGES - Modern Pill Style
        ======================================== */
     .status-badge {
         display: inline-flex;
         align-items: center;
-        gap: 6px;
-        padding: 8px 16px;
-        border-radius: 20px;
-        font-size: 16px;
+        gap: var(--spacing-2);
+        padding: var(--spacing-2) var(--spacing-4);
+        border-radius: var(--radius-full);
+        font-size: var(--font-size-sm);
         font-weight: 600;
     }
 
     .status-excellent {
-        background: rgba(102, 187, 106, 0.2);
+        background: rgba(34, 197, 94, 0.15);
         color: var(--success);
-        border: 1px solid var(--success);
     }
 
     .status-good {
-        background: rgba(76, 175, 80, 0.2);
+        background: var(--primary-muted);
         color: var(--primary);
-        border: 1px solid var(--primary);
     }
 
     .status-moderate {
-        background: rgba(255, 183, 77, 0.2);
+        background: rgba(245, 158, 11, 0.15);
         color: var(--warning);
-        border: 1px solid var(--warning);
     }
 
     .status-poor {
-        background: rgba(239, 83, 80, 0.2);
+        background: rgba(239, 68, 68, 0.15);
         color: var(--error);
-        border: 1px solid var(--error);
     }
 
     /* ========================================
-       ACTION ITEM
+       ACTION ITEM - Modern Clean
        ======================================== */
     .action-item {
         background: var(--bg-card);
         border: 1px solid var(--border-color);
-        border-radius: var(--radius-md);
-        padding: var(--spacing-md);
-        margin: var(--spacing-sm) 0;
-        transition: all 0.3s ease;
+        border-radius: var(--radius-lg);
+        padding: var(--spacing-5);
+        margin: var(--spacing-4) 0;
+        transition: all var(--transition-normal);
+        cursor: pointer;
     }
 
     .action-item:hover {
-        border-color: var(--primary);
+        border-color: var(--border-strong);
+        background: var(--bg-card-hover);
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-md);
     }
 
     .action-item.critical {
-        border-left: 4px solid var(--error);
+        border-left: 3px solid var(--error);
     }
 
     .action-item.high {
-        border-left: 4px solid var(--warning);
+        border-left: 3px solid var(--warning);
     }
 
     .action-item.medium {
-        border-left: 4px solid var(--primary);
+        border-left: 3px solid var(--primary);
     }
 
     .action-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 8px;
+        margin-bottom: var(--spacing-3);
     }
 
     .action-priority {
+        font-family: var(--font-heading);
         font-weight: 600;
-        font-size: 16px;
+        font-size: var(--font-size-sm);
     }
 
     .action-category {
-        font-size: 14px;
-        color: var(--text-muted);
+        font-size: var(--font-size-xs);
+        color: var(--text-secondary);
         background: var(--bg-tertiary);
-        padding: 4px 12px;
-        border-radius: 12px;
+        padding: var(--spacing-1) var(--spacing-3);
+        border-radius: var(--radius-full);
+        font-weight: 500;
     }
 
     .action-text {
-        font-size: 18px;
+        font-size: var(--font-size-base);
         color: var(--text-primary);
-        margin-bottom: 8px;
+        margin-bottom: var(--spacing-3);
+        line-height: 1.6;
     }
 
     .action-timeline {
-        font-size: 14px;
+        font-size: var(--font-size-xs);
         color: var(--text-muted);
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: var(--spacing-2);
     }
 
     /* ========================================
-       MAP CONTAINER
+       MAP CONTAINER - Modern
        ======================================== */
     .map-container {
         background: var(--bg-card);
         border: 1px solid var(--border-color);
-        border-radius: var(--radius-md);
+        border-radius: var(--radius-lg);
         overflow: hidden;
-        margin: var(--spacing-sm) 0;
+        margin: var(--spacing-4) 0;
     }
 
     /* ========================================
-       DIVIDER
+       DIVIDER - Modern Subtle
        ======================================== */
     .divider {
         height: 1px;
-        background: linear-gradient(90deg, transparent, var(--border-color), transparent);
-        margin: var(--spacing-lg) 0;
+        background: var(--border-color);
+        margin: var(--spacing-8) 0;
     }
 
     /* ========================================
-       FOOTER
+       FOOTER - Modern Clean
        ======================================== */
     .footer {
         text-align: center;
-        padding: var(--spacing-lg);
-        margin-top: var(--spacing-xl);
+        padding: var(--spacing-8);
+        margin-top: var(--spacing-10);
         border-top: 1px solid var(--border-color);
         color: var(--text-muted);
     }
 
     .footer p {
-        margin: 4px 0;
-        font-size: 16px !important;
+        margin: var(--spacing-2) 0;
+        font-size: var(--font-size-sm) !important;
     }
 
     /* ========================================
-       FEATURE CARD
+       FEATURE CARD - Modern Glass (Equal Height)
        ======================================== */
     .feature-card {
-        background: var(--bg-card);
-        border: 1px solid rgba(255,255,255,0.06);
-        border-radius: var(--radius-lg);
-        padding: var(--spacing-lg);
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-xl);
+        padding: var(--spacing-6);
+        min-height: 240px;
         height: 100%;
-        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        transition: all var(--transition-normal);
+        cursor: pointer;
     }
 
     .feature-card:hover {
-        border-color: var(--primary);
-        box-shadow: var(--shadow-md);
-        transform: translateY(-2px);
+        border-color: var(--primary-muted);
+        background: var(--bg-card-hover);
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
     }
 
     .feature-icon {
-        width: 72px;
-        height: 72px;
+        width: 56px;
+        height: 56px;
         background: var(--primary-muted);
-        border-radius: var(--radius-md);
+        border-radius: var(--radius-lg);
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-bottom: var(--spacing-md);
+        margin-bottom: var(--spacing-5);
+        flex-shrink: 0;
     }
 
     .feature-icon .material-icons-outlined {
-        font-size: 36px;
+        font-size: var(--icon-lg);
         color: var(--primary);
     }
 
     .feature-title {
-        font-size: 20px;
-        font-weight: 700;
+        font-family: var(--font-heading);
+        font-size: var(--font-size-lg);
+        font-weight: 600;
         color: var(--text-primary);
-        margin-bottom: 10px;
+        margin-bottom: var(--spacing-3);
+        flex-shrink: 0;
     }
 
     .feature-desc {
-        font-size: 16px;
+        font-size: var(--font-size-sm);
+        flex-grow: 1;
         color: var(--text-secondary);
         line-height: 1.6;
     }
@@ -1086,14 +1445,14 @@ st.markdown("""
     /* Mobile responsive feature cards */
     @media (max-width: 768px) {
         .feature-icon {
-            width: 64px;
-            height: 64px;
+            width: 48px;
+            height: 48px;
         }
         .feature-icon .material-icons-outlined {
-            font-size: 32px;
+            font-size: var(--icon-md);
         }
         .feature-title {
-            font-size: 18px;
+            font-size: var(--font-size-base);
         }
     }
 
@@ -1102,7 +1461,7 @@ st.markdown("""
        ======================================== */
     .coord-input-group {
         display: flex;
-        gap: var(--spacing-sm);
+        gap: var(--spacing-4);
         align-items: flex-end;
     }
 
@@ -1111,20 +1470,20 @@ st.markdown("""
     }
 
     /* ========================================
-       SCROLLBAR
+       SCROLLBAR - Modern Thin
        ======================================== */
     ::-webkit-scrollbar {
-        width: 10px;
-        height: 10px;
+        width: 8px;
+        height: 8px;
     }
 
     ::-webkit-scrollbar-track {
-        background: var(--bg-secondary);
+        background: transparent;
     }
 
     ::-webkit-scrollbar-thumb {
-        background: var(--border-light);
-        border-radius: 5px;
+        background: var(--border-strong);
+        border-radius: var(--radius-full);
     }
 
     ::-webkit-scrollbar-thumb:hover {
@@ -1132,51 +1491,55 @@ st.markdown("""
     }
 
     /* ========================================
-       ASSESSMENT BANNER
+       ASSESSMENT BANNER - Modern
        ======================================== */
     .assessment-banner {
-        background: var(--bg-card);
-        border: 1px solid var(--border-color);
-        border-radius: var(--radius-lg);
-        padding: var(--spacing-lg);
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-xl);
+        padding: var(--spacing-8);
         text-align: center;
-        margin-bottom: var(--spacing-lg);
+        margin-bottom: var(--spacing-6);
     }
 
     .assessment-banner.favorable {
-        border-color: var(--success);
-        background: rgba(102, 187, 106, 0.1);
+        border-color: rgba(34, 197, 94, 0.3);
+        background: rgba(34, 197, 94, 0.08);
     }
 
     .assessment-banner.moderate {
-        border-color: var(--warning);
-        background: rgba(255, 183, 77, 0.1);
+        border-color: rgba(245, 158, 11, 0.3);
+        background: rgba(245, 158, 11, 0.08);
     }
 
     .assessment-banner.challenging {
-        border-color: var(--error);
-        background: rgba(239, 83, 80, 0.1);
+        border-color: rgba(239, 68, 68, 0.3);
+        background: rgba(239, 68, 68, 0.08);
     }
 
     .assessment-title {
-        font-size: 24px;
+        font-family: var(--font-heading);
+        font-size: var(--font-size-2xl);
         font-weight: 700;
-        margin-bottom: 8px;
+        margin-bottom: var(--spacing-2);
     }
 
     .assessment-score {
-        font-size: 18px;
+        font-size: var(--font-size-base);
         color: var(--text-secondary);
+        font-weight: 500;
     }
 
     /* ========================================
-       INFO ROW
+       INFO ROW - Modern Clean
        ======================================== */
     .info-row {
         display: flex;
         justify-content: space-between;
-        padding: 12px 0;
-        border-bottom: 1px solid var(--border-color);
+        padding: var(--spacing-4) 0;
+        border-bottom: 1px solid var(--border-light);
     }
 
     .info-row:last-child {
@@ -1185,89 +1548,146 @@ st.markdown("""
 
     .info-label {
         color: var(--text-muted);
-        font-size: 16px;
+        font-size: var(--font-size-sm);
     }
 
     .info-value {
         color: var(--text-primary);
-        font-weight: 500;
-        font-size: 16px;
+        font-weight: 600;
+        font-size: var(--font-size-sm);
     }
 
     /* ========================================
-       FIX DROPDOWN VISIBILITY
-       Root cause: Streamlit's CSS sets the text container height to 0px
-       with overflow:hidden, making the selected value invisible.
+       FIX DROPDOWN VISIBILITY - Modern Style
        ======================================== */
 
-    /* 1. CRITICAL FIX: Force the text container to have visible height
-       The element path is: div[data-baseweb="select"] > div > div > div:first-child
-       This element has height:0px by default which hides the selected text */
+    /* 1. CRITICAL FIX: Force the text container to have visible height */
     div[data-baseweb="select"] > div > div > div:first-child {
         height: auto !important;
-        min-height: 1.2em !important;
+        min-height: 1.4em !important;
         overflow: visible !important;
     }
 
-    /* 2. Force ALL text inside the select box to be white */
+    /* 2. Force ALL text inside the select box */
     div[data-baseweb="select"],
     div[data-baseweb="select"] *,
     div[data-baseweb="select"] span,
     div[data-baseweb="select"] div,
     div[data-baseweb="select"] input {
-        color: #ffffff !important;
+        color: var(--text-primary) !important;
         opacity: 1 !important;
-        -webkit-text-fill-color: #ffffff !important;
+        -webkit-text-fill-color: var(--text-primary) !important;
+        font-size: var(--font-size-base) !important;
+        font-weight: 400 !important;
     }
 
-    /* 3. Target value container by class pattern (BaseWeb dynamic classes) */
+    /* 3. Target value container by class pattern */
     div[data-baseweb="select"] [class*="valueContainer"],
     div[data-baseweb="select"] [class*="singleValue"],
     div[data-baseweb="select"] [class*="placeholder"],
     div[data-baseweb="select"] [class*="Input"] {
-        color: #ffffff !important;
-        -webkit-text-fill-color: #ffffff !important;
+        color: var(--text-primary) !important;
+        -webkit-text-fill-color: var(--text-primary) !important;
         opacity: 1 !important;
         height: auto !important;
     }
 
     /* 4. Specific fix for the control container */
     div[data-baseweb="select"] > div {
-        background-color: #262730 !important;
-        border-color: #4c4c4c !important;
+        background-color: var(--bg-tertiary) !important;
+        border: 1px solid var(--border-color) !important;
+        border-radius: var(--radius-md) !important;
+        transition: all var(--transition-fast) !important;
     }
 
-    /* 5. Dropdown Menu Items (The popup list) */
+    div[data-baseweb="select"] > div:hover {
+        border-color: var(--border-strong) !important;
+    }
+
+    /* 5. Dropdown Menu Items - Modern */
+    ul[data-baseweb="menu"] {
+        border-radius: var(--radius-md) !important;
+        border: 1px solid var(--border-color) !important;
+        background: var(--bg-secondary) !important;
+        box-shadow: var(--shadow-lg) !important;
+        padding: var(--spacing-2) !important;
+    }
+
     li[data-baseweb="menu-item"] {
-        background-color: #262730 !important;
+        background-color: transparent !important;
+        padding: var(--spacing-3) var(--spacing-4) !important;
+        font-size: var(--font-size-base) !important;
+        border-radius: var(--radius-sm) !important;
+        transition: all var(--transition-fast) !important;
     }
 
     li[data-baseweb="menu-item"] div,
     li[data-baseweb="menu-item"] span {
-        color: #ffffff !important;
-        -webkit-text-fill-color: #ffffff !important;
+        color: var(--text-primary) !important;
+        -webkit-text-fill-color: var(--text-primary) !important;
+        font-size: var(--font-size-base) !important;
     }
 
     /* 6. Hover state for menu items */
-    li[data-baseweb="menu-item"]:hover,
+    li[data-baseweb="menu-item"]:hover {
+        background-color: var(--bg-tertiary) !important;
+    }
+
     li[data-baseweb="menu-item"][aria-selected="true"] {
-        background-color: #4CAF50 !important;
+        background-color: var(--primary-muted) !important;
+    }
+
+    li[data-baseweb="menu-item"][aria-selected="true"] div,
+    li[data-baseweb="menu-item"][aria-selected="true"] span {
+        color: var(--primary) !important;
+        -webkit-text-fill-color: var(--primary) !important;
     }
 
     /* 7. Fix SVG Icons (Arrow) */
     div[data-baseweb="select"] svg {
-        fill: #ffffff !important;
-        color: #ffffff !important;
+        fill: var(--text-muted) !important;
+        color: var(--text-muted) !important;
+        width: 20px !important;
+        height: 20px !important;
     }
 
     /* 8. Streamlit-specific selectbox styling */
     .stSelectbox label,
     .stSelectbox div[data-baseweb="select"] {
-        color: #ffffff !important;
+        color: var(--text-primary) !important;
     }
 
     .stSelectbox [data-testid="stWidgetLabel"] {
-        color: #fafafa !important;
+        color: var(--text-secondary) !important;
+        font-size: var(--font-size-sm) !important;
+        font-weight: 500 !important;
+    }
+
+    /* ========================================
+       GLOBAL ICON SIZES
+       ======================================== */
+    .material-icons,
+    .material-icons-outlined {
+        font-size: var(--icon-md) !important;
+    }
+
+    /* ========================================
+       FOCUS STATES - Accessibility
+       ======================================== */
+    *:focus-visible {
+        outline: 2px solid var(--primary) !important;
+        outline-offset: 2px !important;
+    }
+
+    /* ========================================
+       MOTION - Respect user preferences
+       ======================================== */
+    @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
     }
 </style>
 
@@ -1402,16 +1822,52 @@ def main():
     UILogger.log("Streamlit App Rerun Triggered")
 
     # =========================================================================
-    # HEADER
+    # TOP NAVIGATION BAR
+    # =========================================================================
+    st.markdown("""
+    <nav class="top-navbar">
+        <div class="nav-brand">
+            <div class="nav-logo">
+                <span class="material-icons">grass</span>
+            </div>
+            <span class="nav-brand-text">SOILER</span>
+        </div>
+        <div class="nav-links">
+            <span class="nav-link active">หน้าหลัก</span>
+            <span class="nav-link">คู่มือ</span>
+            <span class="nav-link">เกี่ยวกับ</span>
+            <span class="nav-link">ติดต่อ</span>
+            <span class="nav-cta">เข้าสู่ระบบ</span>
+        </div>
+    </nav>
+    """, unsafe_allow_html=True)
+
+    # =========================================================================
+    # HERO BANNER - Full Width Cover Image
     # =========================================================================
     st.markdown(f"""
-    <div class="header-banner">
-        <div class="header-logo">
-            <span class="material-icons">agriculture</span>
-        </div>
-        <div class="header-content">
-            <h1>{TH["app_title"]}</h1>
-            <p>{TH["app_subtitle"]} — {TH["app_tagline"]}</p>
+    <div class="hero-banner">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="material-icons">eco</span>
+                AI-Powered Precision Agriculture
+            </div>
+            <h1 class="hero-title">{TH["app_title"]}</h1>
+            <p class="hero-subtitle">{TH["app_subtitle"]} — วิเคราะห์ดินและวางแผนการเกษตรด้วย AI ผู้เชี่ยวชาญ 8 ตัว</p>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <span class="hero-stat-value">8</span>
+                    <span class="hero-stat-label">AI Experts</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat-value">99%</span>
+                    <span class="hero-stat-label">Accuracy</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat-value">20+</span>
+                    <span class="hero-stat-label">Soil Series</span>
+                </div>
+            </div>
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -2390,14 +2846,31 @@ def main():
         st.info(TH["sample_text"])
 
     # =========================================================================
-    # FOOTER
+    # FOOTER - Professional with Veltrix Credit
     # =========================================================================
+    current_year = datetime.now().year
     st.markdown(f"""
-    <div class="footer">
-        <p style="font-weight: 600; color: #FAFAFA;">{TH["footer_title"]}</p>
-        <p>{TH["footer_desc"]}</p>
-        <p style="font-size: 14px;">{TH["footer_location"]} 🇹🇭</p>
-    </div>
+    <footer class="app-footer">
+        <div class="footer-brand">
+            <span class="footer-brand-text">S.O.I.L.E.R.</span>
+        </div>
+        <p class="footer-tagline">ระบบแนะนำการปรับปรุงดินอัจฉริยะ | AI-Powered Precision Agriculture</p>
+        <p class="footer-developer">
+            พัฒนาโดย <a href="https://veltrix.ai" target="_blank" rel="noopener">Veltrix Agentic AI</a>
+            สำหรับจังหวัดแพร่ ประเทศไทย 🇹🇭
+        </p>
+        <div class="footer-links">
+            <a href="#" class="footer-link">เอกสารประกอบ</a>
+            <a href="#" class="footer-link">นโยบายความเป็นส่วนตัว</a>
+            <a href="#" class="footer-link">เงื่อนไขการใช้งาน</a>
+            <a href="https://github.com/veltrix" class="footer-link" target="_blank" rel="noopener">GitHub</a>
+        </div>
+        <p class="footer-copyright">
+            © {current_year} Veltrix Agentic AI. All rights reserved.<br>
+            Proprietary Software. Commercial License Required for Production Use.<br>
+            Made with ❤️ in Thailand.
+        </p>
+    </footer>
     """, unsafe_allow_html=True)
 
 

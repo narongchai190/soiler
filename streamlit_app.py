@@ -1847,13 +1847,31 @@ def main():
     # HERO BANNER - Full Width Cover Image
     # =========================================================================
     st.markdown(f"""
+    <style>
+        #soiler-hero-title {{
+            font-size: 96px !important;
+            font-weight: 800 !important;
+            color: #FFFFFF !important;
+            font-family: 'Poppins', sans-serif !important;
+            letter-spacing: -2px !important;
+            text-shadow: 0 4px 30px rgba(0,0,0,0.5) !important;
+            margin: 0 0 16px 0 !important;
+            line-height: 1.0 !important;
+        }}
+        @media (max-width: 768px) {{
+            #soiler-hero-title {{
+                font-size: 48px !important;
+                letter-spacing: -1px !important;
+            }}
+        }}
+    </style>
     <div class="hero-banner">
         <div class="hero-content">
             <div class="hero-badge">
                 <span class="material-icons">eco</span>
                 AI-Powered Precision Agriculture
             </div>
-            <h1 class="hero-title" style="font-size: 96px !important; font-weight: 800 !important; color: #FFFFFF !important; font-family: Poppins, sans-serif !important; letter-spacing: -2px !important; text-shadow: 0 4px 30px rgba(0,0,0,0.5) !important; margin: 0 0 16px 0 !important; line-height: 1.0 !important;">{TH["app_title"]}</h1>
+            <h1 id="soiler-hero-title" class="hero-title">{TH["app_title"]}</h1>
             <p class="hero-subtitle">{TH["app_subtitle"]} — วิเคราะห์ดินและวางแผนการเกษตรด้วย AI ผู้เชี่ยวชาญ 8 ตัว</p>
             <div class="hero-stats">
                 <div class="hero-stat">

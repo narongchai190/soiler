@@ -651,7 +651,8 @@ st.markdown("""
         font-size: 18px !important;
     }
 
-    .hero-title {
+    .hero-title,
+    .hero-title span {
         font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif !important;
         font-size: 96px !important;
         font-weight: 800 !important;
@@ -707,7 +708,8 @@ st.markdown("""
         .hero-content {
             padding: var(--spacing-6);
         }
-        .hero-title {
+        .hero-title,
+        .hero-title span {
             font-size: 48px !important;
             letter-spacing: -1px;
         }
@@ -1848,7 +1850,10 @@ def main():
     # =========================================================================
     st.markdown(f"""
     <style>
-        #soiler-hero-title {{
+        .hero-title,
+        .hero-title span,
+        #s-o-i-l-e-r,
+        #s-o-i-l-e-r span {{
             font-size: 96px !important;
             font-weight: 800 !important;
             color: #FFFFFF !important;
@@ -1859,7 +1864,10 @@ def main():
             line-height: 1.0 !important;
         }}
         @media (max-width: 768px) {{
-            #soiler-hero-title {{
+            .hero-title,
+            .hero-title span,
+            #s-o-i-l-e-r,
+            #s-o-i-l-e-r span {{
                 font-size: 48px !important;
                 letter-spacing: -1px !important;
             }}

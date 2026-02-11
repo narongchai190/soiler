@@ -60,6 +60,9 @@ videos/
 *.png
 *.jpg
 
+# Gate artifacts (generated reports)
+artifacts/
+
 # Debug/capture scripts (local only)
 capture_ui.py
 debug_*.py

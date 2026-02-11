@@ -1,0 +1,27 @@
+version: 1.0
+
+p0_blockers:
+  - id: no_secrets
+    desc: "No committed secrets (tracked files only)"
+    check_cmd: "python scripts/scan_secrets.py --mode=tracked"
+  - id: syntax_check
+    desc: "Python syntax valid"
+    check_cmd: "python -m compileall ."
+  - id: lint_check
+    desc: "Lint passes (ruff)"
+    check_cmd: "ruff check ."
+  - id: unit_tests
+    desc: "Unit tests pass"
+    check_cmd: "pytest -q tests/ --ignore=tests_e2e/"
+  - id: import_smoke
+    desc: "App imports successfully"
+    check_cmd: "python -c \"import logging; logging.basicConfig(level=logging.CRITICAL); import streamlit_app; print('Import OK')\""
+
+p1_high_priority:
+  - id: ui_smoke
+    desc: "Playwright UI Smoke Test"
+    check_cmd: "pytest tests_e2e/test_ui_smoke.py"
+  - id: app_launch
+    desc: "Streamlit App Launch & Healthcheck"
+    check_type: "internal_function"
+    check_func: "check_streamlit_health"

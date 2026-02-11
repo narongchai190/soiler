@@ -1,0 +1,74 @@
+name: Strict Release Gate
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  gate_p0:
+    name: P0 Gate (Security/Lint/Unit)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements-dev.txt
+          pip install -r requirements.txt
+          pip install pyyaml requests # Required for gate runner
+
+      - name: Run P0 Checks (Strict)
+        run: |
+          python scripts/release_gate.py --level p0
+
+      - name: Upload Gate Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gate-p0-report
+          path: artifacts/gate_report.json
+
+  gate_p1_ui:
+    name: P1 Gate (UI Smoke/App Health)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements-dev.txt
+          pip install -r requirements.txt
+          pip install pyyaml requests
+
+      - name: Install Playwright Browsers
+        run: |
+          playwright install chromium --with-deps
+
+      - name: Run P1 Checks (UI Smoke)
+        env:
+            SOILER_E2E: "1" # Enable E2E logic in app if needed
+        run: |
+          python scripts/release_gate.py --level p1
+
+      - name: Upload Gate Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gate-p1-report
+          path: artifacts/gate_report.json

@@ -6,7 +6,7 @@ p0_blockers:
     check_cmd: "python scripts/scan_secrets.py --mode=tracked"
   - id: syntax_check
     desc: "Python syntax valid"
-    check_cmd: "python -m compileall ."
+    check_cmd: "python scripts/check_syntax.py"
   - id: lint_check
     desc: "Lint passes (ruff)"
     check_cmd: "ruff check ."

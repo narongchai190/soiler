@@ -1,199 +1,78 @@
-# S.O.I.L.E.R. Release Readiness Report
+# Production Readiness Gate (Strict Mode)
 
-**Generated**: 2026-01-24
-**Target Version**: 0.2.0
-**Status**: ✅ READY FOR RELEASE
+This repository enforces a **Strict CI Gate** for all changes. Fails in this gate block merging to the default branch (`master` or `main`).
 
----
+## 1. Gate Architecture
 
-## STEP A — BASELINE SNAPSHOT
+We divide checks into two levels to optimize feedback loops:
 
-### Git Status
-```
-On branch master
-Untracked files (new features):
-  .github/workflows/evals.yml
-  core/rag/
-  core/skills/
-  data/corpus/
-  tests/test_evals.py
-  tests/test_rag.py
-  tests/test_skills_*.py
-```
+### **P0 Gate (Blocker)**
+- **Speed:** Fast (< 2 mins)
+- **Environment:** No browser, no external network.
+- **Checks:**
+  - 🔒 **Secrets:** Scans git-tracked files for keys/tokens (`scripts/scan_secrets.py --mode=tracked`).
+  - 🐍 **Syntax:** `compileall` validation.
+  - 🧹 **Lint:** `ruff` enforcement.
+  - 🧪 **Unit Tests:** `pytest` (excluding E2E).
+  - 🏗️ **Import Smoke:** Verifies app importability via `python -c`.
 
-### Recent Commits
-```
-f21fbcf security: add secret scanner and SECURITY.md
-43e7b40 chore: add playwright deps and fix run.cmd
-7b6ca8a test: add smoke UI E2E tests
-57b35e0 fix: add selection summary panel
-a03d321 fix: make UTF-8 output deterministic
-8026949 refactor: fix all ruff lint errors (44 total)
-```
+### **P1 Gate (High Priority)**
+- **Speed:** Slower (app boot + browser launch)
+- **Checks:**
+  - 🕸️ **UI Smoke:** Playwright E2E tests (dropdowns, run button).
+  - 🏥 **Healthcheck:** Deterministic Streamlit boot & HTTP 200 check.
 
-### Environment
-- **Python Version**: 3.13.7
-- **Streamlit Version**: 1.51.0
-- **Ruff Version**: 0.14.13
-- **Platform**: Windows
+## 2. Running Locally
 
----
-
-## STEP B — SECRET HYGIENE
-
-### Secret Scanner Results
-```
-============================================================
-S.O.I.L.E.R. Secret Scanner
-============================================================
-Scanning: E:\veltrix2026\soiler
-
-PASSED: No hardcoded secrets detected.
-```
-**Status**: ✅ PASS
-
-### CI Enforcement
-- Security scan job added to `.github/workflows/ci.yml`
-- Fails build if secrets detected
-
-### Documentation Check
-- No API keys in docs
-- SECURITY.md contains key rotation instructions
-- Clear guidance for local dev and deployment secrets
-
----
-
-## STEP C — REPO HYGIENE
-
-### Tracked DB Files
-```
-$ git ls-files | findstr ".db"
-(empty - no DB files tracked)
-```
-**Status**: ✅ PASS - `data/soiler_v1.db` removed from tracking
-
-### .gitignore Coverage
-- ✅ `*.db`, `*.sqlite`, `*.sqlite3`
-- ✅ `.env`, `.env.local`
-- ✅ `.streamlit/secrets.toml`
-- ✅ `dist/`, `build/`, `*.egg-info/`
-- ✅ Test artifacts (screenshots, videos)
-
-### Seed Mechanism
-- `data/seed/seed.json` - sample data for fresh installs
-- `scripts/seed_db.py` - creates DB from seed
-
----
-
-## STEP D — RELEASE PACKAGING
-
-### Version Consistency
-| File | Version |
-|------|---------|
-| VERSION | 0.2.0 |
-| CHANGELOG.md | 0.2.0 |
-
-**Status**: ✅ CONSISTENT
-
-### Changelog Updated
-- Security hardening section added
-- Skill-first agent MVP documented
-- RAG system with citations documented
-- 30 evaluation cases documented
-- E2E smoke tests documented
-
----
-
-## STEP E — FINAL VERIFICATION
-
-### Quality Gates
-
-| Gate | Command | Status | Output |
-|------|---------|--------|--------|
-| Q1 | `python -m compileall .` | ✅ PASS | No errors |
-| Q2 | `ruff check .` | ✅ PASS | All checks passed! |
-| Q3 | `pytest -q` | ✅ PASS | 165 passed in 1.70s |
-| Q4 | `python main.py -q` | ✅ PASS | Analysis Complete |
-| Q5 | `python -c "import streamlit_app"` | ✅ PASS | Warnings OK |
-| Q6 | `python scripts/scan_secrets.py` | ✅ PASS | No secrets detected |
-
-### Test Coverage
-- Unit tests: 165 tests
-- Evaluation suite: 30 cases
-- E2E smoke tests: 9 tests
-
----
-
-## STEP F — TAG PREPARATION
-
-### Recommended Tag
-```
-v0.2.0
-```
-
-### Release Commands (DO NOT PUSH YET)
-
+**Prerequisites:**
 ```bash
-# 1. Stage all changes
-git add -A
-
-# 2. Commit P0 release preparation
-git commit -m "release: prepare v0.2.0 with security hardening and skills"
-
-# 3. Create annotated tag
-git tag -a v0.2.0 -m "Release v0.2.0 - Security hardening, skill-first agents, RAG system"
-
-# 4. When ready to push (user decision):
-git push origin master --tags
+pip install -r requirements-dev.txt
+playwright install chromium  # Only needed for P1
 ```
 
----
+**Run P0 Only (fast, no browser):**
+```bash
+python scripts/release_gate.py --level p0
+```
 
-## APPROVAL CHECKLIST
+**Run P1 Only (UI smoke + healthcheck):**
+```bash
+python scripts/release_gate.py --level p1
+```
 
-- [x] All quality gates pass (Q1-Q6)
-- [x] No secrets in repository
-- [x] No DB artifacts tracked
-- [x] VERSION file updated to 0.2.0
-- [x] CHANGELOG.md updated with v0.2.0
-- [x] SECURITY.md complete with rotation instructions
-- [x] CI workflows include security scan
-- [x] Seed mechanism available for fresh installs
+**Run All Checks:**
+```bash
+python scripts/release_gate.py --level all
+```
 
----
+**Secret Scanner (standalone):**
+```bash
+python scripts/scan_secrets.py --mode=tracked
+```
 
-## NEW FEATURES IN v0.2.0
+## 3. Branch Protection (GitHub)
 
-1. **Skill-first Agent Architecture**
-   - `soil_diagnosis()` - deterministic soil analysis
-   - `fertilizer_plan()` - crop-specific NPK recommendations
-   - 87 unit tests for skills
+To ensure strict enforcement, repository admins **MUST** enable Branch Protection on `master` (or `main`):
 
-2. **RAG System with Citations**
-   - 7 reference documents (Thai agriculture standards)
-   - Citation formatting for grounded responses
-   - 23 unit tests for RAG
+1. Go to **Settings** > **Branches**.
+2. Add rule for `master` (or currently active default branch).
+3. Check **Require status checks to pass before merging**.
+4. Search for and select these exact job names:
+   - `gate_p0`
+   - `gate_p1_ui`
+5. (Optional) Check "Do not allow bypassing the above settings".
 
-3. **Evaluation Suite**
-   - 30 deterministic test cases
-   - CI workflow in `evals.yml`
-   - Summary artifact generation
+## 4. Troubleshooting Failures
 
-4. **Security Hardening**
-   - Enhanced secret scanner (18 patterns)
-   - CI enforcement of scanning
-   - Key rotation documentation
+| Failure | Fix |
+|---------|-----|
+| `no_secrets` | Remove the secret file or add to `.gitignore`. **ROTATE ANY EXPOSED KEYS.** |
+| `syntax_check` | Fix Python syntax errors. Run `python -m compileall .` locally. |
+| `lint_check` | Run `ruff check . --fix`. |
+| `app_launch` | Ensure `streamlit_app.py` runs without errors via `python -c "import streamlit_app"`. |
+| `ui_smoke` | Run `pytest tests_e2e/ --headed` to debug UI interactions. |
 
----
+## 5. Notes
 
-## CONCLUSION
-
-**The repository is SAFE TO RELEASE.**
-
-All P0 gates have passed. The user should:
-1. Review changes with `git status` and `git diff`
-2. Commit with the suggested message
-3. Create the annotated tag
-4. Push when ready
-
-No secrets, no tracked DB files, all tests pass.
+- **Windows encoding:** The release gate runner reconfigures stdout/stderr to UTF-8 on Windows to avoid `UnicodeEncodeError` with emoji output.
+- **Line endings:** Repository uses `.gitattributes` to normalize to LF. Windows `.bat`/`.ps1` scripts use CRLF.

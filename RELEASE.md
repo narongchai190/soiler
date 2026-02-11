@@ -2,11 +2,24 @@
 
 ## Pre-Release Checklist
 
-### 1. Security (P0 - Must Pass)
-- [ ] Secret scan passes: `python scripts/scan_secrets.py`
-- [ ] No API keys in docs or code
-- [ ] SECURITY.md is up to date
-- [ ] No DB files tracked: `git ls-files | findstr ".db"`
+### 1. Security & Quality (P0/P1 Strict Gate)
+This repository uses an automated Strict Gate. All checks must pass in CI.
+Refer to [RELEASE_READINESS.md](RELEASE_READINESS.md) for details.
+
+**Automated Checks Enforced:**
+- Secret Scan (Tracked files)
+- Lint & Syntax
+- Unit Tests
+- UI Smoke Tests
+- Streamlit Healthcheck
+
+Run locally:
+```bash
+python scripts/release_gate.py --level p0   # Fast: secrets, lint, tests
+python scripts/release_gate.py --level p1   # UI smoke + healthcheck
+python scripts/release_gate.py --level all  # Both P0 + P1
+```
+
 
 ### 2. Code Quality
 - [ ] Syntax check: `python -m compileall .`

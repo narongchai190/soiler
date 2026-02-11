@@ -9,10 +9,12 @@ Usage:
     python scripts/scan_secrets.py
 """
 
+
+import argparse
+import subprocess
 import re
 import sys
 from pathlib import Path
-
 
 # Patterns that indicate potential secrets
 SECRET_PATTERNS = [
@@ -45,7 +47,7 @@ SECRET_PATTERNS = [
     (r"(?i)token\s*=\s*['\"][a-zA-Z0-9_-]{20,}['\"]", "Hardcoded Token"),
 ]
 
-# Directories/files to exclude
+# Directories/files to exclude (strict backup for fallback mode)
 EXCLUDE_DIRS = {
     ".venv", "venv", "__pycache__", ".git", "node_modules",
     ".pytest_cache", "dist", "build", ".eggs", "*.egg-info",
@@ -55,7 +57,8 @@ EXCLUDE_FILES = {".env", ".env.local", ".env.example", "secrets.toml"}
 EXCLUDE_EXTENSIONS = {
     ".pyc", ".pyo", ".db", ".sqlite", ".sqlite3",
     ".png", ".jpg", ".jpeg", ".gif", ".ico", ".svg",
-    ".whl", ".tar", ".gz", ".zip", ".exe", ".dll"
+    ".whl", ".tar", ".gz", ".zip", ".exe", ".dll",
+    ".json" # Often contains data, scan with care if needed
 }
 
 
@@ -72,6 +75,11 @@ def should_scan_file(filepath: Path) -> bool:
 
     # Check excluded extensions
     if filepath.suffix.lower() in EXCLUDE_EXTENSIONS:
+        # Extra check: some json files might be credentials
+        if filepath.suffix.lower() == ".json":
+            if "cred" in filepath.name.lower() or "secret" in filepath.name.lower() or "service" in filepath.name.lower():
+                return True # Scan suspicious jsons
+            return False
         return False
 
     return True
@@ -82,6 +90,10 @@ def scan_file(filepath: Path) -> list:
     findings = []
 
     try:
+        # Skip if file doesn't exist (might be deleted but still in git index occasionally)
+        if not filepath.exists():
+            return []
+
         lines = filepath.read_text(encoding="utf-8", errors="ignore").splitlines()
 
         for line_num, line in enumerate(lines, start=1):
@@ -109,30 +121,71 @@ def scan_file(filepath: Path) -> list:
     return findings
 
 
-def scan_repository(repo_path: Path) -> list:
-    """Scan entire repository for secrets."""
-    all_findings = []
+def get_tracked_files(root_dir: Path) -> list[Path]:
+    """Get list of files tracked by git."""
+    try:
+        # Run git ls-files
+        result = subprocess.run(
+            ["git", "ls-files"],
+            cwd=root_dir,
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        files = [root_dir / f for f in result.stdout.splitlines() if f.strip()]
+        return files
+    except subprocess.CalledProcessError:
+        print("Warning: Not a git repository or git not found. Falling back to simple scan.")
+        return []
 
-    for filepath in repo_path.rglob("*"):
+
+def scan_repository(repo_path: Path, mode: str = "tracked") -> list:
+    """Scan repository for secrets."""
+    all_findings = []
+    files_to_scan = []
+
+    if mode == "tracked":
+        print("Mode: Tracked Files Only (via git ls-files)")
+        tracked = get_tracked_files(repo_path)
+        if tracked:
+            files_to_scan = tracked
+        else:
+            # Fallback
+            print("Fallback: Scanning all files (git ls-files failed)")
+            files_to_scan = repo_path.rglob("*")
+    else:
+        print("Mode: All Files (recursive scan)")
+        files_to_scan = repo_path.rglob("*")
+
+    count = 0
+    for filepath in files_to_scan:
+        filepath = Path(filepath) # Ensure Path object
         if filepath.is_file() and should_scan_file(filepath):
+            count += 1
             findings = scan_file(filepath)
             all_findings.extend(findings)
-
+    
+    print(f"Scanned {count} files.")
     return all_findings
 
 
 def main():
     """Main entry point."""
-    repo_path = Path(__file__).parent.parent
+    parser = argparse.ArgumentParser(description="S.O.I.L.E.R. Secret Scanner")
+    parser.add_argument("--mode", choices=["tracked", "all"], default="tracked", 
+                      help="Scan mode: 'tracked' (git files only) or 'all' (files on disk)")
+    args = parser.parse_args()
+
+    repo_path = Path.cwd()
 
     print("=" * 60)
     print("S.O.I.L.E.R. Secret Scanner")
     print("=" * 60)
     print(f"Scanning: {repo_path}")
+    
+    findings = scan_repository(repo_path, mode=args.mode)
+
     print()
-
-    findings = scan_repository(repo_path)
-
     if findings:
         print(f"FAILED: Found {len(findings)} potential secret(s):")
         print()

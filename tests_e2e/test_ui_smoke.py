@@ -170,6 +170,63 @@ class TestSelectboxVisibility:
         )
 
 
+class TestWizardNavigation:
+    """Tests for the 5-step wizard navigation flow.
+
+    Verifies that tabs are navigable, navigation hints are present,
+    and selected values appear in the sidebar summary panel.
+    """
+
+    def test_all_five_tabs_present(self, page: Page):
+        """Verify all 5 wizard tabs are rendered."""
+        page.wait_for_timeout(2000)
+        tabs = page.locator('[role="tab"]')
+        assert tabs.count() >= 5, f"Expected >= 5 tabs, got {tabs.count()}"
+
+    def test_crop_tab_navigation(self, page: Page):
+        """Navigate to crop tab and verify selectbox appears."""
+        page.wait_for_timeout(2000)
+        crop_tab = page.get_by_role("tab", name="พืช")
+        expect(crop_tab.first).to_be_visible(timeout=10000)
+        crop_tab.first.click()
+        page.wait_for_timeout(1000)
+
+        selectbox = page.locator('[data-baseweb="select"]').first
+        expect(selectbox).to_be_visible(timeout=10000)
+
+    def test_nav_hints_present(self, page: Page):
+        """Verify step navigation hints are rendered in the DOM."""
+        page.wait_for_timeout(2000)
+        # The first tab should have a "next" hint but no "back" hint
+        nav_next = page.locator("#nav-next-1")
+        expect(nav_next).to_be_attached(timeout=10000)
+
+    def test_summary_shows_selected_values(self, page: Page):
+        """Verify the sidebar summary panel reflects session_state defaults."""
+        # The summary should show default values on first load
+        summary = page.get_by_text("สรุปสิ่งที่เลือก")
+        expect(summary.first).to_be_visible(timeout=10000)
+
+        # Check that coordinates appear in summary
+        sidebar = page.locator('[data-testid="stSidebar"]')
+        sidebar_text = sidebar.inner_text()
+        assert "พิกัด" in sidebar_text, "Summary should show coordinates"
+        assert "พืช" in sidebar_text, "Summary should show crop"
+        assert "ดิน" in sidebar_text, "Summary should show soil data"
+
+    def test_soil_tab_has_sliders(self, page: Page):
+        """Navigate to soil tab and verify input controls exist."""
+        page.wait_for_timeout(2000)
+        soil_tab = page.get_by_role("tab", name="ดิน")
+        expect(soil_tab.first).to_be_visible(timeout=10000)
+        soil_tab.first.click()
+        page.wait_for_timeout(1000)
+
+        # Soil tab should have slider controls
+        sliders = page.locator('[data-testid="stSlider"]')
+        assert sliders.count() >= 2, f"Expected >= 2 sliders, got {sliders.count()}"
+
+
 class TestRunAnalysis:
     """Tests for the Run Analysis functionality.
 

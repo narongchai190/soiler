@@ -10,3 +10,7 @@ playwright>=1.40.0
 
 # Linting
 ruff>=0.1.0
+
+# Build/Gate
+PyYAML
+requests

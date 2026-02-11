@@ -1078,6 +1078,124 @@ st.markdown("""
     }
 
     /* ========================================
+       WIZARD STEPS - Flow-Based Navigation
+       Blueprint v1 Compliant
+       ======================================== */
+    .wizard-header {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: var(--spacing-2);
+        padding: var(--spacing-4) var(--spacing-6);
+        margin-bottom: var(--spacing-6);
+        background: var(--bg-secondary);
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border-color);
+    }
+
+    .wizard-step {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-3);
+    }
+
+    .wizard-step-number {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--radius-full);
+        font-size: var(--font-size-sm);
+        font-weight: 600;
+        background: var(--bg-tertiary);
+        color: var(--text-muted);
+        border: 2px solid var(--border-color);
+        transition: all var(--transition-fast);
+    }
+
+    .wizard-step.active .wizard-step-number {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+        box-shadow: 0 0 12px rgba(34, 197, 94, 0.4);
+    }
+
+    .wizard-step.completed .wizard-step-number {
+        background: var(--primary-dark);
+        color: white;
+        border-color: var(--primary-dark);
+    }
+
+    .wizard-step-label {
+        font-size: var(--font-size-sm);
+        font-weight: 500;
+        color: var(--text-muted);
+        display: none;
+    }
+
+    @media (min-width: 768px) {
+        .wizard-step-label {
+            display: block;
+        }
+    }
+
+    .wizard-step.active .wizard-step-label {
+        color: var(--primary);
+        font-weight: 600;
+    }
+
+    .wizard-step.completed .wizard-step-label {
+        color: var(--text-secondary);
+    }
+
+    .wizard-connector {
+        width: 40px;
+        height: 2px;
+        background: var(--border-color);
+    }
+
+    .wizard-connector.completed {
+        background: var(--primary);
+    }
+
+    .wizard-content {
+        min-height: 400px;
+        padding: var(--spacing-4);
+    }
+
+    .wizard-actions {
+        display: flex;
+        justify-content: space-between;
+        padding: var(--spacing-4) 0;
+        margin-top: var(--spacing-4);
+        border-top: 1px solid var(--border-color);
+    }
+
+    /* Step Cards - Input Containers */
+    .step-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: var(--spacing-6);
+        margin-bottom: var(--spacing-4);
+    }
+
+    .step-card-title {
+        font-size: var(--font-size-lg);
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: var(--spacing-4);
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+    }
+
+    .step-card-title .material-icons {
+        color: var(--primary);
+    }
+
+    /* ========================================
        NATIVE STREAMLIT METRICS - Modern
        ======================================== */
     [data-testid="stMetricValue"] {
@@ -1806,6 +1924,54 @@ def render_section_header(title: str, icon: str, subtitle: str | None = None) ->
     """, unsafe_allow_html=True)
 
 
+def render_wizard_header(current_step: int) -> None:
+    """Render the wizard step indicator header.
+
+    Args:
+        current_step: Current step number (1-5)
+    """
+    steps = [
+        ("1", "ตำแหน่ง", "location_on"),
+        ("2", "พืช", "grass"),
+        ("3", "ข้อมูลดิน", "science"),
+        ("4", "แผนปุ๋ย", "assignment"),
+        ("5", "บันทึก", "save"),
+    ]
+
+    step_html = []
+    for i, (num, label, icon) in enumerate(steps, 1):
+        state = "active" if i == current_step else ("completed" if i < current_step else "")
+        connector_state = "completed" if i < current_step else ""
+
+        step_html.append(f'''
+            <div class="wizard-step {state}">
+                <div class="wizard-step-number">{num}</div>
+                <span class="wizard-step-label">{label}</span>
+            </div>
+        ''')
+
+        if i < len(steps):
+            step_html.append(f'<div class="wizard-connector {connector_state}"></div>')
+
+    st.markdown(f'''
+    <div class="wizard-header">
+        {"".join(step_html)}
+    </div>
+    ''', unsafe_allow_html=True)
+
+
+# =============================================================================
+# WIZARD STEP LABELS (Thai)
+# =============================================================================
+WIZARD_STEPS = {
+    1: {"icon": "location_on", "label": "📍 ตำแหน่งแปลง", "tab": "ตำแหน่ง"},
+    2: {"icon": "grass", "label": "🌾 พืชและระยะ", "tab": "พืช"},
+    3: {"icon": "science", "label": "🧪 ข้อมูลดิน", "tab": "ดิน"},
+    4: {"icon": "assignment", "label": "📋 แผนปุ๋ย", "tab": "แผน"},
+    5: {"icon": "save", "label": "💾 บันทึก/ส่งออก", "tab": "บันทึก"},
+}
+
+
 # =============================================================================
 # DISTRICT COORDINATES
 # =============================================================================
@@ -1823,6 +1989,32 @@ DISTRICT_COORDS = {
 def main():
     # Log application rerun
     UILogger.log("Streamlit App Rerun Triggered")
+
+    # =========================================================================
+    # SESSION STATE INITIALIZATION - Wizard Steps
+    # =========================================================================
+    if "wizard_step" not in st.session_state:
+        st.session_state["wizard_step"] = 1
+
+    # Initialize all form values in session_state for persistence across steps
+    defaults = {
+        "farm_lat": 18.0087,
+        "farm_lng": 99.8456,
+        "crop_idx": 0,
+        "field_size": 15.0,
+        "budget": 15000,
+        "ph": 6.2,
+        "nitrogen": 20,
+        "phosphorus": 12,
+        "potassium": 110,
+        "texture_idx": 1,
+        "irrigation": True,
+        "prefer_organic": False,
+        "analysis_result": None,
+    }
+    for key, default in defaults.items():
+        if key not in st.session_state:
+            st.session_state[key] = default
 
     # =========================================================================
     # TOP NAVIGATION BAR
@@ -1900,291 +2092,191 @@ def main():
     """, unsafe_allow_html=True)
 
     # =========================================================================
-    # SIDEBAR
+    # WIZARD TABS (Flow-Based Input - Blueprint v1)
     # =========================================================================
-    with st.sidebar:
-        # Initialize session state for location persistence
-        if "farm_lat" not in st.session_state:
-            st.session_state["farm_lat"] = 18.0087
-        if "farm_lng" not in st.session_state:
-            st.session_state["farm_lng"] = 99.8456
-        if "location_district_idx" not in st.session_state:
-            st.session_state["location_district_idx"] = 1
 
-        # Location Section
-        render_section_header(TH["location_section"], "location_on")
+    # Render wizard step header
+    render_wizard_header(st.session_state["wizard_step"])
 
-        if FOLIUM_AVAILABLE:
-            # 1. Selected Location Card (Visual Feedback)
-            st.markdown(f"""
-            <div style="
-                background-color: var(--bg-tertiary);
-                border: 1px solid var(--primary);
-                border-radius: 8px;
-                padding: 12px;
-                margin-bottom: 12px;
-                display: flex;
-                align-items: center;
-                gap: 10px;
-            ">
-                <span class="material-icons" style="color: var(--primary); font-size: 24px;">place</span>
-                <div>
-                    <div style="font-size: 12px; color: var(--text-secondary);">พิกัดที่เลือก</div>
-                    <div style="font-size: 16px; font-weight: 600; color: var(--text-primary);">
-                        {st.session_state['farm_lat']:.4f}, {st.session_state['farm_lng']:.4f}
-                    </div>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
+    # Create wizard tabs
+    tab_location, tab_crop, tab_soil, tab_plan, tab_save = st.tabs([
+        f"📍 {WIZARD_STEPS[1]['tab']}",
+        f"🌾 {WIZARD_STEPS[2]['tab']}",
+        f"🧪 {WIZARD_STEPS[3]['tab']}",
+        f"📋 {WIZARD_STEPS[4]['tab']}",
+        f"💾 {WIZARD_STEPS[5]['tab']}"
+    ])
 
-            # 2. Interactive Map (Primary Interface)
-            map_center = [st.session_state["farm_lat"], st.session_state["farm_lng"]]
-            
-            m = folium.Map(
-                location=map_center,
-                zoom_start=13,
-                tiles="OpenStreetMap",
-                control_scale=True
-            )
-            
-            # Add "Locate Me" button (GPS) - World Class Standard Control
-            LocateControl(
-                auto_start=False,
-                strings={"title": "📍 ตำแหน่งปัจจุบันของฉัน"},
-                flyTo=True,
-                position="topleft"
-            ).add_to(m)
+    # -------------------------------------------------------------------------
+    # STEP 1: LOCATION
+    # -------------------------------------------------------------------------
+    with tab_location:
+        st.markdown("### 📍 ระบุตำแหน่งแปลงเกษตร")
+        st.markdown("เลือกพิกัดแปลงของคุณจากแผนที่ หรือระบุพิกัดด้วยตัวเอง")
 
-            # Add Draggable Marker (Best Practice for fine-tuning)
-            folium.Marker(
-                map_center,
-                popup=TH["current_location"],
-                icon=folium.Icon(color="red", icon="leaf", prefix="fa"),
-                draggable=False # Keep simple click-to-move for mobile stability
-            ).add_to(m)
+        col_map, col_info = st.columns([2, 1])
 
-            # Render map
-            st.caption(TH["click_map_hint"])
-            map_data = st_folium(
-                m, 
-                width=280, 
-                height=280, 
-                key="sidebar_map",
-                returned_objects=["last_clicked"]
-            )
+        with col_map:
+            if FOLIUM_AVAILABLE:
+                map_center = [st.session_state["farm_lat"], st.session_state["farm_lng"]]
+                m = folium.Map(
+                    location=map_center,
+                    zoom_start=13,
+                    tiles="OpenStreetMap",
+                    control_scale=True
+                )
+                LocateControl(
+                    auto_start=False,
+                    strings={"title": "📍 ตำแหน่งปัจจุบันของฉัน"},
+                    flyTo=True,
+                    position="topleft"
+                ).add_to(m)
+                folium.Marker(
+                    map_center,
+                    popup=TH["current_location"],
+                    icon=folium.Icon(color="red", icon="leaf", prefix="fa"),
+                    draggable=False
+                ).add_to(m)
+                st.caption(TH["click_map_hint"])
+                map_data = st_folium(m, width=500, height=350, key="wizard_map", returned_objects=["last_clicked"])
+                if map_data and map_data.get("last_clicked"):
+                    clicked_lat = map_data["last_clicked"]["lat"]
+                    clicked_lng = map_data["last_clicked"]["lng"]
+                    if abs(clicked_lat - st.session_state["farm_lat"]) > 0.00001 or \
+                       abs(clicked_lng - st.session_state["farm_lng"]) > 0.00001:
+                        st.session_state["farm_lat"] = clicked_lat
+                        st.session_state["farm_lng"] = clicked_lng
+                        st.rerun()
+            else:
+                st.warning("ไม่สามารถโหลดแผนที่ได้ กรุณาระบุพิกัดด้วยตัวเอง")
 
-            # Handle map interaction
-            if map_data and map_data.get("last_clicked"):
-                clicked_lat = map_data["last_clicked"]["lat"]
-                clicked_lng = map_data["last_clicked"]["lng"]
-                
-                # Update only if changed significantly (prevent jitter)
-                if abs(clicked_lat - st.session_state["farm_lat"]) > 0.00001 or \
-                   abs(clicked_lng - st.session_state["farm_lng"]) > 0.00001:
-                    st.session_state["farm_lat"] = clicked_lat
-                    st.session_state["farm_lng"] = clicked_lng
+        with col_info:
+            st.markdown("#### พิกัดปัจจุบัน")
+            st.info(f"**Lat:** {st.session_state['farm_lat']:.4f}\n\n**Lng:** {st.session_state['farm_lng']:.4f}")
+            with st.expander("✍️ ระบุพิกัดด้วยตัวเอง"):
+                new_lat = st.number_input("Lat (N)", min_value=5.0, max_value=21.0, value=float(st.session_state["farm_lat"]), step=0.0001, format="%.4f", key="wiz_lat")
+                new_lng = st.number_input("Lng (E)", min_value=97.0, max_value=106.0, value=float(st.session_state["farm_lng"]), step=0.0001, format="%.4f", key="wiz_lng")
+                if new_lat != st.session_state["farm_lat"] or new_lng != st.session_state["farm_lng"]:
+                    st.session_state["farm_lat"] = new_lat
+                    st.session_state["farm_lng"] = new_lng
                     st.rerun()
 
-        # 3. Manual Override (Progressive Disclosure)
-        with st.expander("✍️ ระบุพิกัดด้วยตัวเอง (Manual)", expanded=False):
-            col_lat, col_lng = st.columns(2)
-            with col_lat:
-                new_lat = st.number_input(
-                    "Lat (N)",
-                    min_value=5.0,
-                    max_value=21.0,
-                    value=float(st.session_state["farm_lat"]),
-                    step=0.0001,
-                    format="%.4f",
-                    key="manual_lat"
-                )
-            with col_lng:
-                new_lng = st.number_input(
-                    "Lng (E)",
-                    min_value=97.0,
-                    max_value=106.0,
-                    value=float(st.session_state["farm_lng"]),
-                    step=0.0001,
-                    format="%.4f",
-                    key="manual_lng"
-                )
+    # -------------------------------------------------------------------------
+    # STEP 2: CROP + FIELD SIZE
+    # -------------------------------------------------------------------------
+    with tab_crop:
+        st.markdown("### 🌾 เลือกพืชและขนาดพื้นที่")
 
-            # Update state from manual inputs
-            if new_lat != st.session_state["farm_lat"] or new_lng != st.session_state["farm_lng"]:
-                st.session_state["farm_lat"] = new_lat
-                st.session_state["farm_lng"] = new_lng
-                st.rerun()
+        col1, col2 = st.columns(2)
+        with col1:
+            crop_options = {TH["riceberry"]: "Riceberry Rice", TH["corn"]: "Corn"}
+            crop_keys = list(crop_options.keys())
+            crop_thai = st.selectbox(TH["select_crop"], options=crop_keys, index=st.session_state.get("crop_idx", 0), key="wiz_crop")
+            st.session_state["crop_idx"] = crop_keys.index(crop_thai)
+            st.session_state["crop"] = crop_options[crop_thai]
 
-        # Set location string for backend
-        location = f"Custom Location ({st.session_state['farm_lat']:.4f}, {st.session_state['farm_lng']:.4f})"
-        coords = {"lat": st.session_state["farm_lat"], "lng": st.session_state["farm_lng"]}
+        with col2:
+            field_size = st.number_input(TH["field_size"], min_value=1.0, max_value=100.0, value=float(st.session_state["field_size"]), step=1.0, help=TH["field_size_help"], key="wiz_field")
+            st.session_state["field_size"] = field_size
 
-        st.markdown("---")
+        budget = st.number_input(TH["budget"], min_value=1000, max_value=100000, value=int(st.session_state["budget"]), step=1000, help=TH["budget_help"], key="wiz_budget")
+        st.session_state["budget"] = budget
 
-        # Crop Section
-        if "crop_idx" not in st.session_state:
-            st.session_state["crop_idx"] = 1
+    # -------------------------------------------------------------------------
+    # STEP 3: SOIL INPUTS
+    # -------------------------------------------------------------------------
+    with tab_soil:
+        st.markdown("### 🧪 ข้อมูลผลตรวจดิน")
+        st.markdown("กรอกค่าจากผลตรวจดินของคุณ หรือใช้ค่าเริ่มต้น")
 
-        render_section_header(TH["crop_section"], "grass")
+        col1, col2 = st.columns(2)
+        with col1:
+            ph = st.slider(TH["ph_level"], min_value=4.0, max_value=9.0, value=float(st.session_state["ph"]), step=0.1, key="wiz_ph")
+            st.session_state["ph"] = ph
+            if ph < 5.5:
+                st.markdown(f"<small style='color: #EF5350;'>⚠️ {TH['ph_acidic']}</small>", unsafe_allow_html=True)
+            elif ph < 6.5:
+                st.markdown(f"<small style='color: #FFB74D;'>pH: {TH['ph_slightly_acidic']}</small>", unsafe_allow_html=True)
+            elif ph < 7.5:
+                st.markdown(f"<small style='color: #66BB6A;'>✓ {TH['ph_neutral']}</small>", unsafe_allow_html=True)
+            else:
+                st.markdown(f"<small style='color: #42A5F5;'>pH: {TH['ph_alkaline']}</small>", unsafe_allow_html=True)
 
-        crop_options = {
-            TH["riceberry"]: "Riceberry Rice",
-            TH["corn"]: "Corn",
-        }
-        crop_keys = list(crop_options.keys())
+            nitrogen = st.slider(f"{TH['nitrogen']} ({TH['unit_mg_kg']})", min_value=5, max_value=100, value=int(st.session_state["nitrogen"]), step=5, key="wiz_n")
+            st.session_state["nitrogen"] = nitrogen
 
-        crop_thai = st.selectbox(
-            TH["select_crop"],
-            options=crop_keys,
-            index=st.session_state["crop_idx"],
-            key="sidebar_crop_select"
-        )
-        st.session_state["crop_idx"] = crop_keys.index(crop_thai)
-        crop = crop_options[crop_thai]
+        with col2:
+            phosphorus = st.slider(f"{TH['phosphorus']} ({TH['unit_mg_kg']})", min_value=5, max_value=80, value=int(st.session_state["phosphorus"]), step=2, key="wiz_p")
+            st.session_state["phosphorus"] = phosphorus
 
-        st.markdown("---")
+            potassium = st.slider(f"{TH['potassium']} ({TH['unit_mg_kg']})", min_value=20, max_value=300, value=int(st.session_state["potassium"]), step=10, key="wiz_k")
+            st.session_state["potassium"] = potassium
 
-        # Field Section
-        render_section_header(TH["field_section"], "straighten")
-
-        field_size = st.number_input(
-            TH["field_size"],
-            min_value=1.0,
-            max_value=100.0,
-            value=15.0,
-            step=1.0,
-            help=TH["field_size_help"]
-        )
-
-        budget = st.number_input(
-            TH["budget"],
-            min_value=1000,
-            max_value=100000,
-            value=15000,
-            step=1000,
-            help=TH["budget_help"]
-        )
-
-        st.markdown("---")
-
-        # Soil Section
-        render_section_header(TH["soil_section"], "science")
-
-        ph = st.slider(
-            TH["ph_level"],
-            min_value=4.0,
-            max_value=9.0,
-            value=6.2,
-            step=0.1
-        )
-
-        # pH status indicator
-        if ph < 5.5:
-            ph_status = TH["ph_acidic"]
-            ph_color = "#EF5350"
-        elif ph < 6.5:
-            ph_status = TH["ph_slightly_acidic"]
-            ph_color = "#FFB74D"
-        elif ph < 7.5:
-            ph_status = TH["ph_neutral"]
-            ph_color = "#66BB6A"
-        else:
-            ph_status = TH["ph_alkaline"]
-            ph_color = "#42A5F5"
-
-        st.markdown(f"<small style='color: {ph_color};'>{TH['ph_status']}: {ph_status}</small>", unsafe_allow_html=True)
-
-        nitrogen = st.slider(
-            f"{TH['nitrogen']} ({TH['unit_mg_kg']})",
-            min_value=5,
-            max_value=100,
-            value=20,
-            step=5
-        )
-
-        phosphorus = st.slider(
-            f"{TH['phosphorus']} ({TH['unit_mg_kg']})",
-            min_value=5,
-            max_value=80,
-            value=12,
-            step=2
-        )
-
-        potassium = st.slider(
-            f"{TH['potassium']} ({TH['unit_mg_kg']})",
-            min_value=20,
-            max_value=300,
-            value=110,
-            step=10
-        )
-
-        st.markdown("---")
-
-        # Options Section
-        if "texture_idx" not in st.session_state:
-            st.session_state["texture_idx"] = 3
-        if "irrigation" not in st.session_state:
-            st.session_state["irrigation"] = True
-        if "prefer_organic" not in st.session_state:
-            st.session_state["prefer_organic"] = False
-
-        with st.expander(f"⚙️ {TH['options_section']}", expanded=False):
-            texture_options = {
-                TH["loam"]: "loam",
-                TH["clay_loam"]: "clay loam",
-                TH["sandy_loam"]: "sandy loam",
-                TH["sandy_clay_loam"]: "sandy clay loam",
-                TH["silty_clay"]: "silty clay",
-            }
+        with st.expander("⚙️ ตัวเลือกเพิ่มเติม"):
+            texture_options = {TH["loam"]: "loam", TH["clay_loam"]: "clay loam", TH["sandy_loam"]: "sandy loam", TH["sandy_clay_loam"]: "sandy clay loam", TH["silty_clay"]: "silty clay"}
             texture_keys = list(texture_options.keys())
-
-            texture_thai = st.selectbox(
-                TH["soil_texture"],
-                options=texture_keys,
-                index=st.session_state["texture_idx"],
-                key="sidebar_texture_select"
-            )
+            texture_thai = st.selectbox(TH["soil_texture"], options=texture_keys, index=st.session_state.get("texture_idx", 1), key="wiz_texture")
             st.session_state["texture_idx"] = texture_keys.index(texture_thai)
-            texture = texture_options[texture_thai]
-
-            irrigation = st.checkbox(
-                TH["irrigation"],
-                value=st.session_state["irrigation"],
-                key="sidebar_irrigation"
-            )
+            st.session_state["texture"] = texture_options[texture_thai]
+            irrigation = st.checkbox(TH["irrigation"], value=st.session_state["irrigation"], key="wiz_irrigation")
             st.session_state["irrigation"] = irrigation
-
-            prefer_organic = st.checkbox(
-                TH["prefer_organic"],
-                value=st.session_state["prefer_organic"],
-                key="sidebar_organic"
-            )
+            prefer_organic = st.checkbox(TH["prefer_organic"], value=st.session_state["prefer_organic"], key="wiz_organic")
             st.session_state["prefer_organic"] = prefer_organic
 
+    # -------------------------------------------------------------------------
+    # STEP 4: PLAN OUTPUT (Run Analysis)
+    # -------------------------------------------------------------------------
+    with tab_plan:
+        st.markdown("### 📋 แผนการใส่ปุ๋ย")
+
+        # Summary of inputs
+        st.markdown("#### สรุปข้อมูลที่ป้อน")
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.metric("ตำแหน่ง", f"{st.session_state['farm_lat']:.2f}, {st.session_state['farm_lng']:.2f}")
+        with col2:
+            st.metric("พืช", crop_keys[st.session_state.get("crop_idx", 0)] if st.session_state.get("crop_idx") is not None else "N/A")
+        with col3:
+            st.metric("พื้นที่", f"{st.session_state['field_size']:.0f} ไร่")
+
         st.markdown("---")
 
-        # =====================================================================
-        # SELECTION SUMMARY (with stable anchor for E2E tests)
-        # =====================================================================
+        # Run Analysis Button
+        st.markdown('<div id="run-button"></div>', unsafe_allow_html=True)
+        run_analysis = st.button(f"🔬 {TH['run_analysis']}", key="wizard_run_analysis", use_container_width=True, type="primary")
+
+        if run_analysis:
+            st.session_state["run_triggered"] = True
+
+    # -------------------------------------------------------------------------
+    # STEP 5: LOG + EXPORT
+    # -------------------------------------------------------------------------
+    with tab_save:
+        st.markdown("### 💾 บันทึกและส่งออกรายงาน")
+        if st.session_state.get("analysis_result"):
+            st.success("✅ การวิเคราะห์เสร็จสมบูรณ์ - พร้อมบันทึก")
+            if st.button("📥 ดาวน์โหลดรายงาน PDF", disabled=True):
+                st.info("ฟีเจอร์นี้จะพร้อมใช้งานเร็วๆ นี้")
+        else:
+            st.info("กรุณาวิเคราะห์ข้อมูลก่อนบันทึก (ไปที่แท็บ 'แผน')")
+
+    # =========================================================================
+    # SIDEBAR (Summary Panel - Always Shows Selected Values)
+    # =========================================================================
+    with st.sidebar:
+        # Summary panel anchor for E2E tests
         st.markdown('<div id="selection-summary"></div>', unsafe_allow_html=True)
         st.markdown("### สรุปสิ่งที่เลือก")
+
+        # Compact summary using session state
+        crop_display = crop_keys[st.session_state.get("crop_idx", 0)] if st.session_state.get("crop_idx") is not None else "ยังไม่เลือก"
         st.info(f"""
-        **พื้นที่:** {st.session_state['farm_lat']:.4f}, {st.session_state['farm_lng']:.4f}
-        **พืช:** {crop_thai}
-        **ขนาด:** {field_size:.1f} ไร่
-        **งบประมาณ:** {format_currency(budget)}
-        **ค่าดิน:** pH {ph}, N{nitrogen}-P{phosphorus}-K{potassium}
+        **📍 พิกัด:** {st.session_state['farm_lat']:.4f}, {st.session_state['farm_lng']:.4f}
+        **🌾 พืช:** {crop_display}
+        **📐 ขนาด:** {st.session_state['field_size']:.1f} ไร่
+        **💰 งบ:** {st.session_state['budget']:,} บาท
+        **🧪 ดิน:** pH {st.session_state['ph']}, N{st.session_state['nitrogen']}-P{st.session_state['phosphorus']}-K{st.session_state['potassium']}
         """)
-
-        # Run Analysis Button (with stable anchor for E2E tests)
-        st.markdown('<div id="run-button"></div>', unsafe_allow_html=True)
-        run_analysis = st.button(
-            f"🔬 {TH['run_analysis']}",
-            key="sidebar_run_analysis",
-            use_container_width=True
-        )
-
-        st.markdown("---")
 
         # =====================================================================
         # HISTORY SECTION (ประวัติการวิเคราะห์)
@@ -2262,13 +2354,33 @@ def main():
         """, unsafe_allow_html=True)
 
     # =========================================================================
-    # MAIN CONTENT AREA
+    # MAIN CONTENT AREA - Analysis Results
     # =========================================================================
 
+    # Check if analysis was triggered (from wizard or sidebar button)
+    run_analysis = st.session_state.get("run_triggered", False)
+
     if run_analysis:
+        # Reset trigger
+        st.session_state["run_triggered"] = False
+
         UILogger.log("Run Analysis Button Clicked")
-        
-        # Create tabs
+
+        # Collect values from session state
+        location = f"Custom Location ({st.session_state['farm_lat']:.4f}, {st.session_state['farm_lng']:.4f})"
+        coords = {"lat": st.session_state["farm_lat"], "lng": st.session_state["farm_lng"]}
+        crop = st.session_state.get("crop", "Riceberry Rice")
+        ph = st.session_state["ph"]
+        nitrogen = st.session_state["nitrogen"]
+        phosphorus = st.session_state["phosphorus"]
+        potassium = st.session_state["potassium"]
+        field_size = st.session_state["field_size"]
+        budget = st.session_state["budget"]
+        texture = st.session_state.get("texture", "clay loam")
+        irrigation = st.session_state["irrigation"]
+        prefer_organic = st.session_state["prefer_organic"]
+
+        # Create results tabs
         tab1, tab2, tab3, tab4 = st.tabs([
             f"📊 {TH['tab_dashboard']}",
             f"🔗 {TH['tab_thought_chain']}",
@@ -2278,12 +2390,12 @@ def main():
 
         try:
             # Initialize orchestrator
-            orchestrator = SoilerOrchestrator(verbose=True) # Enable verbose for logs
-            
+            orchestrator = SoilerOrchestrator(verbose=True)
+
             # Processing status
             with st.status(TH["processing"], expanded=True) as status:
                 UILogger.log("Orchestrator initialized. Starting analysis...")
-                
+
                 agents_info = [
                     (TH["agent_soil"], "layers", "กำลังวิเคราะห์องค์ประกอบดิน..."),
                     (TH["agent_crop"], "grass", "กำลังคำนวณเป้าหมายผลผลิต..."),
@@ -2295,8 +2407,6 @@ def main():
 
                 for agent_name, icon, task in agents_info:
                     st.write(f"**{agent_name}**: {task}")
-                    # Remove time.sleep to speed up if actual agents are running
-                    # time.sleep(0.2) 
 
                 # Run analysis
                 UILogger.log(f"Calling orchestrator.analyze with: Location={location}, Crop={crop}")

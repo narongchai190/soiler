@@ -2095,6 +2095,25 @@ def main():
     # WIZARD TABS (Flow-Based Input - Blueprint v1)
     # =========================================================================
 
+    def render_step_nav(step: int, total: int = 5) -> None:
+        """Render Next/Back navigation hints at the bottom of a wizard tab."""
+        cols = st.columns([1, 1, 1])
+        step_labels = {1: "📍 ตำแหน่ง", 2: "🌾 พืช", 3: "🧪 ดิน", 4: "📋 แผน", 5: "💾 บันทึก"}
+        with cols[0]:
+            if step > 1:
+                st.markdown(
+                    f'<div id="nav-back-{step}" style="text-align:left;color:#90CAF9;font-size:14px;">'
+                    f'← ย้อนกลับ: {step_labels[step - 1]}</div>',
+                    unsafe_allow_html=True,
+                )
+        with cols[2]:
+            if step < total:
+                st.markdown(
+                    f'<div id="nav-next-{step}" style="text-align:right;color:#66BB6A;font-size:14px;font-weight:600;">'
+                    f'ถัดไป: {step_labels[step + 1]} →</div>',
+                    unsafe_allow_html=True,
+                )
+
     # Render wizard step header
     render_wizard_header(st.session_state["wizard_step"])
 
@@ -2161,6 +2180,8 @@ def main():
                     st.session_state["farm_lng"] = new_lng
                     st.rerun()
 
+        render_step_nav(1)
+
     # -------------------------------------------------------------------------
     # STEP 2: CROP + FIELD SIZE
     # -------------------------------------------------------------------------
@@ -2181,6 +2202,8 @@ def main():
 
         budget = st.number_input(TH["budget"], min_value=1000, max_value=100000, value=int(st.session_state["budget"]), step=1000, help=TH["budget_help"], key="wiz_budget")
         st.session_state["budget"] = budget
+
+        render_step_nav(2)
 
     # -------------------------------------------------------------------------
     # STEP 3: SOIL INPUTS
@@ -2223,6 +2246,8 @@ def main():
             prefer_organic = st.checkbox(TH["prefer_organic"], value=st.session_state["prefer_organic"], key="wiz_organic")
             st.session_state["prefer_organic"] = prefer_organic
 
+        render_step_nav(3)
+
     # -------------------------------------------------------------------------
     # STEP 4: PLAN OUTPUT (Run Analysis)
     # -------------------------------------------------------------------------
@@ -2248,6 +2273,8 @@ def main():
         if run_analysis:
             st.session_state["run_triggered"] = True
 
+        render_step_nav(4)
+
     # -------------------------------------------------------------------------
     # STEP 5: LOG + EXPORT
     # -------------------------------------------------------------------------
@@ -2259,6 +2286,8 @@ def main():
                 st.info("ฟีเจอร์นี้จะพร้อมใช้งานเร็วๆ นี้")
         else:
             st.info("กรุณาวิเคราะห์ข้อมูลก่อนบันทึก (ไปที่แท็บ 'แผน')")
+
+        render_step_nav(5)
 
     # =========================================================================
     # SIDEBAR (Summary Panel - Always Shows Selected Values)

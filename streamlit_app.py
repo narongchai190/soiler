@@ -55,7 +55,7 @@ st.set_page_config(
     page_title="S.O.I.L.E.R. | ระบบ AI เพื่อการเกษตรแม่นยำ",
     page_icon="🌾",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"
 )
 
 # =============================================================================
@@ -1180,6 +1180,7 @@ st.markdown("""
     .summary-card {
         background: var(--bg-card);
         border: 1px solid var(--border-color);
+        border-top: 3px solid var(--primary);
         border-radius: var(--radius-lg);
         padding: var(--spacing-5);
         position: sticky;
@@ -1188,14 +1189,19 @@ st.markdown("""
 
     .summary-card:hover {
         border-color: var(--border-strong);
+        border-top-color: var(--primary-light);
     }
 
     .summary-row {
-        margin-bottom: 16px;
+        padding-bottom: 12px;
+        margin-bottom: 12px;
+        border-bottom: 1px solid var(--border-light);
     }
 
     .summary-row:last-child {
         margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
     }
 
     .summary-label {
@@ -1210,11 +1216,37 @@ st.markdown("""
         color: var(--text-primary);
         font-weight: 600;
         font-size: var(--font-size-base);
+        line-height: 1.4;
     }
 
     .summary-value-sub {
         color: var(--text-secondary);
         font-size: var(--font-size-sm);
+    }
+
+    .summary-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border-radius: var(--radius-full);
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-top: 14px;
+    }
+
+    .summary-status.ready {
+        background: rgba(34, 197, 94, 0.15);
+        color: var(--primary-light);
+        border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+
+    .summary-status.draft {
+        background: rgba(245, 158, 11, 0.1);
+        color: var(--gold);
+        border: 1px solid rgba(245, 158, 11, 0.25);
     }
 
     /* ========================================
@@ -2185,6 +2217,12 @@ def main():
         crop_keys_summary = list(crop_options_summary.keys())
         crop_display = crop_keys_summary[st.session_state.get("crop_idx", 0)] if st.session_state.get("crop_idx") is not None else "ยังไม่เลือก"
 
+        # Determine if user has enough data to run analysis
+        has_analysis = st.session_state.get("analysis_result") is not None
+        status_class = "ready"
+        status_text = "พร้อมวิเคราะห์" if not has_analysis else "วิเคราะห์แล้ว"
+        status_icon = "check_circle" if has_analysis else "play_circle"
+
         st.markdown(f"""
         <div class="summary-card">
             <div class="summary-row">
@@ -2207,6 +2245,10 @@ def main():
                 <div class="summary-label">🧪 ผลตรวจดิน</div>
                 <div class="summary-value">pH {st.session_state['ph']}</div>
                 <div class="summary-value-sub">N{st.session_state['nitrogen']} · P{st.session_state['phosphorus']} · K{st.session_state['potassium']}</div>
+            </div>
+            <div class="summary-status {status_class}">
+                <span class="material-icons-outlined" style="font-size: 14px;">{status_icon}</span>
+                {status_text}
             </div>
         </div>
         """, unsafe_allow_html=True)

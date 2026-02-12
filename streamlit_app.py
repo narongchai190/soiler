@@ -1164,6 +1164,66 @@ st.markdown("""
         padding: var(--spacing-4);
     }
 
+    /* ========================================
+       SUMMARY PANEL (Right Column) - Sticky Card
+       ======================================== */
+    .summary-panel-title {
+        font-family: var(--font-heading) !important;
+        font-size: var(--font-size-sm) !important;
+        font-weight: 600 !important;
+        color: var(--text-secondary) !important;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        margin-bottom: var(--spacing-3) !important;
+    }
+
+    .summary-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: var(--spacing-5);
+        position: sticky;
+        top: 80px;
+    }
+
+    .summary-card:hover {
+        border-color: var(--border-strong);
+    }
+
+    .summary-row {
+        margin-bottom: 16px;
+    }
+
+    .summary-row:last-child {
+        margin-bottom: 0;
+    }
+
+    .summary-label {
+        color: var(--text-muted);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        margin-bottom: 2px;
+    }
+
+    .summary-value {
+        color: var(--text-primary);
+        font-weight: 600;
+        font-size: var(--font-size-base);
+    }
+
+    .summary-value-sub {
+        color: var(--text-secondary);
+        font-size: var(--font-size-sm);
+    }
+
+    /* ========================================
+       WIZARD TAB CONTENT - Better Spacing
+       ======================================== */
+    .stTabs [data-testid="stVerticalBlockBorderWrapper"] {
+        padding-top: var(--spacing-4);
+    }
+
     .wizard-actions {
         display: flex;
         justify-content: space-between;
@@ -2099,7 +2159,7 @@ def main():
     # ---- Summary Panel (right column) ----
     with summary_col:
         st.markdown('<div id="selection-summary"></div>', unsafe_allow_html=True)
-        st.markdown("### สรุปสิ่งที่เลือก")
+        st.markdown('<p class="summary-panel-title">สรุปสิ่งที่เลือก</p>', unsafe_allow_html=True)
 
         # Crop display from session state
         crop_options_summary = {TH["riceberry"]: "Riceberry Rice", TH["corn"]: "Corn"}
@@ -2107,28 +2167,27 @@ def main():
         crop_display = crop_keys_summary[st.session_state.get("crop_idx", 0)] if st.session_state.get("crop_idx") is not None else "ยังไม่เลือก"
 
         st.markdown(f"""
-        <div style="background: var(--bg-card); border: 1px solid var(--border-color);
-                    border-radius: var(--radius-lg); padding: 20px; margin-top: 8px;">
-            <div style="margin-bottom: 14px;">
-                <span style="color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">📍 พิกัด</span><br>
-                <span style="color: var(--text-primary); font-weight: 600;">{st.session_state['farm_lat']:.4f}, {st.session_state['farm_lng']:.4f}</span>
+        <div class="summary-card">
+            <div class="summary-row">
+                <div class="summary-label">📍 พิกัด</div>
+                <div class="summary-value">{st.session_state['farm_lat']:.4f}, {st.session_state['farm_lng']:.4f}</div>
             </div>
-            <div style="margin-bottom: 14px;">
-                <span style="color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">🌾 พืช</span><br>
-                <span style="color: var(--text-primary); font-weight: 600;">{crop_display}</span>
+            <div class="summary-row">
+                <div class="summary-label">🌾 พืช</div>
+                <div class="summary-value">{crop_display}</div>
             </div>
-            <div style="margin-bottom: 14px;">
-                <span style="color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">📐 ขนาด</span><br>
-                <span style="color: var(--text-primary); font-weight: 600;">{st.session_state['field_size']:.1f} ไร่</span>
+            <div class="summary-row">
+                <div class="summary-label">📐 ขนาด</div>
+                <div class="summary-value">{st.session_state['field_size']:.1f} ไร่</div>
             </div>
-            <div style="margin-bottom: 14px;">
-                <span style="color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">💰 งบ</span><br>
-                <span style="color: var(--text-primary); font-weight: 600;">{st.session_state['budget']:,} บาท</span>
+            <div class="summary-row">
+                <div class="summary-label">💰 งบประมาณ</div>
+                <div class="summary-value">{st.session_state['budget']:,} บาท</div>
             </div>
-            <div>
-                <span style="color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">🧪 ดิน</span><br>
-                <span style="color: var(--text-primary); font-weight: 600;">pH {st.session_state['ph']}</span><br>
-                <span style="color: var(--text-secondary); font-size: 14px;">N{st.session_state['nitrogen']} · P{st.session_state['phosphorus']} · K{st.session_state['potassium']}</span>
+            <div class="summary-row">
+                <div class="summary-label">🧪 ผลตรวจดิน</div>
+                <div class="summary-value">pH {st.session_state['ph']}</div>
+                <div class="summary-value-sub">N{st.session_state['nitrogen']} · P{st.session_state['phosphorus']} · K{st.session_state['potassium']}</div>
             </div>
         </div>
         """, unsafe_allow_html=True)

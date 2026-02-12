@@ -1224,6 +1224,25 @@ st.markdown("""
         padding-top: var(--spacing-4);
     }
 
+    /* ========================================
+       NAVIGATION BUTTONS - Subtle Secondary Style
+       ======================================== */
+    [data-testid="stButton"] button[kind="secondary"] {
+        background: var(--bg-tertiary) !important;
+        color: var(--text-secondary) !important;
+        border: 1px solid var(--border-color) !important;
+        box-shadow: none !important;
+        font-weight: 500 !important;
+    }
+
+    [data-testid="stButton"] button[kind="secondary"]:hover {
+        background: var(--bg-card-hover) !important;
+        color: var(--text-primary) !important;
+        border-color: var(--border-strong) !important;
+        transform: none !important;
+        box-shadow: none !important;
+    }
+
     .wizard-actions {
         display: flex;
         justify-content: space-between;
@@ -2200,23 +2219,20 @@ def main():
         # =====================================================================
 
         def render_step_nav(step: int, total: int = 5) -> None:
-            """Render Next/Back navigation hints at the bottom of a wizard tab."""
-            cols = st.columns([1, 1, 1])
+            """Render Next/Back navigation buttons at the bottom of a wizard tab."""
             step_labels = {1: "📍 ตำแหน่ง", 2: "🌾 พืช", 3: "🧪 ดิน", 4: "📋 แผน", 5: "💾 บันทึก"}
+            st.markdown("<div style='margin-top: 24px; border-top: 1px solid var(--border-color); padding-top: 16px;'></div>", unsafe_allow_html=True)
+            cols = st.columns([1, 1, 1])
             with cols[0]:
                 if step > 1:
-                    st.markdown(
-                        f'<div id="nav-back-{step}" style="text-align:left;color:#90CAF9;font-size:14px;">'
-                        f'← ย้อนกลับ: {step_labels[step - 1]}</div>',
-                        unsafe_allow_html=True,
-                    )
+                    st.markdown(f'<div id="nav-back-{step}"></div>', unsafe_allow_html=True)
+                    if st.button(f"← {step_labels[step - 1]}", key=f"back_{step}", use_container_width=True):
+                        st.session_state["wizard_step"] = step - 1
             with cols[2]:
                 if step < total:
-                    st.markdown(
-                        f'<div id="nav-next-{step}" style="text-align:right;color:#66BB6A;font-size:14px;font-weight:600;">'
-                        f'ถัดไป: {step_labels[step + 1]} →</div>',
-                        unsafe_allow_html=True,
-                    )
+                    st.markdown(f'<div id="nav-next-{step}"></div>', unsafe_allow_html=True)
+                    if st.button(f"{step_labels[step + 1]} →", key=f"next_{step}", type="primary", use_container_width=True):
+                        st.session_state["wizard_step"] = step + 1
 
         # Render wizard step header
         render_wizard_header(st.session_state["wizard_step"])

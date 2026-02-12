@@ -76,3 +76,17 @@ To ensure strict enforcement, repository admins **MUST** enable Branch Protectio
 
 - **Windows encoding:** The release gate runner reconfigures stdout/stderr to UTF-8 on Windows to avoid `UnicodeEncodeError` with emoji output.
 - **Line endings:** Repository uses `.gitattributes` to normalize to LF. Windows `.bat`/`.ps1` scripts use CRLF.
+
+## Gate Evidence
+
+| Field | Value |
+|-------|-------|
+| **Date** | 2026-02-12 16:42 UTC+7 |
+| **Commit** | `4e97508b66e4d06a33412d14c5e160df2e696b1f` |
+| **Commands** | `python scripts/release_gate.py --level p0`, `python scripts/scan_secrets.py`, `pytest -q` |
+| **P0 Gate** | PASS (5/5 checks) |
+| **Secrets Scan** | PASS (87 files, 0 findings) |
+| **Unit Tests** | PASS (165/165) |
+| **Lint (ruff)** | PASS |
+| **Syntax** | PASS (51 files) |
+| **Import Smoke** | PASS |

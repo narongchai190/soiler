@@ -4,6 +4,12 @@
 
 A multi-agent AI system for precision agriculture analysis. Analyzes soil data, climate conditions, and market factors to provide actionable farming recommendations.
 
+## Live Demo
+
+> **[https://narongchai190-soiler.streamlit.app](https://narongchai190-soiler.streamlit.app)**
+>
+> *(Inferred from GitHub repo name + Streamlit Cloud conventions. No confirmed URL found in repo.)*
+
 ## Features
 
 - 8 specialized AI agents working in a coordinated pipeline

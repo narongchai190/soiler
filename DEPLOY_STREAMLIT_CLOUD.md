@@ -1,5 +1,7 @@
 # Deploying S.O.I.L.E.R. to Streamlit Cloud
 
+**Live URL (inferred):** https://narongchai190-soiler.streamlit.app
+
 ## Prerequisites
 
 - GitHub account

@@ -15,7 +15,7 @@ class TestSelectionSummary:
     """Tests for the Selection Summary panel."""
 
     def test_summary_panel_visible(self, page: Page):
-        """Verify the selection summary panel exists in sidebar."""
+        """Verify the selection summary panel exists in main layout."""
         # The summary title we specified
         summary_text = page.get_by_text("สรุปสิ่งที่เลือก")
         expect(summary_text.first).to_be_visible(timeout=10000)
@@ -202,17 +202,19 @@ class TestWizardNavigation:
         expect(nav_next).to_be_attached(timeout=10000)
 
     def test_summary_shows_selected_values(self, page: Page):
-        """Verify the sidebar summary panel reflects session_state defaults."""
+        """Verify the summary panel reflects session_state defaults."""
         # The summary should show default values on first load
         summary = page.get_by_text("สรุปสิ่งที่เลือก")
         expect(summary.first).to_be_visible(timeout=10000)
 
-        # Check that coordinates appear in summary
-        sidebar = page.locator('[data-testid="stSidebar"]')
-        sidebar_text = sidebar.inner_text()
-        assert "พิกัด" in sidebar_text, "Summary should show coordinates"
-        assert "พืช" in sidebar_text, "Summary should show crop"
-        assert "ดิน" in sidebar_text, "Summary should show soil data"
+        # Check that coordinates appear in summary panel (now in main layout)
+        summary_anchor = page.locator("#selection-summary")
+        expect(summary_anchor).to_be_attached(timeout=10000)
+        # Get the parent column text
+        page_text = page.inner_text("body")
+        assert "พิกัด" in page_text, "Summary should show coordinates"
+        assert "พืช" in page_text, "Summary should show crop"
+        assert "ดิน" in page_text, "Summary should show soil data"
 
     def test_soil_tab_has_sliders(self, page: Page):
         """Navigate to soil tab and verify input controls exist."""

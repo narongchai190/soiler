@@ -2092,39 +2092,84 @@ def main():
     """, unsafe_allow_html=True)
 
     # =========================================================================
-    # WIZARD TABS (Flow-Based Input - Blueprint v1)
+    # TWO-COLUMN LAYOUT: Wizard (left 3/4) + Summary Panel (right 1/4)
     # =========================================================================
+    main_col, summary_col = st.columns([3, 1], gap="large")
 
-    def render_step_nav(step: int, total: int = 5) -> None:
-        """Render Next/Back navigation hints at the bottom of a wizard tab."""
-        cols = st.columns([1, 1, 1])
-        step_labels = {1: "📍 ตำแหน่ง", 2: "🌾 พืช", 3: "🧪 ดิน", 4: "📋 แผน", 5: "💾 บันทึก"}
-        with cols[0]:
-            if step > 1:
-                st.markdown(
-                    f'<div id="nav-back-{step}" style="text-align:left;color:#90CAF9;font-size:14px;">'
-                    f'← ย้อนกลับ: {step_labels[step - 1]}</div>',
-                    unsafe_allow_html=True,
-                )
-        with cols[2]:
-            if step < total:
-                st.markdown(
-                    f'<div id="nav-next-{step}" style="text-align:right;color:#66BB6A;font-size:14px;font-weight:600;">'
-                    f'ถัดไป: {step_labels[step + 1]} →</div>',
-                    unsafe_allow_html=True,
-                )
+    # ---- Summary Panel (right column) ----
+    with summary_col:
+        st.markdown('<div id="selection-summary"></div>', unsafe_allow_html=True)
+        st.markdown("### สรุปสิ่งที่เลือก")
 
-    # Render wizard step header
-    render_wizard_header(st.session_state["wizard_step"])
+        # Crop display from session state
+        crop_options_summary = {TH["riceberry"]: "Riceberry Rice", TH["corn"]: "Corn"}
+        crop_keys_summary = list(crop_options_summary.keys())
+        crop_display = crop_keys_summary[st.session_state.get("crop_idx", 0)] if st.session_state.get("crop_idx") is not None else "ยังไม่เลือก"
 
-    # Create wizard tabs
-    tab_location, tab_crop, tab_soil, tab_plan, tab_save = st.tabs([
-        f"📍 {WIZARD_STEPS[1]['tab']}",
-        f"🌾 {WIZARD_STEPS[2]['tab']}",
-        f"🧪 {WIZARD_STEPS[3]['tab']}",
-        f"📋 {WIZARD_STEPS[4]['tab']}",
-        f"💾 {WIZARD_STEPS[5]['tab']}"
-    ])
+        st.markdown(f"""
+        <div style="background: var(--bg-card); border: 1px solid var(--border-color);
+                    border-radius: var(--radius-lg); padding: 20px; margin-top: 8px;">
+            <div style="margin-bottom: 14px;">
+                <span style="color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">📍 พิกัด</span><br>
+                <span style="color: var(--text-primary); font-weight: 600;">{st.session_state['farm_lat']:.4f}, {st.session_state['farm_lng']:.4f}</span>
+            </div>
+            <div style="margin-bottom: 14px;">
+                <span style="color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">🌾 พืช</span><br>
+                <span style="color: var(--text-primary); font-weight: 600;">{crop_display}</span>
+            </div>
+            <div style="margin-bottom: 14px;">
+                <span style="color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">📐 ขนาด</span><br>
+                <span style="color: var(--text-primary); font-weight: 600;">{st.session_state['field_size']:.1f} ไร่</span>
+            </div>
+            <div style="margin-bottom: 14px;">
+                <span style="color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">💰 งบ</span><br>
+                <span style="color: var(--text-primary); font-weight: 600;">{st.session_state['budget']:,} บาท</span>
+            </div>
+            <div>
+                <span style="color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">🧪 ดิน</span><br>
+                <span style="color: var(--text-primary); font-weight: 600;">pH {st.session_state['ph']}</span><br>
+                <span style="color: var(--text-secondary); font-size: 14px;">N{st.session_state['nitrogen']} · P{st.session_state['phosphorus']} · K{st.session_state['potassium']}</span>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    # ---- Wizard (left column) ----
+    with main_col:
+
+        # =====================================================================
+        # WIZARD TABS (Flow-Based Input - Blueprint v1)
+        # =====================================================================
+
+        def render_step_nav(step: int, total: int = 5) -> None:
+            """Render Next/Back navigation hints at the bottom of a wizard tab."""
+            cols = st.columns([1, 1, 1])
+            step_labels = {1: "📍 ตำแหน่ง", 2: "🌾 พืช", 3: "🧪 ดิน", 4: "📋 แผน", 5: "💾 บันทึก"}
+            with cols[0]:
+                if step > 1:
+                    st.markdown(
+                        f'<div id="nav-back-{step}" style="text-align:left;color:#90CAF9;font-size:14px;">'
+                        f'← ย้อนกลับ: {step_labels[step - 1]}</div>',
+                        unsafe_allow_html=True,
+                    )
+            with cols[2]:
+                if step < total:
+                    st.markdown(
+                        f'<div id="nav-next-{step}" style="text-align:right;color:#66BB6A;font-size:14px;font-weight:600;">'
+                        f'ถัดไป: {step_labels[step + 1]} →</div>',
+                        unsafe_allow_html=True,
+                    )
+
+        # Render wizard step header
+        render_wizard_header(st.session_state["wizard_step"])
+
+        # Create wizard tabs
+        tab_location, tab_crop, tab_soil, tab_plan, tab_save = st.tabs([
+            f"📍 {WIZARD_STEPS[1]['tab']}",
+            f"🌾 {WIZARD_STEPS[2]['tab']}",
+            f"🧪 {WIZARD_STEPS[3]['tab']}",
+            f"📋 {WIZARD_STEPS[4]['tab']}",
+            f"💾 {WIZARD_STEPS[5]['tab']}"
+        ])
 
     # -------------------------------------------------------------------------
     # STEP 1: LOCATION
@@ -2290,23 +2335,9 @@ def main():
         render_step_nav(5)
 
     # =========================================================================
-    # SIDEBAR (Summary Panel - Always Shows Selected Values)
+    # SIDEBAR (Minimal - History + Footer)
     # =========================================================================
     with st.sidebar:
-        # Summary panel anchor for E2E tests
-        st.markdown('<div id="selection-summary"></div>', unsafe_allow_html=True)
-        st.markdown("### สรุปสิ่งที่เลือก")
-
-        # Compact summary using session state
-        crop_display = crop_keys[st.session_state.get("crop_idx", 0)] if st.session_state.get("crop_idx") is not None else "ยังไม่เลือก"
-        st.info(f"""
-        **📍 พิกัด:** {st.session_state['farm_lat']:.4f}, {st.session_state['farm_lng']:.4f}
-        **🌾 พืช:** {crop_display}
-        **📐 ขนาด:** {st.session_state['field_size']:.1f} ไร่
-        **💰 งบ:** {st.session_state['budget']:,} บาท
-        **🧪 ดิน:** pH {st.session_state['ph']}, N{st.session_state['nitrogen']}-P{st.session_state['phosphorus']}-K{st.session_state['potassium']}
-        """)
-
         # =====================================================================
         # HISTORY SECTION (ประวัติการวิเคราะห์)
         # =====================================================================

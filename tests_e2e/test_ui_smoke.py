@@ -29,25 +29,28 @@ class TestSelectionSummary:
 class TestDropdownSelection:
     """Tests for dropdown selection functionality."""
 
-    def test_crop_dropdown_visible(self, page: Page):
-        """Verify crop selection dropdown is visible."""
-        # Look for the crop selection in sidebar
-        # The sidebar should have crop selection options
-        sidebar = page.locator('[data-testid="stSidebar"]')
-        expect(sidebar).to_be_visible(timeout=10000)
+    def _navigate_to_crop_tab(self, page: Page):
+        """Click the crop tab (2nd tab) so its selectbox is visible."""
+        page.wait_for_timeout(2000)
+        crop_tab = page.get_by_role("tab", name="พืช")
+        expect(crop_tab.first).to_be_visible(timeout=15000)
+        crop_tab.first.click()
+        page.wait_for_timeout(1000)
 
-        # Check that there's a selectbox (crop dropdown)
-        selectbox = sidebar.locator('[data-baseweb="select"]').first
+    def test_crop_dropdown_visible(self, page: Page):
+        """Verify crop selection dropdown is visible in wizard."""
+        self._navigate_to_crop_tab(page)
+
+        # Check that there's a selectbox (crop dropdown) in main content
+        selectbox = page.locator('[data-baseweb="select"]').first
         expect(selectbox).to_be_visible(timeout=5000)
 
     def test_dropdown_selection_updates_summary(self, page: Page):
         """Verify that changing dropdown updates the Selection Summary."""
-        # Find the sidebar
-        sidebar = page.locator('[data-testid="stSidebar"]')
-        expect(sidebar).to_be_visible(timeout=10000)
+        self._navigate_to_crop_tab(page)
 
         # Find crop selectbox and click to open
-        crop_select = sidebar.locator('[data-baseweb="select"]').first
+        crop_select = page.locator('[data-baseweb="select"]').first
         expect(crop_select).to_be_visible(timeout=10000)
         crop_select.click()
 

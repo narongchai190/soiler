@@ -2396,7 +2396,7 @@ def main():
         render_step_nav(4)
 
     # -------------------------------------------------------------------------
-    # STEP 5: LOG + EXPORT
+    # STEP 5: LOG + EXPORT + HISTORY
     # -------------------------------------------------------------------------
     with tab_save:
         st.markdown("### 💾 บันทึกและส่งออกรายงาน")
@@ -2407,55 +2407,45 @@ def main():
         else:
             st.info("กรุณาวิเคราะห์ข้อมูลก่อนบันทึก (ไปที่แท็บ 'แผน')")
 
-        render_step_nav(5)
+        st.markdown("---")
 
-    # =========================================================================
-    # SIDEBAR (Minimal - History + Footer)
-    # =========================================================================
-    with st.sidebar:
-        # =====================================================================
-        # HISTORY SECTION (ประวัติการวิเคราะห์)
-        # =====================================================================
-        render_section_header(TH["history_section"], "history")
+        # =================================================================
+        # HISTORY SECTION (moved from sidebar)
+        # =================================================================
+        with st.expander(f"📜 {TH['history_section']}", expanded=False):
+            # Get recent history from database
+            try:
+                history_records = get_recent_history(limit=5)
+            except Exception:
+                history_records = []
 
-        # Get recent history from database
-        try:
-            history_records = get_recent_history(limit=5)
-        except Exception:
-            history_records = []
+            if history_records:
+                history_options = ["-- เลือกประวัติ --"]
+                history_map = {}
 
-        if history_records:
-            # Create a selectbox for history items
-            history_options = ["-- เลือกประวัติ --"]
-            history_map = {}
+                for record in history_records:
+                    try:
+                        record_date = datetime.fromisoformat(record["timestamp"]).strftime("%d/%m/%y %H:%M")
+                    except (ValueError, TypeError, KeyError):
+                        record_date = "N/A"
 
-            for record in history_records:
-                # Format date
-                try:
-                    record_date = datetime.fromisoformat(record["timestamp"]).strftime("%d/%m/%y %H:%M")
-                except (ValueError, TypeError, KeyError):
-                    record_date = "N/A"
+                    crop_short = "🌾" if "Rice" in record.get("crop_type", "") else "🌽"
+                    score = record.get("overall_score", 0)
+                    display_text = f"{crop_short} {record_date} | {score:.0f}%"
+                    history_options.append(display_text)
+                    history_map[display_text] = record["id"]
 
-                # Create display text
-                crop_short = "🌾" if "Rice" in record.get("crop_type", "") else "🌽"
-                score = record.get("overall_score", 0)
-                display_text = f"{crop_short} {record_date} | {score:.0f}%"
-                history_options.append(display_text)
-                history_map[display_text] = record["id"]
+                selected_history = st.selectbox(
+                    TH["history_title"],
+                    options=history_options,
+                    index=0,
+                    key="step5_history_select",
+                    label_visibility="collapsed"
+                )
 
-            selected_history = st.selectbox(
-                TH["history_title"],
-                options=history_options,
-                index=0,
-                key="sidebar_history_select",
-                label_visibility="collapsed"
-            )
-
-            # Show selected history details
-            if selected_history != "-- เลือกประวัติ --":
-                record_id = history_map.get(selected_history)
-                if record_id:
-                    with st.expander(f"📋 {TH['history_view']}", expanded=True):
+                if selected_history != "-- เลือกประวัติ --":
+                    record_id = history_map.get(selected_history)
+                    if record_id:
                         try:
                             full_record = get_analysis_by_id(record_id)
                             if full_record:
@@ -2464,7 +2454,6 @@ def main():
                                 st.markdown(f"**{TH['history_score']}:** {full_record.get('overall_score', 0):.1f}/100")
                                 st.markdown(f"**ROI:** {full_record.get('roi_percent', 0):.1f}%")
 
-                                # Show executive summary if available
                                 exec_summary = full_record.get("executive_summary", {})
                                 if exec_summary and isinstance(exec_summary, dict):
                                     bottom_line = exec_summary.get("bottom_line", "")
@@ -2472,19 +2461,25 @@ def main():
                                         st.info(bottom_line)
                         except Exception as e:
                             st.error(f"ไม่สามารถโหลดข้อมูลได้: {e}")
-        else:
-            st.markdown(f"""
-            <div style="text-align: center; padding: 16px; color: #757575; font-size: 14px;">
-                <span class="material-icons-outlined" style="font-size: 24px;">inbox</span>
-                <br>{TH["history_empty"]}
-            </div>
-            """, unsafe_allow_html=True)
+            else:
+                st.markdown(f"""
+                <div style="text-align: center; padding: 16px; color: #757575; font-size: 14px;">
+                    <span class="material-icons-outlined" style="font-size: 24px;">inbox</span>
+                    <br>{TH["history_empty"]}
+                </div>
+                """, unsafe_allow_html=True)
 
-        # Footer info
+        render_step_nav(5)
+
+    # =========================================================================
+    # SIDEBAR (Minimal - Branding Only)
+    # =========================================================================
+    with st.sidebar:
         st.markdown(f"""
-        <div style="text-align: center; margin-top: 24px; color: #757575; font-size: 14px;">
-            <span class="material-icons-outlined" style="font-size: 16px; vertical-align: middle;">smart_toy</span>
-            {TH["powered_by"]}
+        <div style="text-align: center; padding: 20px 0; color: #757575; font-size: 14px;">
+            <span class="material-icons-outlined" style="font-size: 20px; vertical-align: middle; color: var(--primary);">grass</span>
+            <br><strong style="color: var(--text-primary);">S.O.I.L.E.R.</strong>
+            <br><span style="font-size: 12px;">{TH["powered_by"]}</span>
         </div>
         """, unsafe_allow_html=True)
 

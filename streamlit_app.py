@@ -1810,6 +1810,56 @@ st.markdown("""
             transition-duration: 0.01ms !important;
         }
     }
+
+    /* ========================================
+       BLUEPRINT v1 POLISH — Typography + Cards
+       ======================================== */
+
+    /* Step headers inside wizard tabs — larger, bolder */
+    .stTabs [data-baseweb="tab-panel"] h3 {
+        font-size: var(--font-size-2xl) !important;
+        font-weight: 700 !important;
+        letter-spacing: -0.3px !important;
+        margin-bottom: var(--spacing-4) !important;
+    }
+
+    /* Tab panels — card-like containers */
+    .stTabs [data-baseweb="tab-panel"] {
+        padding: var(--spacing-6) var(--spacing-4) !important;
+        background: var(--bg-card) !important;
+        border: 1px solid var(--border-color) !important;
+        border-top: none !important;
+        border-radius: 0 0 var(--radius-lg) var(--radius-lg) !important;
+    }
+
+    /* Summary panel (right column) — elevated card */
+    [data-testid="stVerticalBlockBorderWrapper"]:has(#selection-summary) {
+        background: var(--bg-card);
+        border: 1px solid var(--border-strong);
+        border-radius: var(--radius-lg);
+        padding: var(--spacing-4);
+        box-shadow: var(--shadow-md);
+    }
+
+    /* Primary action button (run analysis) — taller, prominent */
+    .stButton > button[kind="primary"],
+    .stButton > button[data-testid="stBaseButton-primary"] {
+        padding: var(--spacing-4) var(--spacing-8) !important;
+        font-size: var(--font-size-lg) !important;
+        letter-spacing: 0.3px !important;
+    }
+
+    /* Section dividers — more breathing room */
+    .stTabs [data-baseweb="tab-panel"] hr {
+        margin: var(--spacing-6) 0 !important;
+        border-color: var(--border-color) !important;
+    }
+
+    /* Info boxes inside summary — compact, clean */
+    [data-testid="stVerticalBlockBorderWrapper"]:has(#selection-summary) .stAlert {
+        font-size: var(--font-size-sm) !important;
+        padding: var(--spacing-3) !important;
+    }
 </style>
 
 <!-- Material Icons -->

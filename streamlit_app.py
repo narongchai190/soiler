@@ -2,10 +2,10 @@
 S.O.I.L.E.R. Web Dashboard - Professional Edition
 
 Professional AGRI-TECH Interface with:
-- Sarabun Font (Google Fonts)
-- Minimalist Deep Dark Theme
+- GlassDark-ElderFriendly Design System (from tokens)
+- Optional Thai Font Fallback (Sarabun + Noto Sans Thai)
 - Material Icons
-- Elderly-Friendly Accessibility
+- Elderly-Friendly Accessibility (min 18px body, 52px touch targets)
 - Thai Localization
 
 Run with: streamlit run streamlit_app.py
@@ -354,111 +354,290 @@ TH = {
 }
 
 # =============================================================================
-# PROFESSIONAL CSS - MODERN DASHBOARD DESIGN SYSTEM
-# Inspired by Linear, Vercel, Notion - Clean, Professional, World-Class
+# DESIGN SYSTEM CSS — GlassDark-ElderFriendly v1.0.0
+# Source of Truth: design_system.json tokens
 # =============================================================================
+
+# ---------------------------------------------------------------------------
+# Thai Font Fallback Feature Flag
+# Set to True to append Thai-optimized fonts (Sarabun, Noto Sans Thai) as
+# fallbacks after the token font stack. Set False to use token fonts only.
+# ---------------------------------------------------------------------------
+DS_THAI_FALLBACK_ENABLED = True
+
 st.markdown("""
 <style>
     /* ========================================
-       GOOGLE FONTS - Poppins + Open Sans (Professional Pairing)
+       GOOGLE FONTS — Material Icons (required)
        ======================================== */
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Open+Sans:wght@400;500;600;700&display=swap');
     @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
     @import url('https://fonts.googleapis.com/icon?family=Material+Icons+Outlined');
 
     /* ========================================
-       CSS VARIABLES - MODERN DARK THEME
-       Linear/Vercel/Notion Inspired
+       DESIGN SYSTEM TOKENS → CSS VARIABLES
+       Source: design_system.json v1.0.0
        ======================================== */
     :root {
-        /* Primary Colors - Professional Green */
-        --primary: #22C55E;
-        --primary-light: #4ADE80;
-        --primary-dark: #16A34A;
-        --primary-muted: rgba(34, 197, 94, 0.1);
-        --primary-glow: rgba(34, 197, 94, 0.15);
+        /* --- Canvas Background (gradient) --- */
+        --ds-bg-canvas: linear-gradient(225deg, #4B63A2 0%, #212352 55%, #510D1B 100%);
 
-        /* Accent Colors */
-        --accent: #3B82F6;
-        --accent-light: #60A5FA;
-        --gold: #F59E0B;
-        --gold-muted: rgba(245, 158, 11, 0.1);
+        /* --- Glass Surfaces --- */
+        --ds-surface-glass-1: rgba(35, 33, 62, 0.72);
+        --ds-surface-glass-2: rgba(47, 59, 83, 0.58);
+        --ds-surface-glass-3: rgba(51, 45, 71, 0.46);
+        --ds-surface-overlay-hover: rgba(255, 255, 255, 0.06);
+        --ds-surface-overlay-pressed: rgba(255, 255, 255, 0.04);
 
-        /* Backgrounds - Refined Dark (Like Linear) */
-        --bg-primary: #0F172A;
-        --bg-secondary: #1E293B;
-        --bg-tertiary: #334155;
-        --bg-card: #1E293B;
-        --bg-card-hover: #283548;
-        --bg-elevated: #273449;
+        /* --- Borders --- */
+        --ds-border-subtle: rgba(255, 255, 255, 0.12);
+        --ds-border-divider: rgba(255, 255, 255, 0.08);
+        --ds-border-focus: rgba(60, 109, 239, 0.55);
 
-        /* Glass Effect */
-        --glass-bg: rgba(30, 41, 59, 0.8);
-        --glass-border: rgba(255, 255, 255, 0.1);
+        /* --- Text --- */
+        --ds-text-primary: rgba(255, 255, 255, 0.94);
+        --ds-text-secondary: rgba(255, 255, 255, 0.68);
+        --ds-text-tertiary: rgba(255, 255, 255, 0.52);
+        --ds-text-disabled: rgba(255, 255, 255, 0.36);
+        --ds-text-on-accent: #FFFFFF;
 
-        /* Text Colors - High Readability */
-        --text-primary: #F8FAFC;
-        --text-secondary: #94A3B8;
-        --text-muted: #64748B;
+        /* --- Accent --- */
+        --ds-accent-primary: #3C6DEF;
+        --ds-accent-primary-hover: #4A79F2;
+        --ds-accent-primary-pressed: #2F5FE0;
 
-        /* Borders - Subtle */
-        --border-color: rgba(255, 255, 255, 0.08);
-        --border-light: rgba(255, 255, 255, 0.06);
-        --border-strong: rgba(255, 255, 255, 0.12);
+        /* --- Status --- */
+        --ds-status-success: #34C759;
+        --ds-status-info: #3C6DEF;
+        --ds-status-warning: #FFCC00;
+        --ds-status-danger: #FF3B30;
 
-        /* Status Colors */
-        --success: #22C55E;
-        --warning: #F59E0B;
-        --error: #EF4444;
-        --info: #3B82F6;
+        /* --- Hero Gradient --- */
+        --ds-hero-gradient: linear-gradient(90deg, #D633ED 0%, #F34A85 55%, #FCD897 100%);
 
-        /* Shadows - Subtle & Professional */
-        --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
-        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
-        --shadow-glow: 0 0 20px rgba(34, 197, 94, 0.15);
+        /* --- Blur --- */
+        --ds-blur-glass: 18px;
+        --ds-blur-glass-strong: 24px;
 
-        /* Typography Scale - Clean & Readable */
-        --font-heading: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
-        --font-body: 'Open Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-        --font-size-xs: 13px;
-        --font-size-sm: 14px;
-        --font-size-base: 16px;
-        --font-size-lg: 18px;
-        --font-size-xl: 20px;
-        --font-size-2xl: 24px;
-        --font-size-3xl: 30px;
-        --font-size-4xl: 36px;
+        /* --- Radius --- */
+        --ds-radius-window: 24px;
+        --ds-radius-panel: 18px;
+        --ds-radius-card: 18px;
+        --ds-radius-control: 999px;
 
-        /* Icon Sizes - Balanced */
+        /* --- Stroke --- */
+        --ds-stroke-hairline: 1px;
+
+        /* --- Shadow --- */
+        --ds-shadow-1: 0 10px 30px 0 rgba(0,0,0,0.28);
+        --ds-shadow-2: 0 18px 50px 0 rgba(0,0,0,0.34);
+
+        /* --- Spacing (0-9) --- */
+        --ds-space-0: 0px;
+        --ds-space-1: 4px;
+        --ds-space-2: 8px;
+        --ds-space-3: 12px;
+        --ds-space-4: 16px;
+        --ds-space-5: 20px;
+        --ds-space-6: 24px;
+        --ds-space-7: 32px;
+        --ds-space-8: 40px;
+        --ds-space-9: 48px;
+
+        /* --- Typography: Font Family (token) --- */
+        --ds-font-sans: "SF Pro Display", "SF Pro Text", "Inter", "Segoe UI", "Helvetica", "Arial", system-ui, sans-serif;
+
+        /* --- Typography: Thai Fallback (append-only, opt-in) --- */
+        --ds-font-thai-fallback: "Sarabun", "Noto Sans Thai", "Noto Sans Thai UI";
+        --ds-font-sans-with-thai: var(--ds-font-sans);
+
+        /* --- Typography: Weights --- */
+        --ds-weight-regular: 400;
+        --ds-weight-medium: 500;
+        --ds-weight-semibold: 600;
+
+        /* --- Typography: Line Height --- */
+        --ds-lh-tight: 1.15;
+        --ds-lh-normal: 1.3;
+        --ds-lh-relaxed: 1.45;
+
+        /* --- Typography: Elder Scale (min body 18px) --- */
+        --ds-text-xs: 14px;
+        --ds-text-sm: 16px;
+        --ds-text-md: 18px;
+        --ds-text-lg: 20px;
+        --ds-text-xl: 26px;
+        --ds-text-2xl: 32px;
+        --ds-text-3xl: 40px;
+
+        /* --- Component: Touch Target --- */
+        --ds-touch-min: 52px;
+
+        /* --- Component: Button --- */
+        --ds-btn-height: 52px;
+        --ds-btn-px: 18px;
+        --ds-btn-gap: 10px;
+
+        /* --- Component: Tab --- */
+        --ds-tab-height: 44px;
+        --ds-tab-px: 14px;
+
+        /* --- Component: Card --- */
+        --ds-card-padding: 18px;
+
+        /* --- Component: Panel --- */
+        --ds-panel-padding: 18px;
+
+        /* --- Component: List Row --- */
+        --ds-list-height: 64px;
+        --ds-list-px: 16px;
+        --ds-list-gap: 14px;
+
+        /* ===== Legacy aliases (bridge old CSS → DS tokens) ===== */
+        --primary: var(--ds-accent-primary);
+        --primary-light: var(--ds-accent-primary-hover);
+        --primary-dark: var(--ds-accent-primary-pressed);
+        --primary-muted: rgba(60, 109, 239, 0.12);
+        --primary-glow: rgba(60, 109, 239, 0.18);
+        --accent: var(--ds-accent-primary);
+        --accent-light: var(--ds-accent-primary-hover);
+        --gold: var(--ds-status-warning);
+        --gold-muted: rgba(255, 204, 0, 0.12);
+        --bg-primary: #212352;
+        --bg-secondary: var(--ds-surface-glass-1);
+        --bg-tertiary: var(--ds-surface-glass-2);
+        --bg-card: var(--ds-surface-glass-2);
+        --bg-card-hover: var(--ds-surface-overlay-hover);
+        --bg-elevated: var(--ds-surface-glass-1);
+        --glass-bg: var(--ds-surface-glass-1);
+        --glass-border: var(--ds-border-subtle);
+        --text-primary: var(--ds-text-primary);
+        --text-secondary: var(--ds-text-secondary);
+        --text-muted: var(--ds-text-tertiary);
+        --border-color: var(--ds-border-divider);
+        --border-light: var(--ds-surface-overlay-pressed);
+        --border-strong: var(--ds-border-subtle);
+        --success: var(--ds-status-success);
+        --warning: var(--ds-status-warning);
+        --error: var(--ds-status-danger);
+        --info: var(--ds-status-info);
+        --shadow-sm: var(--ds-shadow-1);
+        --shadow-md: var(--ds-shadow-1);
+        --shadow-lg: var(--ds-shadow-2);
+        --shadow-glow: 0 0 20px rgba(60, 109, 239, 0.18);
+        --font-heading: var(--ds-font-sans-with-thai);
+        --font-body: var(--ds-font-sans-with-thai);
+        --font-size-xs: var(--ds-text-xs);
+        --font-size-sm: var(--ds-text-sm);
+        --font-size-base: var(--ds-text-md);
+        --font-size-lg: var(--ds-text-lg);
+        --font-size-xl: var(--ds-text-xl);
+        --font-size-2xl: var(--ds-text-2xl);
+        --font-size-3xl: var(--ds-text-3xl);
+        --font-size-4xl: var(--ds-text-3xl);
         --icon-sm: 18px;
         --icon-md: 22px;
         --icon-lg: 28px;
         --icon-xl: 36px;
-
-        /* Spacing Scale (8px base) */
-        --spacing-1: 4px;
-        --spacing-2: 8px;
-        --spacing-3: 12px;
-        --spacing-4: 16px;
-        --spacing-5: 20px;
-        --spacing-6: 24px;
-        --spacing-8: 32px;
-        --spacing-10: 40px;
-        --spacing-12: 48px;
-
-        /* Border Radius - Modern & Soft */
+        --spacing-1: var(--ds-space-1);
+        --spacing-2: var(--ds-space-2);
+        --spacing-3: var(--ds-space-3);
+        --spacing-4: var(--ds-space-4);
+        --spacing-5: var(--ds-space-5);
+        --spacing-6: var(--ds-space-6);
+        --spacing-8: var(--ds-space-7);
+        --spacing-10: var(--ds-space-8);
+        --spacing-12: var(--ds-space-9);
         --radius-sm: 6px;
         --radius-md: 8px;
-        --radius-lg: 12px;
-        --radius-xl: 16px;
-        --radius-full: 9999px;
-
-        /* Transitions */
+        --radius-lg: var(--ds-radius-card);
+        --radius-xl: var(--ds-radius-window);
+        --radius-full: var(--ds-radius-control);
         --transition-fast: 150ms ease;
         --transition-normal: 200ms ease;
         --transition-slow: 300ms ease;
     }
+
+    /* ========================================
+       THAI FONT FALLBACK LAYER (opt-in)
+       Activate via .ds-thai-fallback-enabled
+       ======================================== */
+    .ds-thai-fallback-enabled {
+        --ds-font-sans-with-thai: var(--ds-font-sans), var(--ds-font-thai-fallback);
+    }
+
+    /* ========================================
+       DS COMPONENT CLASSES — from tokens
+       ======================================== */
+
+    /* Canvas background (gradient) */
+    .ds-canvas {
+        background: var(--ds-bg-canvas) !important;
+        background-attachment: fixed !important;
+        min-height: 100vh;
+    }
+
+    /* Glass Card */
+    .ds-card {
+        background: var(--ds-surface-glass-2);
+        backdrop-filter: blur(var(--ds-blur-glass));
+        -webkit-backdrop-filter: blur(var(--ds-blur-glass));
+        border: var(--ds-stroke-hairline) solid var(--ds-border-subtle);
+        border-radius: var(--ds-radius-card);
+        padding: var(--ds-card-padding);
+        box-shadow: var(--ds-shadow-1);
+    }
+
+    /* Glass Panel (heavier blur) */
+    .ds-panel {
+        background: var(--ds-surface-glass-1);
+        backdrop-filter: blur(var(--ds-blur-glass-strong));
+        -webkit-backdrop-filter: blur(var(--ds-blur-glass-strong));
+        border: var(--ds-stroke-hairline) solid var(--ds-border-subtle);
+        border-radius: var(--ds-radius-panel);
+        padding: var(--ds-panel-padding);
+        box-shadow: var(--ds-shadow-2);
+    }
+
+    /* Primary Button */
+    .ds-button-primary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--ds-btn-gap);
+        height: var(--ds-btn-height);
+        padding: 0 var(--ds-btn-px);
+        background: var(--ds-accent-primary);
+        color: var(--ds-text-on-accent);
+        border: none;
+        border-radius: var(--ds-radius-control);
+        font-family: var(--ds-font-sans-with-thai);
+        font-size: var(--ds-text-sm);
+        font-weight: var(--ds-weight-medium);
+        cursor: pointer;
+        transition: background 150ms ease;
+    }
+    .ds-button-primary:hover { background: var(--ds-accent-primary-hover); }
+    .ds-button-primary:active { background: var(--ds-accent-primary-pressed); }
+
+    /* Secondary Button */
+    .ds-button-secondary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--ds-btn-gap);
+        height: var(--ds-btn-height);
+        padding: 0 var(--ds-btn-px);
+        background: rgba(255,255,255,0.06);
+        color: var(--ds-text-primary);
+        border: var(--ds-stroke-hairline) solid var(--ds-border-subtle);
+        border-radius: var(--ds-radius-control);
+        font-family: var(--ds-font-sans-with-thai);
+        font-size: var(--ds-text-sm);
+        font-weight: var(--ds-weight-medium);
+        cursor: pointer;
+        transition: background 150ms ease;
+    }
+    .ds-button-secondary:hover { background: rgba(255,255,255,0.08); }
 
     /* ========================================
        GLOBAL STYLES - Modern Clean
@@ -473,7 +652,8 @@ st.markdown("""
     }
 
     .stApp {
-        background: var(--bg-primary) !important;
+        background: var(--ds-bg-canvas) !important;
+        background-attachment: fixed !important;
     }
 
     /* ========================================
@@ -653,7 +833,7 @@ st.markdown("""
 
     .hero-title,
     .hero-title span {
-        font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif !important;
+        font-family: var(--ds-font-sans-with-thai) !important;
         font-size: 96px !important;
         font-weight: 800 !important;
         color: #FFFFFF !important;
@@ -836,8 +1016,8 @@ st.markdown("""
        SIDEBAR - Modern Clean Design
        ======================================== */
     [data-testid="stSidebar"] {
-        background: var(--bg-secondary) !important;
-        border-right: 1px solid var(--border-color) !important;
+        background: var(--ds-surface-glass-1) !important;
+        border-right: var(--ds-stroke-hairline) solid var(--ds-border-divider) !important;
     }
 
     [data-testid="stSidebar"] > div:first-child {
@@ -994,42 +1174,46 @@ st.markdown("""
     .stButton > button {
         font-family: var(--font-heading) !important;
         font-size: var(--font-size-base) !important;
-        font-weight: 600 !important;
-        padding: var(--spacing-3) var(--spacing-6) !important;
-        border-radius: var(--radius-md) !important;
+        font-weight: var(--ds-weight-semibold) !important;
+        height: var(--ds-btn-height) !important;
+        min-height: var(--ds-touch-min) !important;
+        padding: 0 var(--ds-btn-px) !important;
+        border-radius: var(--ds-radius-control) !important;
         border: none !important;
-        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%) !important;
-        color: white !important;
+        background: var(--ds-accent-primary) !important;
+        color: var(--ds-text-on-accent) !important;
         width: 100% !important;
         transition: all var(--transition-normal) !important;
-        box-shadow: var(--shadow-md) !important;
+        box-shadow: var(--ds-shadow-1) !important;
         cursor: pointer !important;
     }
 
     .stButton > button:hover {
-        background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%) !important;
+        background: var(--ds-accent-primary-hover) !important;
         transform: translateY(-1px) !important;
-        box-shadow: var(--shadow-lg), var(--shadow-glow) !important;
+        box-shadow: var(--ds-shadow-2), var(--shadow-glow) !important;
     }
 
     .stButton > button:active {
+        background: var(--ds-accent-primary-pressed) !important;
         transform: translateY(0) !important;
-        box-shadow: var(--shadow-sm) !important;
+        box-shadow: var(--ds-shadow-1) !important;
     }
 
     /* ========================================
        METRIC CARDS - Modern Glass
        ======================================== */
     .metric-card {
-        background: var(--glass-bg);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1px solid var(--glass-border);
-        border-radius: var(--radius-lg);
-        padding: var(--spacing-5);
+        background: var(--ds-surface-glass-2);
+        backdrop-filter: blur(var(--ds-blur-glass));
+        -webkit-backdrop-filter: blur(var(--ds-blur-glass));
+        border: var(--ds-stroke-hairline) solid var(--ds-border-subtle);
+        border-radius: var(--ds-radius-card);
+        padding: var(--ds-card-padding);
         text-align: center;
         transition: all var(--transition-normal);
         cursor: pointer;
+        box-shadow: var(--ds-shadow-1);
     }
 
     .metric-card:hover {
@@ -1316,15 +1500,16 @@ st.markdown("""
        AGENT CARD - Modern Glass
        ======================================== */
     .agent-card {
-        background: var(--glass-bg);
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
-        border: 1px solid var(--glass-border);
-        border-left: 3px solid var(--primary);
-        border-radius: var(--radius-lg);
-        padding: var(--spacing-5);
-        margin: var(--spacing-4) 0;
+        background: var(--ds-surface-glass-2);
+        backdrop-filter: blur(var(--ds-blur-glass));
+        -webkit-backdrop-filter: blur(var(--ds-blur-glass));
+        border: var(--ds-stroke-hairline) solid var(--ds-border-subtle);
+        border-left: 3px solid var(--ds-accent-primary);
+        border-radius: var(--ds-radius-card);
+        padding: var(--ds-card-padding);
+        margin: var(--ds-space-4) 0;
         transition: all var(--transition-normal);
+        box-shadow: var(--ds-shadow-1);
     }
 
     .agent-card:hover {
@@ -1509,18 +1694,19 @@ st.markdown("""
        FEATURE CARD - Modern Glass (Equal Height)
        ======================================== */
     .feature-card {
-        background: var(--glass-bg);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1px solid var(--glass-border);
-        border-radius: var(--radius-xl);
-        padding: var(--spacing-6);
+        background: var(--ds-surface-glass-2);
+        backdrop-filter: blur(var(--ds-blur-glass));
+        -webkit-backdrop-filter: blur(var(--ds-blur-glass));
+        border: var(--ds-stroke-hairline) solid var(--ds-border-subtle);
+        border-radius: var(--ds-radius-card);
+        padding: var(--ds-space-6);
         min-height: 240px;
         height: 100%;
         display: flex;
         flex-direction: column;
         transition: all var(--transition-normal);
         cursor: pointer;
+        box-shadow: var(--ds-shadow-1);
     }
 
     .feature-card:hover {
@@ -1615,14 +1801,15 @@ st.markdown("""
        ASSESSMENT BANNER - Modern
        ======================================== */
     .assessment-banner {
-        background: var(--glass-bg);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1px solid var(--glass-border);
-        border-radius: var(--radius-xl);
-        padding: var(--spacing-8);
+        background: var(--ds-surface-glass-1);
+        backdrop-filter: blur(var(--ds-blur-glass-strong));
+        -webkit-backdrop-filter: blur(var(--ds-blur-glass-strong));
+        border: var(--ds-stroke-hairline) solid var(--ds-border-subtle);
+        border-radius: var(--ds-radius-window);
+        padding: var(--ds-space-8);
         text-align: center;
-        margin-bottom: var(--spacing-6);
+        margin-bottom: var(--ds-space-6);
+        box-shadow: var(--ds-shadow-2);
     }
 
     .assessment-banner.favorable {
@@ -1796,7 +1983,7 @@ st.markdown("""
        FOCUS STATES - Accessibility
        ======================================== */
     *:focus-visible {
-        outline: 2px solid var(--primary) !important;
+        outline: 2px solid var(--ds-border-focus) !important;
         outline-offset: 2px !important;
     }
 
@@ -1865,7 +2052,23 @@ st.markdown("""
 <!-- Material Icons -->
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+<!-- Thai Font Fallback (preconnect + load, non-blocking) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 """, unsafe_allow_html=True)
+
+# ---------------------------------------------------------------------------
+# Inject Thai Fallback toggle
+# When enabled, overrides --ds-font-sans-with-thai at root to append Thai fonts.
+# No <script>, no class toggling — pure CSS override, Streamlit Cloud safe.
+# ---------------------------------------------------------------------------
+if DS_THAI_FALLBACK_ENABLED:
+    st.markdown("""<style>
+    :root {
+        --ds-font-sans-with-thai: var(--ds-font-sans), var(--ds-font-thai-fallback);
+    }
+    </style>""", unsafe_allow_html=True)
 
 
 # =============================================================================
@@ -2099,7 +2302,7 @@ def main():
             font-size: 96px !important;
             font-weight: 800 !important;
             color: #FFFFFF !important;
-            font-family: 'Poppins', sans-serif !important;
+            font-family: var(--ds-font-sans-with-thai) !important;
             letter-spacing: -2px !important;
             text-shadow: 0 4px 30px rgba(0,0,0,0.5) !important;
             margin: 0 0 16px 0 !important;

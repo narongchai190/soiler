@@ -15,6 +15,7 @@ Or use: scripts/run_ui.cmd (Windows)
 # CRITICAL: Bootstrap UTF-8 encoding FIRST before any other imports
 # This ensures Thai text works on all Windows terminals
 import sys
+import textwrap
 sys.path.insert(0, ".")
 from core.encoding_bootstrap import bootstrap_utf8
 bootstrap_utf8()
@@ -39,6 +40,16 @@ from utils.logger import UILogger
 
 # Initialize Logger
 UILogger.setup()
+
+
+def _html(markup: str, **kwargs) -> None:
+    """Render HTML via st.markdown, stripping leading indentation.
+
+    Prevents Markdown's 4-space-indent = code-block rule from
+    turning HTML into raw text on Streamlit Cloud.
+    """
+    st.markdown(textwrap.dedent(markup), unsafe_allow_html=True, **kwargs)
+
 
 # =============================================================================
 # E2E TEST MODE - Deterministic mode for automated testing
@@ -555,6 +566,13 @@ st.markdown("""
         --transition-fast: 150ms ease;
         --transition-normal: 200ms ease;
         --transition-slow: 300ms ease;
+
+        /* Streamlit internal theme tokens — set explicitly to suppress
+           "Invalid color passed for widgetBackgroundColor" console spam */
+        --primary-color: #3C6DEF;
+        --background-color: #212352;
+        --secondary-background-color: rgba(35, 33, 62, 0.72);
+        --text-color: rgba(255, 255, 255, 0.94);
     }
 
     /* ========================================
@@ -2166,7 +2184,7 @@ def render_section_header(title: str, icon: str, subtitle: str | None = None) ->
         subtitle: Optional subtitle text below the title
     """
     subtitle_html = f'<div class="soiler-section-subtitle">{subtitle}</div>' if subtitle else ""
-    st.markdown(f"""
+    _html(f"""
     <div class="soiler-section-header">
         <div class="soiler-section-title">
             <span class="soiler-section-icon material-icons-outlined">{icon}</span>
@@ -2174,7 +2192,7 @@ def render_section_header(title: str, icon: str, subtitle: str | None = None) ->
         </div>
         {subtitle_html}
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
 
 def render_wizard_header(current_step: int) -> None:
@@ -2258,7 +2276,7 @@ def main():
         "budget": 15000,
         "ph": 6.2,
         "nitrogen": 20,
-        "phosphorus": 12,
+        "phosphorus": 11,
         "potassium": 110,
         "texture_idx": 1,
         "irrigation": True,
@@ -2272,7 +2290,7 @@ def main():
     # =========================================================================
     # TOP NAVIGATION BAR
     # =========================================================================
-    st.markdown("""
+    _html("""
     <nav class="top-navbar">
         <div class="nav-brand">
             <div class="nav-logo">
@@ -2288,7 +2306,7 @@ def main():
             <span class="nav-cta">เข้าสู่ระบบ</span>
         </div>
     </nav>
-    """, unsafe_allow_html=True)
+    """)
 
     # =========================================================================
     # HERO BANNER - Full Width Cover Image
@@ -2598,12 +2616,12 @@ def main():
                             except Exception as e:
                                 st.error(f"ไม่สามารถโหลดข้อมูลได้: {e}")
                 else:
-                    st.markdown(f"""
+                    _html(f"""
                     <div style="text-align: center; padding: 16px; color: #757575; font-size: 14px;">
                         <span class="material-icons-outlined" style="font-size: 24px;">inbox</span>
                         <br>{TH["history_empty"]}
                     </div>
-                    """, unsafe_allow_html=True)
+                    """)
 
             render_step_nav(5)
 
@@ -2636,12 +2654,12 @@ def main():
     # SIDEBAR (Minimal - Branding Only)
     # =========================================================================
     with st.sidebar:
-        st.markdown(f"""
+        _html(f"""
         <div style="text-align: center; margin-top: 24px; color: #757575; font-size: 14px;">
             <span class="material-icons-outlined" style="font-size: 16px; vertical-align: middle;">smart_toy</span>
             {TH["powered_by"]}
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
     # =========================================================================
     # MAIN CONTENT AREA - Analysis Results
@@ -2807,7 +2825,7 @@ def main():
                 banner_class = "challenging"
                 title_color = "#EF5350"
 
-            st.markdown(f"""
+            _html(f"""
             <div class="assessment-banner {banner_class}">
                 <div class="assessment-title" style="color: {title_color};">
                     {TH["overall_assessment"]}: {assessment}
@@ -2816,7 +2834,7 @@ def main():
                     {TH["overall_score"]}: <strong>{score:.1f}/100</strong>
                 </div>
             </div>
-            """, unsafe_allow_html=True)
+            """)
 
             # Key Metrics
             st.markdown(f"### {TH['key_metrics']}")
@@ -2826,7 +2844,7 @@ def main():
             with col1:
                 soil_health = dashboard.get("soil_health", {}).get("score", 0)
                 soil_status = dashboard.get("soil_health", {}).get("status_th", "")
-                st.markdown(f"""
+                _html(f"""
                 <div class="metric-card">
                     <div class="metric-icon">
                         <span class="material-icons-outlined">favorite</span>
@@ -2835,11 +2853,11 @@ def main():
                     <div class="metric-label">{TH["soil_health"]}</div>
                     <div class="metric-delta">{soil_status}</div>
                 </div>
-                """, unsafe_allow_html=True)
+                """)
 
             with col2:
                 yield_target = dashboard.get("yield_target", {}).get("value", 0)
-                st.markdown(f"""
+                _html(f"""
                 <div class="metric-card">
                     <div class="metric-icon">
                         <span class="material-icons-outlined">inventory_2</span>
@@ -2848,12 +2866,12 @@ def main():
                     <div class="metric-label">{TH["target_yield"]} ({TH["kg_per_rai"]})</div>
                     <div class="metric-delta">รวม {yield_target * field_size:,.0f} {TH["kg"]}</div>
                 </div>
-                """, unsafe_allow_html=True)
+                """)
 
             with col3:
                 roi = dashboard.get("returns", {}).get("roi_percent", 0)
                 profit_status = TH["profitable"] if roi > 0 else TH["loss"]
-                st.markdown(f"""
+                _html(f"""
                 <div class="metric-card">
                     <div class="metric-icon">
                         <span class="material-icons-outlined">trending_up</span>
@@ -2862,11 +2880,11 @@ def main():
                     <div class="metric-label">{TH["expected_roi"]}</div>
                     <div class="metric-delta">{profit_status}</div>
                 </div>
-                """, unsafe_allow_html=True)
+                """)
 
             with col4:
                 total_cost = dashboard.get("investment", {}).get("total_cost", 0)
-                st.markdown(f"""
+                _html(f"""
                 <div class="metric-card">
                     <div class="metric-icon">
                         <span class="material-icons-outlined">account_balance_wallet</span>
@@ -2875,7 +2893,7 @@ def main():
                     <div class="metric-label">{TH["total_investment"]}</div>
                     <div class="metric-delta">งบ: {format_currency(budget)}</div>
                 </div>
-                """, unsafe_allow_html=True)
+                """)
 
             st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
 
@@ -2930,13 +2948,13 @@ def main():
                 else:
                     risk_class = "status-poor"
 
-                st.markdown(f"""
+                _html(f"""
                 <div style="text-align: center; margin: 20px 0;">
                     <span class="{risk_class}" style="padding: 12px 32px; font-size: 20px;">
                         ความเสี่ยง: {risk_level}
                     </span>
                 </div>
-                """, unsafe_allow_html=True)
+                """)
 
                 risks = risk_section.get("risks", [])[:3]
 
@@ -2945,12 +2963,12 @@ def main():
                     for risk in risks:
                         severity = risk.get("severity_th", "ปานกลาง")
                         icon = "error" if severity == "สูง" else "warning" if severity == "ปานกลาง" else "info"
-                        st.markdown(f"""
+                        _html(f"""
                         <div style="display: flex; align-items: center; gap: 8px; margin: 8px 0; color: #B0B0B0;">
                             <span class="material-icons-outlined" style="font-size: 18px;">{icon}</span>
                             {risk.get('risk_th', 'N/A')}
                         </div>
-                        """, unsafe_allow_html=True)
+                        """)
 
             st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
 
@@ -3013,7 +3031,7 @@ def main():
                 elif "รายงาน" in agent_th:
                     icon = "assignment"
 
-                st.markdown(f"""
+                _html(f"""
                 <div class="agent-card">
                     <div class="agent-header">
                         <div class="agent-icon">
@@ -3023,14 +3041,14 @@ def main():
                     </div>
                     <div class="agent-observation">{observation}</div>
                 </div>
-                """, unsafe_allow_html=True)
+                """)
 
                 if i < len(observations):
-                    st.markdown("""
+                    _html("""
                     <div style="text-align: center; margin: 8px 0;">
                         <span class="material-icons-outlined" style="color: #4CAF50; font-size: 24px;">arrow_downward</span>
                     </div>
-                    """, unsafe_allow_html=True)
+                    """)
 
             st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
 
@@ -3051,7 +3069,7 @@ def main():
 
             metadata = report.get("report_metadata", {})
 
-            st.markdown(f"""
+            _html(f"""
             <div style="background: #1A1A1A; padding: 16px; border-radius: 12px; margin-bottom: 24px;">
                 <div class="info-row">
                     <span class="info-label">{TH['report_id']}</span>
@@ -3066,7 +3084,7 @@ def main():
                     <span class="info-value">{metadata.get('generated_at', 'N/A')[:19]}</span>
                 </div>
             </div>
-            """, unsafe_allow_html=True)
+            """)
 
             with st.expander(f"🔬 {TH['soil_analysis']}", expanded=True):
                 # Combine soil series and chemistry data
@@ -3165,7 +3183,7 @@ def main():
                         urgency_class = "medium"
                         urgency_color = "#4CAF50"
 
-                    st.markdown(f"""
+                    _html(f"""
                     <div class="action-item {urgency_class}">
                         <div class="action-header">
                             <span class="action-priority" style="color: {urgency_color};">
@@ -3179,7 +3197,7 @@ def main():
                             {TH["timeline"]}: {action.get('timeline_th', 'ตามความเหมาะสม')}
                         </div>
                     </div>
-                    """, unsafe_allow_html=True)
+                    """)
             else:
                 st.info("ไม่มีรายการดำเนินการ")
 
@@ -3213,31 +3231,31 @@ def main():
 
         # Bottom line
         st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
-        st.markdown(f"""
+        _html(f"""
         <div style="text-align: center; padding: 24px;">
             <p style="color: #4CAF50; font-size: 20px; font-weight: 600;">
                 {summary.get('bottom_line_th', 'การวิเคราะห์เสร็จสมบูรณ์')}
             </p>
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
     else:
         # =====================================================================
         # WELCOME SCREEN
         # =====================================================================
-        st.markdown(f"""
+        _html(f"""
         <div style="text-align: center; padding: 48px 24px;">
             <h2 style="color: #FAFAFA; font-size: 28px; margin-bottom: 16px;">{TH["welcome_title"]}</h2>
             <p style="color: #B0B0B0; font-size: 20px;">{TH["welcome_desc"]}</p>
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
         st.markdown(f"### {TH['features_title']}")
 
         col1, col2, col3 = st.columns(3)
 
         with col1:
-            st.markdown(f"""
+            _html(f"""
             <div class="feature-card">
                 <div class="feature-icon">
                     <span class="material-icons-outlined">psychology</span>
@@ -3245,10 +3263,10 @@ def main():
                 <div class="feature-title">{TH["feature_agents"]}</div>
                 <div class="feature-desc">{TH["feature_agents_desc"]}</div>
             </div>
-            """, unsafe_allow_html=True)
+            """)
 
         with col2:
-            st.markdown(f"""
+            _html(f"""
             <div class="feature-card">
                 <div class="feature-icon">
                     <span class="material-icons-outlined">analytics</span>
@@ -3256,10 +3274,10 @@ def main():
                 <div class="feature-title">{TH["feature_roi"]}</div>
                 <div class="feature-desc">{TH["feature_roi_desc"]}</div>
             </div>
-            """, unsafe_allow_html=True)
+            """)
 
         with col3:
-            st.markdown(f"""
+            _html(f"""
             <div class="feature-card">
                 <div class="feature-icon">
                     <span class="material-icons-outlined">tune</span>
@@ -3267,7 +3285,7 @@ def main():
                 <div class="feature-title">{TH["feature_precision"]}</div>
                 <div class="feature-desc">{TH["feature_precision_desc"]}</div>
             </div>
-            """, unsafe_allow_html=True)
+            """)
 
         st.markdown(f"### {TH['sample_scenario']}")
         st.info(TH["sample_text"])
@@ -3276,7 +3294,7 @@ def main():
     # FOOTER - Professional with Veltrix Credit
     # =========================================================================
     current_year = datetime.now().year
-    st.markdown(f"""
+    _html(f"""
     <footer class="app-footer">
         <div class="footer-brand">
             <span class="footer-brand-text">S.O.I.L.E.R.</span>
@@ -3298,7 +3316,7 @@ def main():
             Made with ❤️ in Thailand.
         </p>
     </footer>
-    """, unsafe_allow_html=True)
+    """)
 
 
 if __name__ == "__main__":

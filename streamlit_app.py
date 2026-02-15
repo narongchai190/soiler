@@ -15,6 +15,7 @@ Or use: scripts/run_ui.cmd (Windows)
 # CRITICAL: Bootstrap UTF-8 encoding FIRST before any other imports
 # This ensures Thai text works on all Windows terminals
 import sys
+import textwrap
 sys.path.insert(0, ".")
 from core.encoding_bootstrap import bootstrap_utf8
 bootstrap_utf8()
@@ -39,6 +40,15 @@ from utils.logger import UILogger
 
 # Initialize Logger
 UILogger.setup()
+
+
+def _html(markup: str, **kwargs) -> None:
+    """Render HTML via st.markdown, stripping leading indentation.
+
+    Prevents Markdown's 4-space-indent = code-block rule from
+    turning HTML into raw text on Streamlit Cloud.
+    """
+    st.markdown(textwrap.dedent(markup), unsafe_allow_html=True, **kwargs)
 
 # =============================================================================
 # E2E TEST MODE - Deterministic mode for automated testing
@@ -458,6 +468,13 @@ st.markdown("""
         --transition-fast: 150ms ease;
         --transition-normal: 200ms ease;
         --transition-slow: 300ms ease;
+
+        /* Streamlit internal theme tokens — set explicitly to suppress
+           "Invalid color passed for widgetBackgroundColor" console spam */
+        --primary-color: #22C55E;
+        --background-color: #0F172A;
+        --secondary-background-color: #1E293B;
+        --text-color: #F8FAFC;
     }
 
     /* ========================================
@@ -2145,15 +2162,13 @@ def render_section_header(title: str, icon: str, subtitle: str | None = None) ->
         subtitle: Optional subtitle text below the title
     """
     subtitle_html = f'<div class="soiler-section-subtitle">{subtitle}</div>' if subtitle else ""
-    st.markdown(f"""
-    <div class="soiler-section-header">
-        <div class="soiler-section-title">
-            <span class="soiler-section-icon material-icons-outlined">{icon}</span>
-            {title}
-        </div>
-        {subtitle_html}
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown(
+        f'<div class="soiler-section-header">'
+        f'<div class="soiler-section-title">'
+        f'<span class="soiler-section-icon material-icons-outlined">{icon}</span>'
+        f'{title}</div>{subtitle_html}</div>',
+        unsafe_allow_html=True,
+    )
 
 
 def render_wizard_header(current_step: int) -> None:
@@ -2175,21 +2190,21 @@ def render_wizard_header(current_step: int) -> None:
         state = "active" if i == current_step else ("completed" if i < current_step else "")
         connector_state = "completed" if i < current_step else ""
 
-        step_html.append(f'''
-            <div class="wizard-step {state}">
-                <div class="wizard-step-number">{num}</div>
-                <span class="wizard-step-label">{label}</span>
-            </div>
-        ''')
+        step_html.append(
+            f'<div class="wizard-step {state}">'
+            f'<div class="wizard-step-number">{num}</div>'
+            f'<span class="wizard-step-label">{label}</span>'
+            f'</div>'
+        )
 
         if i < len(steps):
             step_html.append(f'<div class="wizard-connector {connector_state}"></div>')
 
-    st.markdown(f'''
-    <div class="wizard-header">
-        {"".join(step_html)}
-    </div>
-    ''', unsafe_allow_html=True)
+    wizard_body = "".join(step_html)
+    st.markdown(
+        f'<div class="wizard-header">{wizard_body}</div>',
+        unsafe_allow_html=True,
+    )
 
 
 # =============================================================================
@@ -2237,7 +2252,7 @@ def main():
         "budget": 15000,
         "ph": 6.2,
         "nitrogen": 20,
-        "phosphorus": 12,
+        "phosphorus": 11,
         "potassium": 110,
         "texture_idx": 1,
         "irrigation": True,
@@ -2251,23 +2266,21 @@ def main():
     # =========================================================================
     # TOP NAVIGATION BAR
     # =========================================================================
-    st.markdown("""
-    <nav class="top-navbar">
-        <div class="nav-brand">
-            <div class="nav-logo">
-                <span class="material-icons">grass</span>
-            </div>
-            <span class="nav-brand-text">SOILER</span>
-        </div>
-        <div class="nav-links">
-            <span class="nav-link active">หน้าหลัก</span>
-            <span class="nav-link">คู่มือ</span>
-            <span class="nav-link">เกี่ยวกับ</span>
-            <span class="nav-link">ติดต่อ</span>
-            <span class="nav-cta">เข้าสู่ระบบ</span>
-        </div>
-    </nav>
-    """, unsafe_allow_html=True)
+    st.markdown(
+        '<nav class="top-navbar">'
+        '<div class="nav-brand">'
+        '<div class="nav-logo"><span class="material-icons">grass</span></div>'
+        '<span class="nav-brand-text">SOILER</span>'
+        '</div>'
+        '<div class="nav-links">'
+        '<span class="nav-link active">หน้าหลัก</span>'
+        '<span class="nav-link">คู่มือ</span>'
+        '<span class="nav-link">เกี่ยวกับ</span>'
+        '<span class="nav-link">ติดต่อ</span>'
+        '<span class="nav-cta">เข้าสู่ระบบ</span>'
+        '</div></nav>',
+        unsafe_allow_html=True,
+    )
 
     # =========================================================================
     # HERO BANNER - Full Width Cover Image
@@ -2367,73 +2380,52 @@ def main():
         ph_val = st.session_state['ph']
         ph_pct = min(max(ph_val / 14 * 100, 0), 100)
 
-        st.markdown(f"""
-        <div class="summary-card">
-            <div class="summary-header">
-                <span class="material-icons-outlined">summarize</span>
-                สรุปข้อมูล
-                <span class="completeness">
-                    <span class="material-icons-outlined" style="font-size:13px !important;">check_circle</span>
-                    5/5
-                </span>
-            </div>
-            <div class="summary-body">
-                <div class="summary-row">
-                    <div class="summary-label">
-                        <span class="material-icons-outlined">location_on</span> พิกัด
-                    </div>
-                    <div class="summary-value">{st.session_state['farm_lat']:.4f}, {st.session_state['farm_lng']:.4f}</div>
-                </div>
-                <div class="summary-row">
-                    <div class="summary-label">
-                        <span class="material-icons-outlined">grass</span> พืช
-                    </div>
-                    <div class="summary-value">{crop_display}</div>
-                </div>
-                <div class="summary-row">
-                    <div class="summary-label">
-                        <span class="material-icons-outlined">straighten</span> ขนาด
-                    </div>
-                    <div class="summary-value">{st.session_state['field_size']:.1f} ไร่</div>
-                </div>
-                <div class="summary-row">
-                    <div class="summary-label">
-                        <span class="material-icons-outlined">payments</span> งบประมาณ
-                    </div>
-                    <div class="summary-value">{st.session_state['budget']:,} บาท</div>
-                </div>
-                <div class="summary-row">
-                    <div class="summary-label">
-                        <span class="material-icons-outlined">science</span> ผลตรวจดิน
-                    </div>
-                    <div class="summary-value">pH {ph_val}</div>
-                    <div class="ph-scale"><div class="ph-indicator" style="left: {ph_pct:.0f}%"></div></div>
-                    <div class="ph-labels"><span>กรด</span><span>กลาง</span><span>ด่าง</span></div>
-                    <div class="npk-bars">
-                        <div class="npk-row">
-                            <span class="npk-letter">N</span>
-                            <div class="npk-track"><div class="npk-fill" style="width:{n_pct}%;background:{n_color}"></div></div>
-                            <span class="npk-val">{n_val}</span>
-                        </div>
-                        <div class="npk-row">
-                            <span class="npk-letter">P</span>
-                            <div class="npk-track"><div class="npk-fill" style="width:{p_pct}%;background:{p_color}"></div></div>
-                            <span class="npk-val">{p_val}</span>
-                        </div>
-                        <div class="npk-row">
-                            <span class="npk-letter">K</span>
-                            <div class="npk-track"><div class="npk-fill" style="width:{k_pct}%;background:{k_color}"></div></div>
-                            <span class="npk-val">{k_val}</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="summary-status {status_class}">
-                    <span class="material-icons-outlined" style="font-size: 14px;">{status_icon}</span>
-                    {status_text}
-                </div>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+        _summary_html = (
+            '<div class="summary-card">'
+            '<div class="summary-header">'
+            '<span class="material-icons-outlined">summarize</span> สรุปข้อมูล'
+            '<span class="completeness">'
+            '<span class="material-icons-outlined" style="font-size:13px !important;">check_circle</span> 5/5'
+            '</span></div>'
+            '<div class="summary-body">'
+            # Location
+            '<div class="summary-row">'
+            '<div class="summary-label"><span class="material-icons-outlined">location_on</span> พิกัด</div>'
+            f'<div class="summary-value">{st.session_state["farm_lat"]:.4f}, {st.session_state["farm_lng"]:.4f}</div>'
+            '</div>'
+            # Crop
+            '<div class="summary-row">'
+            '<div class="summary-label"><span class="material-icons-outlined">grass</span> พืช</div>'
+            f'<div class="summary-value">{crop_display}</div>'
+            '</div>'
+            # Field size
+            '<div class="summary-row">'
+            '<div class="summary-label"><span class="material-icons-outlined">straighten</span> ขนาด</div>'
+            f'<div class="summary-value">{st.session_state["field_size"]:.1f} ไร่</div>'
+            '</div>'
+            # Budget
+            '<div class="summary-row">'
+            '<div class="summary-label"><span class="material-icons-outlined">payments</span> งบประมาณ</div>'
+            f'<div class="summary-value">{st.session_state["budget"]:,} บาท</div>'
+            '</div>'
+            # Soil
+            '<div class="summary-row">'
+            '<div class="summary-label"><span class="material-icons-outlined">science</span> ผลตรวจดิน</div>'
+            f'<div class="summary-value">pH {ph_val}</div>'
+            f'<div class="ph-scale"><div class="ph-indicator" style="left: {ph_pct:.0f}%"></div></div>'
+            '<div class="ph-labels"><span>กรด</span><span>กลาง</span><span>ด่าง</span></div>'
+            '<div class="npk-bars">'
+            f'<div class="npk-row"><span class="npk-letter">N</span><div class="npk-track"><div class="npk-fill" style="width:{n_pct}%;background:{n_color}"></div></div><span class="npk-val">{n_val}</span></div>'
+            f'<div class="npk-row"><span class="npk-letter">P</span><div class="npk-track"><div class="npk-fill" style="width:{p_pct}%;background:{p_color}"></div></div><span class="npk-val">{p_val}</span></div>'
+            f'<div class="npk-row"><span class="npk-letter">K</span><div class="npk-track"><div class="npk-fill" style="width:{k_pct}%;background:{k_color}"></div></div><span class="npk-val">{k_val}</span></div>'
+            '</div></div>'
+            # Status
+            f'<div class="summary-status {status_class}">'
+            f'<span class="material-icons-outlined" style="font-size: 14px;">{status_icon}</span> {status_text}'
+            '</div>'
+            '</div></div>'
+        )
+        st.markdown(_summary_html, unsafe_allow_html=True)
 
     # ---- Wizard (left column) ----
     with main_col:
@@ -2686,12 +2678,12 @@ def main():
                         except Exception as e:
                             st.error(f"ไม่สามารถโหลดข้อมูลได้: {e}")
             else:
-                st.markdown(f"""
+                _html(f"""
                 <div style="text-align: center; padding: 16px; color: #757575; font-size: 14px;">
                     <span class="material-icons-outlined" style="font-size: 24px;">inbox</span>
                     <br>{TH["history_empty"]}
                 </div>
-                """, unsafe_allow_html=True)
+                """)
 
         render_step_nav(5)
 
@@ -2699,13 +2691,13 @@ def main():
     # SIDEBAR (Minimal - Branding Only)
     # =========================================================================
     with st.sidebar:
-        st.markdown(f"""
+        _html(f"""
         <div style="text-align: center; padding: 20px 0; color: #757575; font-size: 14px;">
             <span class="material-icons-outlined" style="font-size: 20px; vertical-align: middle; color: var(--primary);">grass</span>
             <br><strong style="color: var(--text-primary);">S.O.I.L.E.R.</strong>
             <br><span style="font-size: 12px;">{TH["powered_by"]}</span>
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
     # =========================================================================
     # MAIN CONTENT AREA - Analysis Results
@@ -2871,7 +2863,7 @@ def main():
                 banner_class = "challenging"
                 title_color = "#EF5350"
 
-            st.markdown(f"""
+            _html(f"""
             <div class="assessment-banner {banner_class}">
                 <div class="assessment-title" style="color: {title_color};">
                     {TH["overall_assessment"]}: {assessment}
@@ -2880,7 +2872,7 @@ def main():
                     {TH["overall_score"]}: <strong>{score:.1f}/100</strong>
                 </div>
             </div>
-            """, unsafe_allow_html=True)
+            """)
 
             # Key Metrics
             st.markdown(f"### {TH['key_metrics']}")
@@ -2890,7 +2882,7 @@ def main():
             with col1:
                 soil_health = dashboard.get("soil_health", {}).get("score", 0)
                 soil_status = dashboard.get("soil_health", {}).get("status_th", "")
-                st.markdown(f"""
+                _html(f"""
                 <div class="metric-card">
                     <div class="metric-icon">
                         <span class="material-icons-outlined">favorite</span>
@@ -2899,11 +2891,11 @@ def main():
                     <div class="metric-label">{TH["soil_health"]}</div>
                     <div class="metric-delta">{soil_status}</div>
                 </div>
-                """, unsafe_allow_html=True)
+                """)
 
             with col2:
                 yield_target = dashboard.get("yield_target", {}).get("value", 0)
-                st.markdown(f"""
+                _html(f"""
                 <div class="metric-card">
                     <div class="metric-icon">
                         <span class="material-icons-outlined">inventory_2</span>
@@ -2912,12 +2904,12 @@ def main():
                     <div class="metric-label">{TH["target_yield"]} ({TH["kg_per_rai"]})</div>
                     <div class="metric-delta">รวม {yield_target * field_size:,.0f} {TH["kg"]}</div>
                 </div>
-                """, unsafe_allow_html=True)
+                """)
 
             with col3:
                 roi = dashboard.get("returns", {}).get("roi_percent", 0)
                 profit_status = TH["profitable"] if roi > 0 else TH["loss"]
-                st.markdown(f"""
+                _html(f"""
                 <div class="metric-card">
                     <div class="metric-icon">
                         <span class="material-icons-outlined">trending_up</span>
@@ -2926,11 +2918,11 @@ def main():
                     <div class="metric-label">{TH["expected_roi"]}</div>
                     <div class="metric-delta">{profit_status}</div>
                 </div>
-                """, unsafe_allow_html=True)
+                """)
 
             with col4:
                 total_cost = dashboard.get("investment", {}).get("total_cost", 0)
-                st.markdown(f"""
+                _html(f"""
                 <div class="metric-card">
                     <div class="metric-icon">
                         <span class="material-icons-outlined">account_balance_wallet</span>
@@ -2939,7 +2931,7 @@ def main():
                     <div class="metric-label">{TH["total_investment"]}</div>
                     <div class="metric-delta">งบ: {format_currency(budget)}</div>
                 </div>
-                """, unsafe_allow_html=True)
+                """)
 
             st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
 
@@ -2994,13 +2986,13 @@ def main():
                 else:
                     risk_class = "status-poor"
 
-                st.markdown(f"""
+                _html(f"""
                 <div style="text-align: center; margin: 20px 0;">
                     <span class="{risk_class}" style="padding: 12px 32px; font-size: 20px;">
                         ความเสี่ยง: {risk_level}
                     </span>
                 </div>
-                """, unsafe_allow_html=True)
+                """)
 
                 risks = risk_section.get("risks", [])[:3]
 
@@ -3009,12 +3001,12 @@ def main():
                     for risk in risks:
                         severity = risk.get("severity_th", "ปานกลาง")
                         icon = "error" if severity == "สูง" else "warning" if severity == "ปานกลาง" else "info"
-                        st.markdown(f"""
+                        _html(f"""
                         <div style="display: flex; align-items: center; gap: 8px; margin: 8px 0; color: #B0B0B0;">
                             <span class="material-icons-outlined" style="font-size: 18px;">{icon}</span>
                             {risk.get('risk_th', 'N/A')}
                         </div>
-                        """, unsafe_allow_html=True)
+                        """)
 
             st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
 
@@ -3077,7 +3069,7 @@ def main():
                 elif "รายงาน" in agent_th:
                     icon = "assignment"
 
-                st.markdown(f"""
+                _html(f"""
                 <div class="agent-card">
                     <div class="agent-header">
                         <div class="agent-icon">
@@ -3087,14 +3079,14 @@ def main():
                     </div>
                     <div class="agent-observation">{observation}</div>
                 </div>
-                """, unsafe_allow_html=True)
+                """)
 
                 if i < len(observations):
-                    st.markdown("""
+                    _html("""
                     <div style="text-align: center; margin: 8px 0;">
                         <span class="material-icons-outlined" style="color: #4CAF50; font-size: 24px;">arrow_downward</span>
                     </div>
-                    """, unsafe_allow_html=True)
+                    """)
 
             st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
 
@@ -3115,7 +3107,7 @@ def main():
 
             metadata = report.get("report_metadata", {})
 
-            st.markdown(f"""
+            _html(f"""
             <div style="background: #1A1A1A; padding: 16px; border-radius: 12px; margin-bottom: 24px;">
                 <div class="info-row">
                     <span class="info-label">{TH['report_id']}</span>
@@ -3130,7 +3122,7 @@ def main():
                     <span class="info-value">{metadata.get('generated_at', 'N/A')[:19]}</span>
                 </div>
             </div>
-            """, unsafe_allow_html=True)
+            """)
 
             with st.expander(f"🔬 {TH['soil_analysis']}", expanded=True):
                 # Combine soil series and chemistry data
@@ -3229,7 +3221,7 @@ def main():
                         urgency_class = "medium"
                         urgency_color = "#4CAF50"
 
-                    st.markdown(f"""
+                    _html(f"""
                     <div class="action-item {urgency_class}">
                         <div class="action-header">
                             <span class="action-priority" style="color: {urgency_color};">
@@ -3243,7 +3235,7 @@ def main():
                             {TH["timeline"]}: {action.get('timeline_th', 'ตามความเหมาะสม')}
                         </div>
                     </div>
-                    """, unsafe_allow_html=True)
+                    """)
             else:
                 st.info("ไม่มีรายการดำเนินการ")
 
@@ -3277,31 +3269,31 @@ def main():
 
         # Bottom line
         st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
-        st.markdown(f"""
+        _html(f"""
         <div style="text-align: center; padding: 24px;">
             <p style="color: #4CAF50; font-size: 20px; font-weight: 600;">
                 {summary.get('bottom_line_th', 'การวิเคราะห์เสร็จสมบูรณ์')}
             </p>
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
     else:
         # =====================================================================
         # WELCOME SCREEN
         # =====================================================================
-        st.markdown(f"""
+        _html(f"""
         <div style="text-align: center; padding: 48px 24px;">
             <h2 style="color: #FAFAFA; font-size: 28px; margin-bottom: 16px;">{TH["welcome_title"]}</h2>
             <p style="color: #B0B0B0; font-size: 20px;">{TH["welcome_desc"]}</p>
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
         st.markdown(f"### {TH['features_title']}")
 
         col1, col2, col3 = st.columns(3)
 
         with col1:
-            st.markdown(f"""
+            _html(f"""
             <div class="feature-card">
                 <div class="feature-icon">
                     <span class="material-icons-outlined">psychology</span>
@@ -3309,10 +3301,10 @@ def main():
                 <div class="feature-title">{TH["feature_agents"]}</div>
                 <div class="feature-desc">{TH["feature_agents_desc"]}</div>
             </div>
-            """, unsafe_allow_html=True)
+            """)
 
         with col2:
-            st.markdown(f"""
+            _html(f"""
             <div class="feature-card">
                 <div class="feature-icon">
                     <span class="material-icons-outlined">analytics</span>
@@ -3320,10 +3312,10 @@ def main():
                 <div class="feature-title">{TH["feature_roi"]}</div>
                 <div class="feature-desc">{TH["feature_roi_desc"]}</div>
             </div>
-            """, unsafe_allow_html=True)
+            """)
 
         with col3:
-            st.markdown(f"""
+            _html(f"""
             <div class="feature-card">
                 <div class="feature-icon">
                     <span class="material-icons-outlined">tune</span>
@@ -3331,7 +3323,7 @@ def main():
                 <div class="feature-title">{TH["feature_precision"]}</div>
                 <div class="feature-desc">{TH["feature_precision_desc"]}</div>
             </div>
-            """, unsafe_allow_html=True)
+            """)
 
         st.markdown(f"### {TH['sample_scenario']}")
         st.info(TH["sample_text"])
@@ -3340,7 +3332,7 @@ def main():
     # FOOTER - Professional with Veltrix Credit
     # =========================================================================
     current_year = datetime.now().year
-    st.markdown(f"""
+    _html(f"""
     <footer class="app-footer">
         <div class="footer-brand">
             <span class="footer-brand-text">S.O.I.L.E.R.</span>
@@ -3362,7 +3354,7 @@ def main():
             Made with ❤️ in Thailand.
         </p>
     </footer>
-    """, unsafe_allow_html=True)
+    """)
 
 
 if __name__ == "__main__":

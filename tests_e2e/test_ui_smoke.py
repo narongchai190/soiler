@@ -12,11 +12,10 @@ from playwright.sync_api import Page, expect
 
 
 class TestSelectionSummary:
-    """Tests for the Selection Summary panel."""
+    """Tests for the Selection Summary panel (now in main layout right column)."""
 
     def test_summary_panel_visible(self, page: Page):
-        """Verify the selection summary panel exists in sidebar."""
-        # The summary title we specified
+        """Verify the selection summary panel exists in the main layout."""
         summary_text = page.get_by_text("สรุปสิ่งที่เลือก")
         expect(summary_text.first).to_be_visible(timeout=10000)
 
@@ -30,24 +29,29 @@ class TestDropdownSelection:
     """Tests for dropdown selection functionality."""
 
     def test_crop_dropdown_visible(self, page: Page):
-        """Verify crop selection dropdown is visible."""
-        # Look for the crop selection in sidebar
-        # The sidebar should have crop selection options
-        sidebar = page.locator('[data-testid="stSidebar"]')
-        expect(sidebar).to_be_visible(timeout=10000)
+        """Verify crop selection dropdown is visible in the crop tab."""
+        page.wait_for_timeout(2000)
+        # Navigate to crop tab
+        crop_tab = page.get_by_role("tab", name="พืช")
+        expect(crop_tab.first).to_be_visible(timeout=10000)
+        crop_tab.first.click()
+        page.wait_for_timeout(1000)
 
-        # Check that there's a selectbox (crop dropdown)
-        selectbox = sidebar.locator('[data-baseweb="select"]').first
+        # Check that there's a selectbox (crop dropdown) in main content
+        selectbox = page.locator('[data-baseweb="select"]').first
         expect(selectbox).to_be_visible(timeout=5000)
 
     def test_dropdown_selection_updates_summary(self, page: Page):
         """Verify that changing dropdown updates the Selection Summary."""
-        # Find the sidebar
-        sidebar = page.locator('[data-testid="stSidebar"]')
-        expect(sidebar).to_be_visible(timeout=10000)
+        page.wait_for_timeout(2000)
+        # Navigate to crop tab
+        crop_tab = page.get_by_role("tab", name="พืช")
+        expect(crop_tab.first).to_be_visible(timeout=10000)
+        crop_tab.first.click()
+        page.wait_for_timeout(1000)
 
         # Find crop selectbox and click to open
-        crop_select = sidebar.locator('[data-baseweb="select"]').first
+        crop_select = page.locator('[data-baseweb="select"]').first
         expect(crop_select).to_be_visible(timeout=10000)
         crop_select.click()
 
@@ -174,7 +178,7 @@ class TestWizardNavigation:
     """Tests for the 5-step wizard navigation flow.
 
     Verifies that tabs are navigable, navigation hints are present,
-    and selected values appear in the sidebar summary panel.
+    and selected values appear in the summary panel.
     """
 
     def test_all_five_tabs_present(self, page: Page):
@@ -202,17 +206,16 @@ class TestWizardNavigation:
         expect(nav_next).to_be_attached(timeout=10000)
 
     def test_summary_shows_selected_values(self, page: Page):
-        """Verify the sidebar summary panel reflects session_state defaults."""
+        """Verify the summary panel reflects session_state defaults."""
         # The summary should show default values on first load
         summary = page.get_by_text("สรุปสิ่งที่เลือก")
         expect(summary.first).to_be_visible(timeout=10000)
 
-        # Check that coordinates appear in summary
-        sidebar = page.locator('[data-testid="stSidebar"]')
-        sidebar_text = sidebar.inner_text()
-        assert "พิกัด" in sidebar_text, "Summary should show coordinates"
-        assert "พืช" in sidebar_text, "Summary should show crop"
-        assert "ดิน" in sidebar_text, "Summary should show soil data"
+        # Check that key values appear in the page (summary is now in main layout)
+        page_text = page.inner_text("body")
+        assert "พิกัด" in page_text, "Summary should show coordinates"
+        assert "พืช" in page_text, "Summary should show crop"
+        assert "ดิน" in page_text, "Summary should show soil data"
 
     def test_soil_tab_has_sliders(self, page: Page):
         """Navigate to soil tab and verify input controls exist."""

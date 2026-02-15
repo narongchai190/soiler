@@ -1810,6 +1810,56 @@ st.markdown("""
             transition-duration: 0.01ms !important;
         }
     }
+
+    /* ========================================
+       BLUEPRINT v1 POLISH — Typography + Cards
+       ======================================== */
+
+    /* Step headers inside wizard tabs — larger, bolder */
+    .stTabs [data-baseweb="tab-panel"] h3 {
+        font-size: var(--font-size-2xl) !important;
+        font-weight: 700 !important;
+        letter-spacing: -0.3px !important;
+        margin-bottom: var(--spacing-4) !important;
+    }
+
+    /* Tab panels — card-like containers */
+    .stTabs [data-baseweb="tab-panel"] {
+        padding: var(--spacing-6) var(--spacing-4) !important;
+        background: var(--bg-card) !important;
+        border: 1px solid var(--border-color) !important;
+        border-top: none !important;
+        border-radius: 0 0 var(--radius-lg) var(--radius-lg) !important;
+    }
+
+    /* Summary panel (right column) — elevated card */
+    [data-testid="stVerticalBlockBorderWrapper"]:has(#selection-summary) {
+        background: var(--bg-card);
+        border: 1px solid var(--border-strong);
+        border-radius: var(--radius-lg);
+        padding: var(--spacing-4);
+        box-shadow: var(--shadow-md);
+    }
+
+    /* Primary action button (run analysis) — taller, prominent */
+    .stButton > button[kind="primary"],
+    .stButton > button[data-testid="stBaseButton-primary"] {
+        padding: var(--spacing-4) var(--spacing-8) !important;
+        font-size: var(--font-size-lg) !important;
+        letter-spacing: 0.3px !important;
+    }
+
+    /* Section dividers — more breathing room */
+    .stTabs [data-baseweb="tab-panel"] hr {
+        margin: var(--spacing-6) 0 !important;
+        border-color: var(--border-color) !important;
+    }
+
+    /* Info boxes inside summary — compact, clean */
+    [data-testid="stVerticalBlockBorderWrapper"]:has(#selection-summary) .stAlert {
+        font-size: var(--font-size-sm) !important;
+        padding: var(--spacing-3) !important;
+    }
 </style>
 
 <!-- Material Icons -->
@@ -2114,190 +2164,262 @@ def main():
                     unsafe_allow_html=True,
                 )
 
-    # Render wizard step header
-    render_wizard_header(st.session_state["wizard_step"])
+    # =========================================================================
+    # 2-COLUMN LAYOUT: Wizard (left) + Summary Panel (right)
+    # =========================================================================
+    wizard_col, summary_col = st.columns([3, 1], gap="large")
 
-    # Create wizard tabs
-    tab_location, tab_crop, tab_soil, tab_plan, tab_save = st.tabs([
-        f"📍 {WIZARD_STEPS[1]['tab']}",
-        f"🌾 {WIZARD_STEPS[2]['tab']}",
-        f"🧪 {WIZARD_STEPS[3]['tab']}",
-        f"📋 {WIZARD_STEPS[4]['tab']}",
-        f"💾 {WIZARD_STEPS[5]['tab']}"
-    ])
+    with wizard_col:
+        # Render wizard step header
+        render_wizard_header(st.session_state["wizard_step"])
 
-    # -------------------------------------------------------------------------
-    # STEP 1: LOCATION
-    # -------------------------------------------------------------------------
-    with tab_location:
-        st.markdown("### 📍 ระบุตำแหน่งแปลงเกษตร")
-        st.markdown("เลือกพิกัดแปลงของคุณจากแผนที่ หรือระบุพิกัดด้วยตัวเอง")
+        # Create wizard tabs
+        tab_location, tab_crop, tab_soil, tab_plan, tab_save = st.tabs([
+            f"📍 {WIZARD_STEPS[1]['tab']}",
+            f"🌾 {WIZARD_STEPS[2]['tab']}",
+            f"🧪 {WIZARD_STEPS[3]['tab']}",
+            f"📋 {WIZARD_STEPS[4]['tab']}",
+            f"💾 {WIZARD_STEPS[5]['tab']}"
+        ])
 
-        col_map, col_info = st.columns([2, 1])
+        # -------------------------------------------------------------------------
+        # STEP 1: LOCATION
+        # -------------------------------------------------------------------------
+        with tab_location:
+            st.markdown("### 📍 ระบุตำแหน่งแปลงเกษตร")
+            st.markdown("เลือกพิกัดแปลงของคุณจากแผนที่ หรือระบุพิกัดด้วยตัวเอง")
 
-        with col_map:
-            if FOLIUM_AVAILABLE:
-                map_center = [st.session_state["farm_lat"], st.session_state["farm_lng"]]
-                m = folium.Map(
-                    location=map_center,
-                    zoom_start=13,
-                    tiles="OpenStreetMap",
-                    control_scale=True
-                )
-                LocateControl(
-                    auto_start=False,
-                    strings={"title": "📍 ตำแหน่งปัจจุบันของฉัน"},
-                    flyTo=True,
-                    position="topleft"
-                ).add_to(m)
-                folium.Marker(
-                    map_center,
-                    popup=TH["current_location"],
-                    icon=folium.Icon(color="red", icon="leaf", prefix="fa"),
-                    draggable=False
-                ).add_to(m)
-                st.caption(TH["click_map_hint"])
-                map_data = st_folium(m, width=500, height=350, key="wizard_map", returned_objects=["last_clicked"])
-                if map_data and map_data.get("last_clicked"):
-                    clicked_lat = map_data["last_clicked"]["lat"]
-                    clicked_lng = map_data["last_clicked"]["lng"]
-                    if abs(clicked_lat - st.session_state["farm_lat"]) > 0.00001 or \
-                       abs(clicked_lng - st.session_state["farm_lng"]) > 0.00001:
-                        st.session_state["farm_lat"] = clicked_lat
-                        st.session_state["farm_lng"] = clicked_lng
+            col_map, col_info = st.columns([2, 1])
+
+            with col_map:
+                if FOLIUM_AVAILABLE:
+                    map_center = [st.session_state["farm_lat"], st.session_state["farm_lng"]]
+                    m = folium.Map(
+                        location=map_center,
+                        zoom_start=13,
+                        tiles="OpenStreetMap",
+                        control_scale=True
+                    )
+                    LocateControl(
+                        auto_start=False,
+                        strings={"title": "📍 ตำแหน่งปัจจุบันของฉัน"},
+                        flyTo=True,
+                        position="topleft"
+                    ).add_to(m)
+                    folium.Marker(
+                        map_center,
+                        popup=TH["current_location"],
+                        icon=folium.Icon(color="red", icon="leaf", prefix="fa"),
+                        draggable=False
+                    ).add_to(m)
+                    st.caption(TH["click_map_hint"])
+                    map_data = st_folium(m, width=500, height=350, key="wizard_map", returned_objects=["last_clicked"])
+                    if map_data and map_data.get("last_clicked"):
+                        clicked_lat = map_data["last_clicked"]["lat"]
+                        clicked_lng = map_data["last_clicked"]["lng"]
+                        if abs(clicked_lat - st.session_state["farm_lat"]) > 0.00001 or \
+                           abs(clicked_lng - st.session_state["farm_lng"]) > 0.00001:
+                            st.session_state["farm_lat"] = clicked_lat
+                            st.session_state["farm_lng"] = clicked_lng
+                            st.rerun()
+                else:
+                    st.warning("ไม่สามารถโหลดแผนที่ได้ กรุณาระบุพิกัดด้วยตัวเอง")
+
+            with col_info:
+                st.markdown("#### พิกัดปัจจุบัน")
+                st.info(f"**Lat:** {st.session_state['farm_lat']:.4f}\n\n**Lng:** {st.session_state['farm_lng']:.4f}")
+                with st.expander("✍️ ระบุพิกัดด้วยตัวเอง"):
+                    new_lat = st.number_input("Lat (N)", min_value=5.0, max_value=21.0, value=float(st.session_state["farm_lat"]), step=0.0001, format="%.4f", key="wiz_lat")
+                    new_lng = st.number_input("Lng (E)", min_value=97.0, max_value=106.0, value=float(st.session_state["farm_lng"]), step=0.0001, format="%.4f", key="wiz_lng")
+                    if new_lat != st.session_state["farm_lat"] or new_lng != st.session_state["farm_lng"]:
+                        st.session_state["farm_lat"] = new_lat
+                        st.session_state["farm_lng"] = new_lng
                         st.rerun()
+
+            render_step_nav(1)
+
+        # -------------------------------------------------------------------------
+        # STEP 2: CROP + FIELD SIZE
+        # -------------------------------------------------------------------------
+        with tab_crop:
+            st.markdown("### 🌾 เลือกพืชและขนาดพื้นที่")
+
+            col1, col2 = st.columns(2)
+            with col1:
+                crop_options = {TH["riceberry"]: "Riceberry Rice", TH["corn"]: "Corn"}
+                crop_keys = list(crop_options.keys())
+                crop_thai = st.selectbox(TH["select_crop"], options=crop_keys, index=st.session_state.get("crop_idx", 0), key="wiz_crop")
+                st.session_state["crop_idx"] = crop_keys.index(crop_thai)
+                st.session_state["crop"] = crop_options[crop_thai]
+
+            with col2:
+                field_size = st.number_input(TH["field_size"], min_value=1.0, max_value=100.0, value=float(st.session_state["field_size"]), step=1.0, help=TH["field_size_help"], key="wiz_field")
+                st.session_state["field_size"] = field_size
+
+            budget = st.number_input(TH["budget"], min_value=1000, max_value=100000, value=int(st.session_state["budget"]), step=1000, help=TH["budget_help"], key="wiz_budget")
+            st.session_state["budget"] = budget
+
+            render_step_nav(2)
+
+        # -------------------------------------------------------------------------
+        # STEP 3: SOIL INPUTS
+        # -------------------------------------------------------------------------
+        with tab_soil:
+            st.markdown("### 🧪 ข้อมูลผลตรวจดิน")
+            st.markdown("กรอกค่าจากผลตรวจดินของคุณ หรือใช้ค่าเริ่มต้น")
+
+            col1, col2 = st.columns(2)
+            with col1:
+                ph = st.slider(TH["ph_level"], min_value=4.0, max_value=9.0, value=float(st.session_state["ph"]), step=0.1, key="wiz_ph")
+                st.session_state["ph"] = ph
+                if ph < 5.5:
+                    st.markdown(f"<small style='color: #EF5350;'>⚠️ {TH['ph_acidic']}</small>", unsafe_allow_html=True)
+                elif ph < 6.5:
+                    st.markdown(f"<small style='color: #FFB74D;'>pH: {TH['ph_slightly_acidic']}</small>", unsafe_allow_html=True)
+                elif ph < 7.5:
+                    st.markdown(f"<small style='color: #66BB6A;'>✓ {TH['ph_neutral']}</small>", unsafe_allow_html=True)
+                else:
+                    st.markdown(f"<small style='color: #42A5F5;'>pH: {TH['ph_alkaline']}</small>", unsafe_allow_html=True)
+
+                nitrogen = st.slider(f"{TH['nitrogen']} ({TH['unit_mg_kg']})", min_value=5, max_value=100, value=int(st.session_state["nitrogen"]), step=5, key="wiz_n")
+                st.session_state["nitrogen"] = nitrogen
+
+            with col2:
+                phosphorus = st.slider(f"{TH['phosphorus']} ({TH['unit_mg_kg']})", min_value=5, max_value=80, value=int(st.session_state["phosphorus"]), step=2, key="wiz_p")
+                st.session_state["phosphorus"] = phosphorus
+
+                potassium = st.slider(f"{TH['potassium']} ({TH['unit_mg_kg']})", min_value=20, max_value=300, value=int(st.session_state["potassium"]), step=10, key="wiz_k")
+                st.session_state["potassium"] = potassium
+
+            with st.expander("⚙️ ตัวเลือกเพิ่มเติม"):
+                texture_options = {TH["loam"]: "loam", TH["clay_loam"]: "clay loam", TH["sandy_loam"]: "sandy loam", TH["sandy_clay_loam"]: "sandy clay loam", TH["silty_clay"]: "silty clay"}
+                texture_keys = list(texture_options.keys())
+                texture_thai = st.selectbox(TH["soil_texture"], options=texture_keys, index=st.session_state.get("texture_idx", 1), key="wiz_texture")
+                st.session_state["texture_idx"] = texture_keys.index(texture_thai)
+                st.session_state["texture"] = texture_options[texture_thai]
+                irrigation = st.checkbox(TH["irrigation"], value=st.session_state["irrigation"], key="wiz_irrigation")
+                st.session_state["irrigation"] = irrigation
+                prefer_organic = st.checkbox(TH["prefer_organic"], value=st.session_state["prefer_organic"], key="wiz_organic")
+                st.session_state["prefer_organic"] = prefer_organic
+
+            render_step_nav(3)
+
+        # -------------------------------------------------------------------------
+        # STEP 4: PLAN OUTPUT (Run Analysis)
+        # -------------------------------------------------------------------------
+        with tab_plan:
+            st.markdown("### 📋 แผนการใส่ปุ๋ย")
+
+            # Summary of inputs
+            st.markdown("#### สรุปข้อมูลที่ป้อน")
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.metric("ตำแหน่ง", f"{st.session_state['farm_lat']:.2f}, {st.session_state['farm_lng']:.2f}")
+            with col2:
+                st.metric("พืช", crop_keys[st.session_state.get("crop_idx", 0)] if st.session_state.get("crop_idx") is not None else "N/A")
+            with col3:
+                st.metric("พื้นที่", f"{st.session_state['field_size']:.0f} ไร่")
+
+            st.markdown("---")
+
+            # Run Analysis Button
+            st.markdown('<div id="run-button"></div>', unsafe_allow_html=True)
+            run_analysis = st.button(f"🔬 {TH['run_analysis']}", key="wizard_run_analysis", use_container_width=True, type="primary")
+
+            if run_analysis:
+                st.session_state["run_triggered"] = True
+
+            render_step_nav(4)
+
+        # -------------------------------------------------------------------------
+        # STEP 5: LOG + EXPORT
+        # -------------------------------------------------------------------------
+        with tab_save:
+            st.markdown("### 💾 บันทึกและส่งออกรายงาน")
+            if st.session_state.get("analysis_result"):
+                st.success("✅ การวิเคราะห์เสร็จสมบูรณ์ - พร้อมบันทึก")
+                if st.button("📥 ดาวน์โหลดรายงาน PDF", disabled=True):
+                    st.info("ฟีเจอร์นี้จะพร้อมใช้งานเร็วๆ นี้")
             else:
-                st.warning("ไม่สามารถโหลดแผนที่ได้ กรุณาระบุพิกัดด้วยตัวเอง")
+                st.info("กรุณาวิเคราะห์ข้อมูลก่อนบันทึก (ไปที่แท็บ 'แผน')")
 
-        with col_info:
-            st.markdown("#### พิกัดปัจจุบัน")
-            st.info(f"**Lat:** {st.session_state['farm_lat']:.4f}\n\n**Lng:** {st.session_state['farm_lng']:.4f}")
-            with st.expander("✍️ ระบุพิกัดด้วยตัวเอง"):
-                new_lat = st.number_input("Lat (N)", min_value=5.0, max_value=21.0, value=float(st.session_state["farm_lat"]), step=0.0001, format="%.4f", key="wiz_lat")
-                new_lng = st.number_input("Lng (E)", min_value=97.0, max_value=106.0, value=float(st.session_state["farm_lng"]), step=0.0001, format="%.4f", key="wiz_lng")
-                if new_lat != st.session_state["farm_lat"] or new_lng != st.session_state["farm_lng"]:
-                    st.session_state["farm_lat"] = new_lat
-                    st.session_state["farm_lng"] = new_lng
-                    st.rerun()
+            # -----------------------------------------------------------------
+            # HISTORY SECTION (ประวัติการวิเคราะห์)
+            # -----------------------------------------------------------------
+            with st.expander(f"📂 {TH['history_section']}", expanded=False):
+                try:
+                    history_records = get_recent_history(limit=5)
+                except Exception:
+                    history_records = []
 
-        render_step_nav(1)
+                if history_records:
+                    history_options = ["-- เลือกประวัติ --"]
+                    history_map = {}
 
-    # -------------------------------------------------------------------------
-    # STEP 2: CROP + FIELD SIZE
-    # -------------------------------------------------------------------------
-    with tab_crop:
-        st.markdown("### 🌾 เลือกพืชและขนาดพื้นที่")
+                    for record in history_records:
+                        try:
+                            record_date = datetime.fromisoformat(record["timestamp"]).strftime("%d/%m/%y %H:%M")
+                        except (ValueError, TypeError, KeyError):
+                            record_date = "N/A"
 
-        col1, col2 = st.columns(2)
-        with col1:
-            crop_options = {TH["riceberry"]: "Riceberry Rice", TH["corn"]: "Corn"}
-            crop_keys = list(crop_options.keys())
-            crop_thai = st.selectbox(TH["select_crop"], options=crop_keys, index=st.session_state.get("crop_idx", 0), key="wiz_crop")
-            st.session_state["crop_idx"] = crop_keys.index(crop_thai)
-            st.session_state["crop"] = crop_options[crop_thai]
+                        crop_short = "🌾" if "Rice" in record.get("crop_type", "") else "🌽"
+                        score = record.get("overall_score", 0)
+                        display_text = f"{crop_short} {record_date} | {score:.0f}%"
+                        history_options.append(display_text)
+                        history_map[display_text] = record["id"]
 
-        with col2:
-            field_size = st.number_input(TH["field_size"], min_value=1.0, max_value=100.0, value=float(st.session_state["field_size"]), step=1.0, help=TH["field_size_help"], key="wiz_field")
-            st.session_state["field_size"] = field_size
+                    selected_history = st.selectbox(
+                        TH["history_title"],
+                        options=history_options,
+                        index=0,
+                        key="sidebar_history_select",
+                        label_visibility="collapsed"
+                    )
 
-        budget = st.number_input(TH["budget"], min_value=1000, max_value=100000, value=int(st.session_state["budget"]), step=1000, help=TH["budget_help"], key="wiz_budget")
-        st.session_state["budget"] = budget
+                    if selected_history != "-- เลือกประวัติ --":
+                        record_id = history_map.get(selected_history)
+                        if record_id:
+                            try:
+                                full_record = get_analysis_by_id(record_id)
+                                if full_record:
+                                    st.markdown(f"**{TH['history_location']}:** {full_record.get('location_name', 'N/A')}")
+                                    st.markdown(f"**{TH['history_crop']}:** {full_record.get('crop_type', 'N/A')}")
+                                    st.markdown(f"**{TH['history_score']}:** {full_record.get('overall_score', 0):.1f}/100")
+                                    st.markdown(f"**ROI:** {full_record.get('roi_percent', 0):.1f}%")
 
-        render_step_nav(2)
+                                    exec_summary = full_record.get("executive_summary", {})
+                                    if exec_summary and isinstance(exec_summary, dict):
+                                        bottom_line = exec_summary.get("bottom_line", "")
+                                        if bottom_line:
+                                            st.info(bottom_line)
+                            except Exception as e:
+                                st.error(f"ไม่สามารถโหลดข้อมูลได้: {e}")
+                else:
+                    st.markdown(f"""
+                    <div style="text-align: center; padding: 16px; color: #757575; font-size: 14px;">
+                        <span class="material-icons-outlined" style="font-size: 24px;">inbox</span>
+                        <br>{TH["history_empty"]}
+                    </div>
+                    """, unsafe_allow_html=True)
 
-    # -------------------------------------------------------------------------
-    # STEP 3: SOIL INPUTS
-    # -------------------------------------------------------------------------
-    with tab_soil:
-        st.markdown("### 🧪 ข้อมูลผลตรวจดิน")
-        st.markdown("กรอกค่าจากผลตรวจดินของคุณ หรือใช้ค่าเริ่มต้น")
-
-        col1, col2 = st.columns(2)
-        with col1:
-            ph = st.slider(TH["ph_level"], min_value=4.0, max_value=9.0, value=float(st.session_state["ph"]), step=0.1, key="wiz_ph")
-            st.session_state["ph"] = ph
-            if ph < 5.5:
-                st.markdown(f"<small style='color: #EF5350;'>⚠️ {TH['ph_acidic']}</small>", unsafe_allow_html=True)
-            elif ph < 6.5:
-                st.markdown(f"<small style='color: #FFB74D;'>pH: {TH['ph_slightly_acidic']}</small>", unsafe_allow_html=True)
-            elif ph < 7.5:
-                st.markdown(f"<small style='color: #66BB6A;'>✓ {TH['ph_neutral']}</small>", unsafe_allow_html=True)
-            else:
-                st.markdown(f"<small style='color: #42A5F5;'>pH: {TH['ph_alkaline']}</small>", unsafe_allow_html=True)
-
-            nitrogen = st.slider(f"{TH['nitrogen']} ({TH['unit_mg_kg']})", min_value=5, max_value=100, value=int(st.session_state["nitrogen"]), step=5, key="wiz_n")
-            st.session_state["nitrogen"] = nitrogen
-
-        with col2:
-            phosphorus = st.slider(f"{TH['phosphorus']} ({TH['unit_mg_kg']})", min_value=5, max_value=80, value=int(st.session_state["phosphorus"]), step=2, key="wiz_p")
-            st.session_state["phosphorus"] = phosphorus
-
-            potassium = st.slider(f"{TH['potassium']} ({TH['unit_mg_kg']})", min_value=20, max_value=300, value=int(st.session_state["potassium"]), step=10, key="wiz_k")
-            st.session_state["potassium"] = potassium
-
-        with st.expander("⚙️ ตัวเลือกเพิ่มเติม"):
-            texture_options = {TH["loam"]: "loam", TH["clay_loam"]: "clay loam", TH["sandy_loam"]: "sandy loam", TH["sandy_clay_loam"]: "sandy clay loam", TH["silty_clay"]: "silty clay"}
-            texture_keys = list(texture_options.keys())
-            texture_thai = st.selectbox(TH["soil_texture"], options=texture_keys, index=st.session_state.get("texture_idx", 1), key="wiz_texture")
-            st.session_state["texture_idx"] = texture_keys.index(texture_thai)
-            st.session_state["texture"] = texture_options[texture_thai]
-            irrigation = st.checkbox(TH["irrigation"], value=st.session_state["irrigation"], key="wiz_irrigation")
-            st.session_state["irrigation"] = irrigation
-            prefer_organic = st.checkbox(TH["prefer_organic"], value=st.session_state["prefer_organic"], key="wiz_organic")
-            st.session_state["prefer_organic"] = prefer_organic
-
-        render_step_nav(3)
-
-    # -------------------------------------------------------------------------
-    # STEP 4: PLAN OUTPUT (Run Analysis)
-    # -------------------------------------------------------------------------
-    with tab_plan:
-        st.markdown("### 📋 แผนการใส่ปุ๋ย")
-
-        # Summary of inputs
-        st.markdown("#### สรุปข้อมูลที่ป้อน")
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            st.metric("ตำแหน่ง", f"{st.session_state['farm_lat']:.2f}, {st.session_state['farm_lng']:.2f}")
-        with col2:
-            st.metric("พืช", crop_keys[st.session_state.get("crop_idx", 0)] if st.session_state.get("crop_idx") is not None else "N/A")
-        with col3:
-            st.metric("พื้นที่", f"{st.session_state['field_size']:.0f} ไร่")
-
-        st.markdown("---")
-
-        # Run Analysis Button
-        st.markdown('<div id="run-button"></div>', unsafe_allow_html=True)
-        run_analysis = st.button(f"🔬 {TH['run_analysis']}", key="wizard_run_analysis", use_container_width=True, type="primary")
-
-        if run_analysis:
-            st.session_state["run_triggered"] = True
-
-        render_step_nav(4)
-
-    # -------------------------------------------------------------------------
-    # STEP 5: LOG + EXPORT
-    # -------------------------------------------------------------------------
-    with tab_save:
-        st.markdown("### 💾 บันทึกและส่งออกรายงาน")
-        if st.session_state.get("analysis_result"):
-            st.success("✅ การวิเคราะห์เสร็จสมบูรณ์ - พร้อมบันทึก")
-            if st.button("📥 ดาวน์โหลดรายงาน PDF", disabled=True):
-                st.info("ฟีเจอร์นี้จะพร้อมใช้งานเร็วๆ นี้")
-        else:
-            st.info("กรุณาวิเคราะห์ข้อมูลก่อนบันทึก (ไปที่แท็บ 'แผน')")
-
-        render_step_nav(5)
+            render_step_nav(5)
 
     # =========================================================================
-    # SIDEBAR (Summary Panel - Always Shows Selected Values)
+    # SUMMARY PANEL (Right Column - Always Shows Selected Values)
     # =========================================================================
-    with st.sidebar:
-        # Summary panel anchor for E2E tests
+    with summary_col:
+        st.markdown("""
+        <style>
+        [data-testid="stVerticalBlockBorderWrapper"]:has(#selection-summary) {
+            position: sticky;
+            top: 3.5rem;
+            align-self: start;
+        }
+        </style>
+        """, unsafe_allow_html=True)
         st.markdown('<div id="selection-summary"></div>', unsafe_allow_html=True)
         st.markdown("### สรุปสิ่งที่เลือก")
 
-        # Compact summary using session state
         crop_display = crop_keys[st.session_state.get("crop_idx", 0)] if st.session_state.get("crop_idx") is not None else "ยังไม่เลือก"
         st.info(f"""
         **📍 พิกัด:** {st.session_state['farm_lat']:.4f}, {st.session_state['farm_lng']:.4f}
@@ -2307,74 +2429,10 @@ def main():
         **🧪 ดิน:** pH {st.session_state['ph']}, N{st.session_state['nitrogen']}-P{st.session_state['phosphorus']}-K{st.session_state['potassium']}
         """)
 
-        # =====================================================================
-        # HISTORY SECTION (ประวัติการวิเคราะห์)
-        # =====================================================================
-        render_section_header(TH["history_section"], "history")
-
-        # Get recent history from database
-        try:
-            history_records = get_recent_history(limit=5)
-        except Exception:
-            history_records = []
-
-        if history_records:
-            # Create a selectbox for history items
-            history_options = ["-- เลือกประวัติ --"]
-            history_map = {}
-
-            for record in history_records:
-                # Format date
-                try:
-                    record_date = datetime.fromisoformat(record["timestamp"]).strftime("%d/%m/%y %H:%M")
-                except (ValueError, TypeError, KeyError):
-                    record_date = "N/A"
-
-                # Create display text
-                crop_short = "🌾" if "Rice" in record.get("crop_type", "") else "🌽"
-                score = record.get("overall_score", 0)
-                display_text = f"{crop_short} {record_date} | {score:.0f}%"
-                history_options.append(display_text)
-                history_map[display_text] = record["id"]
-
-            selected_history = st.selectbox(
-                TH["history_title"],
-                options=history_options,
-                index=0,
-                key="sidebar_history_select",
-                label_visibility="collapsed"
-            )
-
-            # Show selected history details
-            if selected_history != "-- เลือกประวัติ --":
-                record_id = history_map.get(selected_history)
-                if record_id:
-                    with st.expander(f"📋 {TH['history_view']}", expanded=True):
-                        try:
-                            full_record = get_analysis_by_id(record_id)
-                            if full_record:
-                                st.markdown(f"**{TH['history_location']}:** {full_record.get('location_name', 'N/A')}")
-                                st.markdown(f"**{TH['history_crop']}:** {full_record.get('crop_type', 'N/A')}")
-                                st.markdown(f"**{TH['history_score']}:** {full_record.get('overall_score', 0):.1f}/100")
-                                st.markdown(f"**ROI:** {full_record.get('roi_percent', 0):.1f}%")
-
-                                # Show executive summary if available
-                                exec_summary = full_record.get("executive_summary", {})
-                                if exec_summary and isinstance(exec_summary, dict):
-                                    bottom_line = exec_summary.get("bottom_line", "")
-                                    if bottom_line:
-                                        st.info(bottom_line)
-                        except Exception as e:
-                            st.error(f"ไม่สามารถโหลดข้อมูลได้: {e}")
-        else:
-            st.markdown(f"""
-            <div style="text-align: center; padding: 16px; color: #757575; font-size: 14px;">
-                <span class="material-icons-outlined" style="font-size: 24px;">inbox</span>
-                <br>{TH["history_empty"]}
-            </div>
-            """, unsafe_allow_html=True)
-
-        # Footer info
+    # =========================================================================
+    # SIDEBAR (Minimal - Branding Only)
+    # =========================================================================
+    with st.sidebar:
         st.markdown(f"""
         <div style="text-align: center; margin-top: 24px; color: #757575; font-size: 14px;">
             <span class="material-icons-outlined" style="font-size: 16px; vertical-align: middle;">smart_toy</span>

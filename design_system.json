@@ -1,0 +1,453 @@
+{
+    "meta": {
+        "name": "GlassDark-ElderFriendly",
+        "version": "1.0.0",
+        "description": "Dark + Glassmorphism tokens inspired by the attached UI, tuned for elder-friendly typography and touch targets."
+    },
+    "color": {
+        "bg": {
+            "canvas": {
+                "type": "linear-gradient",
+                "stops": [
+                    {
+                        "color": "#4B63A2",
+                        "pos": 0.0
+                    },
+                    {
+                        "color": "#212352",
+                        "pos": 0.55
+                    },
+                    {
+                        "color": "#510D1B",
+                        "pos": 1.0
+                    }
+                ],
+                "angleDeg": 225
+            }
+        },
+        "surface": {
+            "glass": {
+                "1": {
+                    "value": "rgba(35, 33, 62, 0.72)"
+                },
+                "2": {
+                    "value": "rgba(47, 59, 83, 0.58)"
+                },
+                "3": {
+                    "value": "rgba(51, 45, 71, 0.46)"
+                }
+            },
+            "overlay": {
+                "hover": {
+                    "value": "rgba(255, 255, 255, 0.06)"
+                },
+                "pressed": {
+                    "value": "rgba(255, 255, 255, 0.04)"
+                }
+            }
+        },
+        "border": {
+            "subtle": {
+                "value": "rgba(255, 255, 255, 0.12)"
+            },
+            "divider": {
+                "value": "rgba(255, 255, 255, 0.08)"
+            },
+            "focus": {
+                "value": "rgba(60, 109, 239, 0.55)"
+            }
+        },
+        "text": {
+            "primary": {
+                "value": "rgba(255, 255, 255, 0.94)"
+            },
+            "secondary": {
+                "value": "rgba(255, 255, 255, 0.68)"
+            },
+            "tertiary": {
+                "value": "rgba(255, 255, 255, 0.52)"
+            },
+            "disabled": {
+                "value": "rgba(255, 255, 255, 0.36)"
+            },
+            "onAccent": {
+                "value": "#FFFFFF"
+            }
+        },
+        "accent": {
+            "primary": {
+                "value": "#3C6DEF"
+            },
+            "primaryHover": {
+                "value": "#4A79F2"
+            },
+            "primaryPressed": {
+                "value": "#2F5FE0"
+            }
+        },
+        "status": {
+            "success": {
+                "value": "#34C759"
+            },
+            "info": {
+                "value": "#3C6DEF"
+            },
+            "warning": {
+                "value": "#FFCC00"
+            },
+            "danger": {
+                "value": "#FF3B30"
+            }
+        },
+        "hero": {
+            "gradient": {
+                "type": "linear-gradient",
+                "stops": [
+                    {
+                        "color": "#D633ED",
+                        "pos": 0.0
+                    },
+                    {
+                        "color": "#F34A85",
+                        "pos": 0.55
+                    },
+                    {
+                        "color": "#FCD897",
+                        "pos": 1.0
+                    }
+                ],
+                "angleDeg": 90
+            }
+        }
+    },
+    "blur": {
+        "glass": {
+            "sigma": {
+                "value": 18
+            },
+            "sigmaStrong": {
+                "value": 24
+            }
+        }
+    },
+    "radius": {
+        "window": {
+            "value": 24
+        },
+        "panel": {
+            "value": 18
+        },
+        "card": {
+            "value": 18
+        },
+        "control": {
+            "value": 999
+        }
+    },
+    "stroke": {
+        "hairline": {
+            "value": 1
+        }
+    },
+    "shadow": {
+        "elevation": {
+            "1": {
+                "value": [
+                    {
+                        "x": 0,
+                        "y": 10,
+                        "blur": 30,
+                        "spread": 0,
+                        "color": "rgba(0,0,0,0.28)"
+                    }
+                ]
+            },
+            "2": {
+                "value": [
+                    {
+                        "x": 0,
+                        "y": 18,
+                        "blur": 50,
+                        "spread": 0,
+                        "color": "rgba(0,0,0,0.34)"
+                    }
+                ]
+            }
+        }
+    },
+    "space": {
+        "0": {
+            "value": 0
+        },
+        "1": {
+            "value": 4
+        },
+        "2": {
+            "value": 8
+        },
+        "3": {
+            "value": 12
+        },
+        "4": {
+            "value": 16
+        },
+        "5": {
+            "value": 20
+        },
+        "6": {
+            "value": 24
+        },
+        "7": {
+            "value": 32
+        },
+        "8": {
+            "value": 40
+        },
+        "9": {
+            "value": 48
+        }
+    },
+    "typography": {
+        "fontFamily": {
+            "sans": {
+                "value": [
+                    "SF Pro Display",
+                    "SF Pro Text",
+                    "Inter",
+                    "Segoe UI",
+                    "Helvetica",
+                    "Arial",
+                    "system-ui",
+                    "sans-serif"
+                ]
+            }
+        },
+        "weight": {
+            "regular": {
+                "value": 400
+            },
+            "medium": {
+                "value": 500
+            },
+            "semibold": {
+                "value": 600
+            }
+        },
+        "lineHeight": {
+            "tight": {
+                "value": 1.15
+            },
+            "normal": {
+                "value": 1.3
+            },
+            "relaxed": {
+                "value": 1.45
+            }
+        },
+        "letterSpacing": {
+            "normal": {
+                "value": 0
+            },
+            "title": {
+                "value": 0.2
+            }
+        },
+        "scale": {
+            "base": {
+                "xs": {
+                    "value": 12
+                },
+                "sm": {
+                    "value": 14
+                },
+                "md": {
+                    "value": 16
+                },
+                "lg": {
+                    "value": 18
+                },
+                "xl": {
+                    "value": 22
+                },
+                "2xl": {
+                    "value": 28
+                },
+                "3xl": {
+                    "value": 34
+                }
+            },
+            "elder": {
+                "xs": {
+                    "value": 14
+                },
+                "sm": {
+                    "value": 16
+                },
+                "md": {
+                    "value": 18
+                },
+                "lg": {
+                    "value": 20
+                },
+                "xl": {
+                    "value": 26
+                },
+                "2xl": {
+                    "value": 32
+                },
+                "3xl": {
+                    "value": 40
+                }
+            }
+        },
+        "role": {
+            "appTitle": {
+                "fontFamily": "{typography.fontFamily.sans}",
+                "fontWeight": "{typography.weight.semibold}",
+                "fontSize": "{typography.scale.elder.xl}",
+                "lineHeight": "{typography.lineHeight.tight}",
+                "letterSpacing": "{typography.letterSpacing.title}",
+                "color": "{color.text.primary}"
+            },
+            "sectionTitle": {
+                "fontFamily": "{typography.fontFamily.sans}",
+                "fontWeight": "{typography.weight.semibold}",
+                "fontSize": "{typography.scale.elder.lg}",
+                "lineHeight": "{typography.lineHeight.normal}",
+                "color": "{color.text.primary}"
+            },
+            "body": {
+                "fontFamily": "{typography.fontFamily.sans}",
+                "fontWeight": "{typography.weight.regular}",
+                "fontSize": "{typography.scale.elder.md}",
+                "lineHeight": "{typography.lineHeight.relaxed}",
+                "color": "{color.text.secondary}"
+            },
+            "label": {
+                "fontFamily": "{typography.fontFamily.sans}",
+                "fontWeight": "{typography.weight.medium}",
+                "fontSize": "{typography.scale.elder.sm}",
+                "lineHeight": "{typography.lineHeight.normal}",
+                "color": "{color.text.primary}"
+            },
+            "meta": {
+                "fontFamily": "{typography.fontFamily.sans}",
+                "fontWeight": "{typography.weight.regular}",
+                "fontSize": "{typography.scale.elder.xs}",
+                "lineHeight": "{typography.lineHeight.normal}",
+                "color": "{color.text.tertiary}"
+            }
+        }
+    },
+    "component": {
+        "touchTarget": {
+            "minSize": {
+                "value": 52
+            },
+            "minHeight": {
+                "value": 52
+            }
+        },
+        "button": {
+            "height": {
+                "value": 52
+            },
+            "paddingX": {
+                "value": 18
+            },
+            "gap": {
+                "value": 10
+            },
+            "radius": "{radius.control}",
+            "font": "{typography.role.label}",
+            "primary": {
+                "bg": "{color.accent.primary}",
+                "bgHover": "{color.accent.primaryHover}",
+                "bgPressed": "{color.accent.primaryPressed}",
+                "text": "{color.text.onAccent}"
+            },
+            "secondary": {
+                "bg": "rgba(255,255,255,0.06)",
+                "bgHover": "rgba(255,255,255,0.08)",
+                "border": "{color.border.subtle}",
+                "text": "{color.text.primary}"
+            }
+        },
+        "tab": {
+            "height": {
+                "value": 44
+            },
+            "paddingX": {
+                "value": 14
+            },
+            "fontSize": "{typography.scale.elder.sm}",
+            "activeUnderline": {
+                "height": {
+                    "value": 2
+                },
+                "color": "{color.text.primary}"
+            }
+        },
+        "sidebar": {
+            "width": {
+                "value": 260
+            },
+            "itemHeight": {
+                "value": 48
+            },
+            "itemPaddingX": {
+                "value": 14
+            },
+            "itemRadius": {
+                "value": 12
+            },
+            "fontSize": "{typography.scale.elder.sm}",
+            "selectedBg": "rgba(255,255,255,0.08)"
+        },
+        "listRow": {
+            "height": {
+                "value": 64
+            },
+            "paddingX": {
+                "value": 16
+            },
+            "gap": {
+                "value": 14
+            },
+            "divider": "{color.border.divider}",
+            "titleFontSize": "{typography.scale.elder.md}",
+            "metaFontSize": "{typography.scale.elder.sm}"
+        },
+        "card": {
+            "radius": "{radius.card}",
+            "padding": {
+                "value": 18
+            },
+            "bg": "{color.surface.glass.2}",
+            "border": "{color.border.subtle}",
+            "blurSigma": "{blur.glass.sigma}",
+            "shadow": "{shadow.elevation.1}"
+        },
+        "panel": {
+            "radius": "{radius.panel}",
+            "padding": {
+                "value": 18
+            },
+            "bg": "{color.surface.glass.1}",
+            "border": "{color.border.subtle}",
+            "blurSigma": "{blur.glass.sigmaStrong}",
+            "shadow": "{shadow.elevation.2}"
+        }
+    },
+    "accessibility": {
+        "elderFriendly": {
+            "enabled": true,
+            "notes": [
+                "Typography scale uses elder sizes (min body 18px).",
+                "Minimum touch target is 52px.",
+                "Increased line-height for readability.",
+                "High contrast maintained using primary/secondary text tokens."
+            ]
+        }
+    }
+}

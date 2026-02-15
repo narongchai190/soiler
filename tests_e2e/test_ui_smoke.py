@@ -16,9 +16,8 @@ class TestSelectionSummary:
 
     def test_summary_panel_visible(self, page: Page):
         """Verify the selection summary panel exists in main layout."""
-        # The summary title we specified
-        summary_text = page.get_by_text("สรุปสิ่งที่เลือก")
-        expect(summary_text.first).to_be_visible(timeout=10000)
+        summary_card = page.locator(".summary-card")
+        expect(summary_card.first).to_be_visible(timeout=10000)
 
     def test_summary_anchor_exists(self, page: Page):
         """Verify the stable HTML anchor exists for testing."""
@@ -67,8 +66,8 @@ class TestDropdownSelection:
                 page.wait_for_timeout(1000)
 
         # Verify selection summary is still visible (page didn't crash)
-        summary_text = page.get_by_text("สรุปสิ่งที่เลือก")
-        expect(summary_text.first).to_be_visible(timeout=10000)
+        summary_card = page.locator(".summary-card")
+        expect(summary_card.first).to_be_visible(timeout=10000)
 
 
 class TestSelectboxVisibility:
@@ -206,9 +205,9 @@ class TestWizardNavigation:
 
     def test_summary_shows_selected_values(self, page: Page):
         """Verify the summary panel reflects session_state defaults."""
-        # The summary should show default values on first load
-        summary = page.get_by_text("สรุปสิ่งที่เลือก")
-        expect(summary.first).to_be_visible(timeout=10000)
+        # The summary card should be visible on first load
+        summary_card = page.locator(".summary-card")
+        expect(summary_card.first).to_be_visible(timeout=10000)
 
         # Check that coordinates appear in summary panel (now in main layout)
         summary_anchor = page.locator("#selection-summary")

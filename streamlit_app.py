@@ -2,9 +2,9 @@
 S.O.I.L.E.R. Web Dashboard - Professional Edition
 
 Professional AGRI-TECH Interface with:
-- Sarabun Font (Google Fonts)
-- Minimalist Deep Dark Theme
-- Material Icons
+- Sarabun Font (Google Fonts) - Thai-optimized typography
+- Earth Green + Harvest Gold Dark Theme
+- Material Icons (HTML cards) + Emoji (Streamlit tabs)
 - Elderly-Friendly Accessibility
 - Thai Localization
 
@@ -362,7 +362,7 @@ st.markdown("""
     /* ========================================
        GOOGLE FONTS - Poppins + Open Sans (Professional Pairing)
        ======================================== */
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Open+Sans:wght@400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap');
     @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
     @import url('https://fonts.googleapis.com/icon?family=Material+Icons+Outlined');
 
@@ -371,18 +371,18 @@ st.markdown("""
        Linear/Vercel/Notion Inspired
        ======================================== */
     :root {
-        /* Primary Colors - Professional Green */
-        --primary: #22C55E;
-        --primary-light: #4ADE80;
-        --primary-dark: #16A34A;
-        --primary-muted: rgba(34, 197, 94, 0.1);
-        --primary-glow: rgba(34, 197, 94, 0.15);
+        /* Primary Colors - Earth Green (Agriculture) */
+        --primary: #15803D;
+        --primary-light: #22C55E;
+        --primary-dark: #166534;
+        --primary-muted: rgba(21, 128, 61, 0.12);
+        --primary-glow: rgba(21, 128, 61, 0.18);
 
-        /* Accent Colors */
-        --accent: #3B82F6;
-        --accent-light: #60A5FA;
-        --gold: #F59E0B;
-        --gold-muted: rgba(245, 158, 11, 0.1);
+        /* Accent Colors - Harvest Gold */
+        --accent: #CA8A04;
+        --accent-light: #EAB308;
+        --gold: #CA8A04;
+        --gold-muted: rgba(202, 138, 4, 0.12);
 
         /* Backgrounds - Refined Dark (Like Linear) */
         --bg-primary: #0F172A;
@@ -416,11 +416,11 @@ st.markdown("""
         --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
         --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
         --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
-        --shadow-glow: 0 0 20px rgba(34, 197, 94, 0.15);
+        --shadow-glow: 0 0 20px rgba(21, 128, 61, 0.15);
 
         /* Typography Scale - Clean & Readable */
-        --font-heading: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
-        --font-body: 'Open Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+        --font-heading: 'Sarabun', -apple-system, BlinkMacSystemFont, sans-serif;
+        --font-body: 'Sarabun', -apple-system, BlinkMacSystemFont, sans-serif;
         --font-size-xs: 13px;
         --font-size-sm: 14px;
         --font-size-base: 16px;
@@ -635,10 +635,10 @@ st.markdown("""
         display: inline-flex;
         align-items: center;
         gap: var(--spacing-2);
-        background: rgba(34, 197, 94, 0.2);
+        background: rgba(21, 128, 61, 0.2);
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(34, 197, 94, 0.4);
+        border: 1px solid rgba(21, 128, 61, 0.4);
         border-radius: var(--radius-full);
         padding: var(--spacing-2) var(--spacing-4);
         font-size: var(--font-size-sm);
@@ -653,8 +653,8 @@ st.markdown("""
 
     .hero-title,
     .hero-title span {
-        font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif !important;
-        font-size: 96px !important;
+        font-family: 'Sarabun', -apple-system, BlinkMacSystemFont, sans-serif !important;
+        font-size: 72px !important;
         font-weight: 800 !important;
         color: #FFFFFF !important;
         margin: 0 0 16px 0 !important;
@@ -1118,7 +1118,7 @@ st.markdown("""
         background: var(--primary);
         color: white;
         border-color: var(--primary);
-        box-shadow: 0 0 12px rgba(34, 197, 94, 0.4);
+        box-shadow: 0 0 12px rgba(21, 128, 61, 0.4);
     }
 
     .wizard-step.completed .wizard-step-number {
@@ -1165,51 +1165,95 @@ st.markdown("""
     }
 
     /* ========================================
-       SUMMARY PANEL (Right Column) - Sticky Card
+       SUMMARY PANEL (Right Column) - Premium Redesign
+       Earth Green + Harvest Gold + Material Icons
        ======================================== */
     .summary-panel-title {
-        font-family: var(--font-heading) !important;
-        font-size: var(--font-size-sm) !important;
-        font-weight: 600 !important;
-        color: var(--text-secondary) !important;
-        text-transform: uppercase;
-        letter-spacing: 0.8px;
-        margin-bottom: var(--spacing-3) !important;
+        display: none;
     }
 
     .summary-card {
         background: var(--bg-card);
         border: 1px solid var(--border-color);
-        border-top: 3px solid var(--primary);
         border-radius: var(--radius-lg);
-        padding: var(--spacing-5);
+        overflow: hidden;
         position: sticky;
         top: 80px;
+        transition: border-color var(--transition-normal);
+    }
+
+    .summary-card::before {
+        content: '';
+        display: block;
+        height: 3px;
+        background: linear-gradient(90deg, var(--primary) 0%, var(--gold) 100%);
     }
 
     .summary-card:hover {
         border-color: var(--border-strong);
-        border-top-color: var(--primary-light);
+    }
+
+    /* Summary Header with completeness indicator */
+    .summary-header {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        padding: var(--spacing-4) var(--spacing-5) var(--spacing-3);
+        font-family: var(--font-heading);
+        font-weight: 600;
+        font-size: var(--font-size-sm);
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+    }
+
+    .summary-header .material-icons-outlined {
+        font-size: 18px !important;
+        color: var(--primary);
+    }
+
+    .summary-header .completeness {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--primary-light);
+        background: var(--primary-muted);
+        padding: 2px 8px;
+        border-radius: var(--radius-full);
+    }
+
+    .summary-body {
+        padding: 0 var(--spacing-5) var(--spacing-5);
     }
 
     .summary-row {
-        padding-bottom: 12px;
-        margin-bottom: 12px;
+        padding: 10px 0;
         border-bottom: 1px solid var(--border-light);
     }
 
-    .summary-row:last-child {
-        margin-bottom: 0;
-        padding-bottom: 0;
+    .summary-row:last-of-type {
         border-bottom: none;
+        padding-bottom: 0;
     }
 
     .summary-label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
         color: var(--text-muted);
         font-size: 11px;
         text-transform: uppercase;
         letter-spacing: 0.6px;
-        margin-bottom: 2px;
+        margin-bottom: 3px;
+    }
+
+    .summary-label .material-icons-outlined {
+        font-size: 15px !important;
+        color: var(--text-muted);
+        opacity: 0.7;
     }
 
     .summary-value {
@@ -1222,8 +1266,85 @@ st.markdown("""
     .summary-value-sub {
         color: var(--text-secondary);
         font-size: var(--font-size-sm);
+        margin-top: 2px;
     }
 
+    /* pH Scale Visual Indicator */
+    .ph-scale {
+        position: relative;
+        height: 6px;
+        border-radius: 3px;
+        background: linear-gradient(90deg,
+            #EF4444 0%, #F59E0B 30%, #22C55E 50%, #3B82F6 75%, #8B5CF6 100%);
+        margin-top: 8px;
+        margin-bottom: 4px;
+    }
+
+    .ph-indicator {
+        position: absolute;
+        top: -3px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: white;
+        border: 2px solid var(--bg-card);
+        box-shadow: 0 0 0 2px var(--text-primary), var(--shadow-sm);
+        transform: translateX(-50%);
+    }
+
+    .ph-labels {
+        display: flex;
+        justify-content: space-between;
+        font-size: 9px;
+        color: var(--text-muted);
+        letter-spacing: 0.3px;
+    }
+
+    /* NPK Bars - Visual Nutrient Indicators */
+    .npk-bars {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-top: 8px;
+    }
+
+    .npk-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .npk-letter {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--text-secondary);
+        width: 14px;
+        text-align: center;
+    }
+
+    .npk-track {
+        flex: 1;
+        height: 6px;
+        background: var(--bg-tertiary);
+        border-radius: 3px;
+        overflow: hidden;
+    }
+
+    .npk-fill {
+        height: 100%;
+        border-radius: 3px;
+        transition: width 0.4s ease;
+    }
+
+    .npk-val {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--text-secondary);
+        width: 30px;
+        text-align: right;
+    }
+
+    /* Summary Status Badge */
     .summary-status {
         display: inline-flex;
         align-items: center;
@@ -1238,15 +1359,15 @@ st.markdown("""
     }
 
     .summary-status.ready {
-        background: rgba(34, 197, 94, 0.15);
+        background: rgba(21, 128, 61, 0.15);
         color: var(--primary-light);
-        border: 1px solid rgba(34, 197, 94, 0.3);
+        border: 1px solid rgba(21, 128, 61, 0.3);
     }
 
     .summary-status.draft {
-        background: rgba(245, 158, 11, 0.1);
+        background: var(--gold-muted);
         color: var(--gold);
-        border: 1px solid rgba(245, 158, 11, 0.25);
+        border: 1px solid rgba(202, 138, 4, 0.25);
     }
 
     /* ========================================
@@ -1492,7 +1613,7 @@ st.markdown("""
     }
 
     .status-excellent {
-        background: rgba(34, 197, 94, 0.15);
+        background: rgba(21, 128, 61, 0.15);
         color: var(--success);
     }
 
@@ -1737,8 +1858,8 @@ st.markdown("""
     }
 
     .assessment-banner.favorable {
-        border-color: rgba(34, 197, 94, 0.3);
-        background: rgba(34, 197, 94, 0.08);
+        border-color: rgba(21, 128, 61, 0.3);
+        background: rgba(21, 128, 61, 0.08);
     }
 
     .assessment-banner.moderate {
@@ -2160,7 +2281,7 @@ def main():
             font-size: 96px !important;
             font-weight: 800 !important;
             color: #FFFFFF !important;
-            font-family: 'Poppins', sans-serif !important;
+            font-family: 'Sarabun', sans-serif !important;
             letter-spacing: -2px !important;
             text-shadow: 0 4px 30px rgba(0,0,0,0.5) !important;
             margin: 0 0 16px 0 !important;
@@ -2210,7 +2331,6 @@ def main():
     # ---- Summary Panel (right column) ----
     with summary_col:
         st.markdown('<div id="selection-summary"></div>', unsafe_allow_html=True)
-        st.markdown('<p class="summary-panel-title">สรุปสิ่งที่เลือก</p>', unsafe_allow_html=True)
 
         # Crop display from session state
         crop_options_summary = {TH["riceberry"]: "Riceberry Rice", TH["corn"]: "Corn"}
@@ -2223,32 +2343,94 @@ def main():
         status_text = "พร้อมวิเคราะห์" if not has_analysis else "วิเคราะห์แล้ว"
         status_icon = "check_circle" if has_analysis else "play_circle"
 
+        # NPK visual indicators - compute bar widths & colors
+        n_val = st.session_state['nitrogen']
+        p_val = st.session_state['phosphorus']
+        k_val = st.session_state['potassium']
+        # Normalize: N max~80, P max~60, K max~200 (typical Thai soil ranges)
+        n_pct = min(int(n_val / 80 * 100), 100)
+        p_pct = min(int(p_val / 60 * 100), 100)
+        k_pct = min(int(k_val / 200 * 100), 100)
+        # Color coding: <30% red, 30-60% gold, >60% green
+        def _npk_color(pct: int) -> str:
+            if pct < 30:
+                return "var(--error)"
+            if pct < 60:
+                return "var(--gold)"
+            return "var(--primary-light)"
+
+        n_color = _npk_color(n_pct)
+        p_color = _npk_color(p_pct)
+        k_color = _npk_color(k_pct)
+
+        # pH indicator position (0-14 scale -> 0-100%)
+        ph_val = st.session_state['ph']
+        ph_pct = min(max(ph_val / 14 * 100, 0), 100)
+
         st.markdown(f"""
         <div class="summary-card">
-            <div class="summary-row">
-                <div class="summary-label">📍 พิกัด</div>
-                <div class="summary-value">{st.session_state['farm_lat']:.4f}, {st.session_state['farm_lng']:.4f}</div>
+            <div class="summary-header">
+                <span class="material-icons-outlined">summarize</span>
+                สรุปข้อมูล
+                <span class="completeness">
+                    <span class="material-icons-outlined" style="font-size:13px !important;">check_circle</span>
+                    5/5
+                </span>
             </div>
-            <div class="summary-row">
-                <div class="summary-label">🌾 พืช</div>
-                <div class="summary-value">{crop_display}</div>
-            </div>
-            <div class="summary-row">
-                <div class="summary-label">📐 ขนาด</div>
-                <div class="summary-value">{st.session_state['field_size']:.1f} ไร่</div>
-            </div>
-            <div class="summary-row">
-                <div class="summary-label">💰 งบประมาณ</div>
-                <div class="summary-value">{st.session_state['budget']:,} บาท</div>
-            </div>
-            <div class="summary-row">
-                <div class="summary-label">🧪 ผลตรวจดิน</div>
-                <div class="summary-value">pH {st.session_state['ph']}</div>
-                <div class="summary-value-sub">N{st.session_state['nitrogen']} · P{st.session_state['phosphorus']} · K{st.session_state['potassium']}</div>
-            </div>
-            <div class="summary-status {status_class}">
-                <span class="material-icons-outlined" style="font-size: 14px;">{status_icon}</span>
-                {status_text}
+            <div class="summary-body">
+                <div class="summary-row">
+                    <div class="summary-label">
+                        <span class="material-icons-outlined">location_on</span> พิกัด
+                    </div>
+                    <div class="summary-value">{st.session_state['farm_lat']:.4f}, {st.session_state['farm_lng']:.4f}</div>
+                </div>
+                <div class="summary-row">
+                    <div class="summary-label">
+                        <span class="material-icons-outlined">grass</span> พืช
+                    </div>
+                    <div class="summary-value">{crop_display}</div>
+                </div>
+                <div class="summary-row">
+                    <div class="summary-label">
+                        <span class="material-icons-outlined">straighten</span> ขนาด
+                    </div>
+                    <div class="summary-value">{st.session_state['field_size']:.1f} ไร่</div>
+                </div>
+                <div class="summary-row">
+                    <div class="summary-label">
+                        <span class="material-icons-outlined">payments</span> งบประมาณ
+                    </div>
+                    <div class="summary-value">{st.session_state['budget']:,} บาท</div>
+                </div>
+                <div class="summary-row">
+                    <div class="summary-label">
+                        <span class="material-icons-outlined">science</span> ผลตรวจดิน
+                    </div>
+                    <div class="summary-value">pH {ph_val}</div>
+                    <div class="ph-scale"><div class="ph-indicator" style="left: {ph_pct:.0f}%"></div></div>
+                    <div class="ph-labels"><span>กรด</span><span>กลาง</span><span>ด่าง</span></div>
+                    <div class="npk-bars">
+                        <div class="npk-row">
+                            <span class="npk-letter">N</span>
+                            <div class="npk-track"><div class="npk-fill" style="width:{n_pct}%;background:{n_color}"></div></div>
+                            <span class="npk-val">{n_val}</span>
+                        </div>
+                        <div class="npk-row">
+                            <span class="npk-letter">P</span>
+                            <div class="npk-track"><div class="npk-fill" style="width:{p_pct}%;background:{p_color}"></div></div>
+                            <span class="npk-val">{p_val}</span>
+                        </div>
+                        <div class="npk-row">
+                            <span class="npk-letter">K</span>
+                            <div class="npk-track"><div class="npk-fill" style="width:{k_pct}%;background:{k_color}"></div></div>
+                            <span class="npk-val">{k_val}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="summary-status {status_class}">
+                    <span class="material-icons-outlined" style="font-size: 14px;">{status_icon}</span>
+                    {status_text}
+                </div>
             </div>
         </div>
         """, unsafe_allow_html=True)

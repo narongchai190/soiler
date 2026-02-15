@@ -2214,21 +2214,21 @@ def render_wizard_header(current_step: int) -> None:
         state = "active" if i == current_step else ("completed" if i < current_step else "")
         connector_state = "completed" if i < current_step else ""
 
-        step_html.append(f'''
-            <div class="wizard-step {state}">
-                <div class="wizard-step-number">{num}</div>
-                <span class="wizard-step-label">{label}</span>
-            </div>
-        ''')
+        step_html.append(
+            f'<div class="wizard-step {state}">'
+            f'<div class="wizard-step-number">{num}</div>'
+            f'<span class="wizard-step-label">{label}</span>'
+            f'</div>'
+        )
 
         if i < len(steps):
             step_html.append(f'<div class="wizard-connector {connector_state}"></div>')
 
-    st.markdown(f'''
-    <div class="wizard-header">
-        {"".join(step_html)}
-    </div>
-    ''', unsafe_allow_html=True)
+    wizard_body = "".join(step_html)
+    st.markdown(
+        f'<div class="wizard-header">{wizard_body}</div>',
+        unsafe_allow_html=True,
+    )
 
 
 # =============================================================================
